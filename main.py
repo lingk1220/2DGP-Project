@@ -1,3 +1,5 @@
+from xml.etree.ElementPath import xpath_tokenizer
+
 from pico2d import *
 import random
 
@@ -5,7 +7,7 @@ class Props:
     global width, height
     image = None
     def __init__(self):
-        self.x, self.y = random.randint(0, 0), 90
+        self.x, self.y = random.randint(0, 0), 0
         self.draw_x = 0
         self.draw_y = 0
         if Props.image == None:
@@ -15,7 +17,88 @@ class Props:
         pass
 
     def draw(self):
-        self.image.clip_draw(0, 0, 1024, 1024, width // 2, height // 2)
+        self.image.clip_draw(0, 0, 1024, 1024, width // 2, height // 2 - 100)
+
+class Props2:
+    global width, height
+    image = None
+    def __init__(self):
+        self.x, self.y = random.randint(0, 0), 0
+        self.draw_x = 0
+        self.draw_y = 0
+        if Props2.image == None:
+            Props2.image = load_image('Props2.png')
+
+    def update(self):
+        pass
+
+    def draw(self):
+        self.image.clip_draw(0, 0, 1024, 1024, width // 2, height // 2 - 100)
+
+class Man1:
+    global width, height
+    image_skin = None
+    image_pants = None
+    image_boots = None
+    image_shirts = None
+
+    def __init__(self):
+        self.width_image = 800
+        self.height_image = 448
+        self.x, self.y = random.randint(0, 0), 0
+        self.draw_x = 0
+        self.draw_y = 0
+        if Man1.image_skin == None:
+            Man1.image_skin = load_image('Male Skin1.png')
+        if Man1.image_pants == None:
+            Man1.image_pants = load_image('Blue Pants.png')
+        if Man1.image_shirts == None:
+            Man1.image_shirts = load_image('Shirt.png')
+        if Man1.image_boots == None:
+            Man1.image_boots = load_image('Boots.png')
+
+    def update(self):
+        pass
+
+    def draw(self):
+        self.image_skin.clip_draw(0, 0, self.width_image, self.height_image, width // 2, height // 2)
+        self.image_pants.clip_draw(0, 0, self.width_image, self.height_image, width // 2, height // 2)
+        self.image_shirts.clip_draw(0, 0, self.width_image, self.height_image, width // 2, height // 2)
+        self.image_boots.clip_draw(0, 0, self.width_image, self.height_image, width // 2, height // 2)
+
+
+class Ground:
+    global width, height
+    image = None
+    def __init__(self, x, y):
+        self.width_image = 512
+        self.height_image = 512
+
+        self.count_h = 16
+        self.count_v = 16
+
+        self.size_h = (self.width_image // self.count_h)
+        self.size_v = (self.height_image // self.count_v)
+
+        self.index_h = x
+        self.index_v = y
+        self.x, self.y = random.randint(0, 0), 0
+        self.draw_x = 0
+        self.draw_y = 0
+        if Ground.image == None:
+            Ground.image = load_image('Ground.png')
+
+    def update(self):
+        pass
+
+    def draw(self):
+        self.image.clip_draw(self.index_h * self.size_h,
+                             self.index_v * self.size_v,
+                             self.size_h,
+                             self.size_v,
+                             self.size_h * self.index_h,
+                             self.size_v * self.index_v)
+
 
 
 def handle_events():
@@ -37,7 +120,21 @@ def reset_world():
     world = []
 
     prop = Props()
-    world.append(prop)
+
+    #world.append(prop)
+
+    for i in range (0, 16 + 1):
+        for j in range(0, 16 + 1):
+            ground = Ground(i, j)
+            world.append(ground)
+
+    prop2 = Props2()
+
+    #world.append(prop2)
+
+    man = Man1()
+
+    #world.append(man)
 
 def update_world():
     for o in world:
@@ -51,7 +148,7 @@ def render_world():
         o.draw()
     update_canvas()
 
-width = 1000
+width = 1400
 height = 800
 
 open_canvas(width, height, False, False)
