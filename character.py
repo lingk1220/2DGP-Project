@@ -38,6 +38,11 @@ class Character:
         self.state_machine.update()
         pass
 
+    def handle_event(self, event):
+        print('handle Event')
+        pass
+
+
     def draw(self):
         self.image.clip_draw(self.index_h * self.size_h,
                              self.index_v * self.size_v,
@@ -51,16 +56,42 @@ class Idle:
     @staticmethod
     def enter(character):
         character.index_v = 9 - 1
-        print('Boy Idle Enter')
+        character.index_h = 0
+        print('Character Idle Enter')
 
     @staticmethod
     def exit(character):
-        print('Boy Idle Exit')
+        print('Character Idle Exit')
+
+    @staticmethod
+    def do(character):
+        character.index_h = (character.index_h + 1) % 6
+
+    @staticmethod
+    def draw(character):
+        character.image.clip_draw(character.frame * character.size_h,
+                                  character.index_v * character.size_v,
+                                  character.size_h,
+                                  character.size_h,
+                                  width // 2 + 64,
+                                  height // 2 + 64)
+
+
+class Walk:
+    @staticmethod
+    def enter(character):
+        character.index_v = 8 - 1
+        character.index_h = 0
+        print('Character Walk Enter')
+
+    @staticmethod
+    def exit(character):
+        print('Character Walk Exit')
 
     @staticmethod
     def do(character):
         print('updating frame')
-        character.index_h = (character.index_h + 1) % 6
+        character.index_h = (character.index_h + 1) % 28
 
     @staticmethod
     def draw(character):

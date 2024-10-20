@@ -174,6 +174,8 @@ def handle_events():
             running = False
         elif event.type == SDL_KEYDOWN and event.key == SDLK_ESCAPE:
             running = False
+        else:
+            character.handle_event(events)
 
 
 def reset_world():
@@ -206,6 +208,7 @@ def reset_world():
 
     world.append(archer)
 
+    global character
     character = Character(0, 0)
 
 
