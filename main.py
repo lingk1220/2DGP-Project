@@ -175,7 +175,7 @@ def handle_events():
         elif event.type == SDL_KEYDOWN and event.key == SDLK_ESCAPE:
             running = False
         else:
-            character.handle_event(events)
+            character.handle_event(event)
 
 
 def reset_world():
