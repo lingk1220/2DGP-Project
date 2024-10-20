@@ -2,6 +2,7 @@ import random
 
 from pico2d import load_image
 
+from state_machine import StateMachine
 #from main import width, height
 
 width = 1400
@@ -13,6 +14,8 @@ class Character:
     def __init__(self, x, y):
         self.width_image = 3626
         self.height_image = 594
+
+        self.frame = 0
 
         self.count_h = 37
         self.count_v = 9
@@ -28,9 +31,11 @@ class Character:
         if Character.image == None:
             Character.image = load_image('JoannaD\'ArcIII-Sheet#1.png')
 
+        self.state_machine = StateMachine(self)
+        self.state_machine.start(Idle)
+
     def update(self):
-        self.index_h = 1 - 1
-        self.index_v = 9 - 1
+        self.state_machine.update()
         pass
 
     def draw(self):
@@ -40,3 +45,29 @@ class Character:
                              self.size_v,
                              width // 2 + 64,
                              height // 2 + 64, self.size_h, self.size_v)
+
+
+class Idle:
+    @staticmethod
+    def enter(character):
+        character.index_v = 9 - 1
+        print('Boy Idle Enter')
+
+    @staticmethod
+    def exit(character):
+        print('Boy Idle Exit')
+
+    @staticmethod
+    def do(character):
+        print('updating frame')
+        character.index_h = (character.index_h + 1) % 6
+
+    @staticmethod
+    def draw(character):
+        character.image.clip_draw(character.frame * character.size_h,
+                                  character.index_v * character.size_v,
+                                  character.size_h,
+                                  character.size_h,
+                                  width // 2 + 64,
+                                  height // 2 + 64)
+
