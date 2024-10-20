@@ -20,6 +20,8 @@ class Character:
         self.dir = 0
         self.run = 0
 
+        self.flip_v = ''
+
         self.count_h = 37
         self.count_v = 9
 
@@ -65,6 +67,9 @@ class Character:
             self.state_machine.start(Idle)
 
         elif self.dir != 0:
+            if self.dir == 1:
+                self.flip_v = ''
+            else: self.flip_v = 'h'
             if self.run == 0 and self.state_machine.cur_state != Walk:
                 self.state_machine.start(Walk)
             elif self.run == 1 and self.state_machine.cur_state != Run:
@@ -74,12 +79,7 @@ class Character:
 
 
     def draw(self):
-        self.image.clip_draw(self.index_h * self.size_h,
-                             self.index_v * self.size_v,
-                             self.size_h,
-                             self.size_v,
-                             width // 2 + 64,
-                             height // 2 + 64, self.size_h, self.size_v)
+        self.state_machine.draw()
 
 
 class Idle:
@@ -99,10 +99,12 @@ class Idle:
 
     @staticmethod
     def draw(character):
-        character.image.clip_draw(character.index_h * character.size_h,
+        character.image.clip_composite_draw(character.index_h * character.size_h,
                                   character.index_v * character.size_v,
                                   character.size_h,
                                   character.size_v,
+                                  0,
+                                  character.flip_v,
                                   width // 2 + 64,
                                   height // 2 + 64, character.size_h * 2, character.size_v * 2)
 
@@ -111,7 +113,7 @@ class Walk:
     @staticmethod
     def enter(character):
         character.index_v = 8 - 1
-        character.index_h = 1
+        character.index_h = 0
         print('Character Walk Enter')
 
     @staticmethod
@@ -126,12 +128,15 @@ class Walk:
 
     @staticmethod
     def draw(character):
-        character.image.clip_draw(character.frame * character.size_h,
+
+        character.image.clip_composite_draw(character.index_h * character.size_h,
                                   character.index_v * character.size_v,
                                   character.size_h,
                                   character.size_v,
+                                  0,
+                                  character.flip_v,
                                   width // 2 + 64,
-                                  height // 2 + 64, character.size_h * 4, character.size_v * 4)
+                                  height // 2 + 64, character.size_h * 2, character.size_v * 2)
 
 
 class Run:
@@ -147,13 +152,17 @@ class Run:
 
     @staticmethod
     def do(character):
-        character.index_h = (character.index_h + 1) % 6
+        character.index_h = character.index_h + 1
+        if character.index_h >= 9:
+            character.index_h = 2
 
     @staticmethod
     def draw(character):
-        character.image.clip_draw(character.index_h * character.size_h,
+        character.image.clip_composite_draw(character.index_h * character.size_h,
                                   character.index_v * character.size_v,
                                   character.size_h,
                                   character.size_v,
+                                  0,
+                                  character.flip_v,
                                   width // 2 + 64,
                                   height // 2 + 64, character.size_h * 2, character.size_v * 2)
