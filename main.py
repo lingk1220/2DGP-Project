@@ -209,7 +209,7 @@ def reset_world():
     world.append(archer)
 
     global character
-    character = Character(0, 0)
+    character = Character(width // 2, height // 2)
 
 
 
@@ -232,9 +232,12 @@ def render_world():
         o.draw()
     update_canvas()
 
+
 width = 1400
 height = 800
 
+time_game = 0
+image_update_tick_per = 2
 open_canvas(width, height, False, False)
 reset_world()
 # game loop
@@ -242,6 +245,7 @@ while running:
     handle_events()
     update_world()
     render_world()
-    delay(0.05)
+    time_game += 1
+    delay(0.02)
 # finalization code
 close_canvas()

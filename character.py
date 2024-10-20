@@ -3,19 +3,24 @@ import random
 from pico2d import *
 
 from state_machine import StateMachine
-#from main import width, height
 
-width = 1400
-height = 800
+
+
 
 class Character:
-    global width, height
+
     image = None
     def __init__(self, x, y):
         self.width_image = 3626
         self.height_image = 594
 
+        self.pos_x = x
+        self.pos_y = y
+
+        self.speed_walk = 3
+        self.speed_run = 7
         self.frame = 0
+        self.need_update_frame = 0
 
         self.dir = 0
         self.run = 0
@@ -28,8 +33,8 @@ class Character:
         self.size_h = (self.width_image // self.count_h)
         self.size_v = (self.height_image // self.count_v)
 
-        self.index_h = x
-        self.index_v = y
+        self.index_h = 0
+        self.index_v = 0
         self.x, self.y = random.randint(0, 0), 0
         self.draw_x = 0
         self.draw_y = 0
@@ -95,18 +100,19 @@ class Idle:
 
     @staticmethod
     def do(character):
-        character.index_h = (character.index_h + 1) % 6
+        character.need_update_frame = (character.need_update_frame + 1 ) % 2
+        if character.need_update_frame:
+            character.index_h = (character.index_h + 1) % 12
 
     @staticmethod
     def draw(character):
-        character.image.clip_composite_draw(character.index_h * character.size_h,
+        character.image.clip_composite_draw(character.index_h // 2 * character.size_h,
                                   character.index_v * character.size_v,
                                   character.size_h,
                                   character.size_v,
                                   0,
                                   character.flip_v,
-                                  width // 2 + 64,
-                                  height // 2 + 64, character.size_h * 2, character.size_v * 2)
+                                  character.pos_x, character.pos_y, character.size_h * 2, character.size_v * 2)
 
 
 class Walk:
@@ -122,9 +128,13 @@ class Walk:
 
     @staticmethod
     def do(character):
-        character.index_h = character.index_h + 1
-        if character.index_h >= 20:
-            character.index_h = 2
+        character.need_update_frame = (character.need_update_frame + 1 ) % 2
+        if character.need_update_frame:
+            character.index_h = character.index_h + 1
+            if character.index_h >= 20:
+                character.index_h = 2
+
+        character.pos_x += character.dir * character.speed_walk
 
     @staticmethod
     def draw(character):
@@ -135,8 +145,7 @@ class Walk:
                                   character.size_v,
                                   0,
                                   character.flip_v,
-                                  width // 2 + 64,
-                                  height // 2 + 64, character.size_h * 2, character.size_v * 2)
+                                  character.pos_x, character.pos_y, character.size_h * 2, character.size_v * 2)
 
 
 class Run:
@@ -152,9 +161,13 @@ class Run:
 
     @staticmethod
     def do(character):
-        character.index_h = character.index_h + 1
-        if character.index_h >= 9:
-            character.index_h = 2
+        character.need_update_frame = (character.need_update_frame + 1) % 2
+        if character.need_update_frame:
+            character.index_h = character.index_h + 1
+            if character.index_h >= 9:
+                character.index_h = 2
+
+        character.pos_x += character.dir * character.speed_run
 
     @staticmethod
     def draw(character):
@@ -164,5 +177,4 @@ class Run:
                                   character.size_v,
                                   0,
                                   character.flip_v,
-                                  width // 2 + 64,
-                                  height // 2 + 64, character.size_h * 2, character.size_v * 2)
+                                  character.pos_x, character.pos_y, character.size_h * 2, character.size_v * 2)
