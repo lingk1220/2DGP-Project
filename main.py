@@ -1,7 +1,9 @@
 from pico2d import *
 import random
 
+
 from character import Character
+from ground import Ground
 
 
 class Props:
@@ -67,38 +69,6 @@ class Man1:
         self.image_shirts.clip_draw(0, 0, self.width_image, self.height_image, width // 2, height // 2)
         self.image_boots.clip_draw(0, 0, self.width_image, self.height_image, width // 2, height // 2)
 
-
-class Ground:
-    global width, height
-    image = None
-    def __init__(self, x, y):
-        self.width_image = 512
-        self.height_image = 512
-
-        self.count_h = 16
-        self.count_v = 16
-
-        self.size_h = (self.width_image // self.count_h)
-        self.size_v = (self.height_image // self.count_v)
-
-        self.index_h = x
-        self.index_v = y
-        self.x, self.y = random.randint(0, 0), 0
-        self.draw_x = 0
-        self.draw_y = 0
-        if Ground.image == None:
-            Ground.image = load_image('Ground.png')
-
-    def update(self):
-        pass
-
-    def draw(self):
-        self.image.clip_draw(self.index_h * self.size_h,
-                             self.index_v * self.size_v,
-                             self.size_h,
-                             self.size_v,
-                             self.size_h * self.index_h,
-                             self.size_v * self.index_v)
 
 class Archer:
     global width, height
@@ -166,6 +136,20 @@ class Skeleton:
                              self.size_v * self.index_v + height // 2, 100, 180)
 
 
+class Background:
+    global width, height
+    images = [None]
+    def __init__(self, x, y):
+        self.width_image = 600
+        self.height_image = 150
+
+        for i in range(0, 1):
+            if Background.images[i] == None:
+                name = 'Sky' + (i+1)
+                Background.images[i] = load_image(name)
+                pass
+
+
 def handle_events():
     global running
     events = get_events()
@@ -190,9 +174,9 @@ def reset_world():
 
     #world.append(prop)
 
-    for i in range (0, 16 + 1):
-        for j in range(0, 16 + 1):
-            ground = Ground(i, j)
+    for i in range (0, 3 + 1):
+        for j in range(-80, 45 + 80 + 1):
+            ground = Ground(j, i)
             world.append(ground)
 
     prop2 = Props2()
@@ -209,16 +193,14 @@ def reset_world():
     world.append(archer)
 
     global character
-    character = Character(width // 2, height // 2)
+    character = Character(width // 2, 123)
 
 
 
     world.append(character)
 
 
-    skeleton = Skeleton(0, 0)
 
-    world.append(skeleton)
 
 def update_world():
     for o in world:
