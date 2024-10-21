@@ -1,7 +1,7 @@
 from pico2d import *
 import random
 
-
+from background import Background
 from character import Character
 from ground import Ground
 
@@ -135,30 +135,6 @@ class Skeleton:
                              self.size_h * self.index_h + width // 2 + 128,
                              self.size_v * self.index_v + height // 2, 100, 180)
 
-
-class Background:
-    global width, height
-    images = [None] * 4
-    def __init__(self):
-        self.width_image = 576
-        self.height_image = 324
-
-        for i in range(0, 4):
-            if Background.images[i] == None:
-                name = 'Sky' + (str)(i+1) + '.png'
-                Background.images[i] = load_image(name)
-                pass
-    def update(self):
-        pass
-
-    def draw(self):
-        for i in range(0,4):
-            self.images[i].clip_draw(0,
-                                     0,
-                                     self.width_image,
-                                     self.height_image,
-                                     width // 2,
-                                     height // 2, self.width_image * 3, self.height_image * 3)
 
 def handle_events():
     global running
