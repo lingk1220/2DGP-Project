@@ -138,17 +138,27 @@ class Skeleton:
 
 class Background:
     global width, height
-    images = [None]
-    def __init__(self, x, y):
-        self.width_image = 600
-        self.height_image = 150
+    images = [None] * 4
+    def __init__(self):
+        self.width_image = 576
+        self.height_image = 324
 
-        for i in range(0, 1):
+        for i in range(0, 4):
             if Background.images[i] == None:
-                name = 'Sky' + (i+1)
+                name = 'Sky' + (str)(i+1) + '.png'
                 Background.images[i] = load_image(name)
                 pass
+    def update(self):
+        pass
 
+    def draw(self):
+        for i in range(0,4):
+            self.images[i].clip_draw(0,
+                                     0,
+                                     self.width_image,
+                                     self.height_image,
+                                     width // 2,
+                                     height // 2, self.width_image * 3, self.height_image * 3)
 
 def handle_events():
     global running
@@ -174,23 +184,22 @@ def reset_world():
 
     #world.append(prop)
 
+    background = Background()
+    world.append(background)
+
     for i in range (0, 3 + 1):
         for j in range(-80, 45 + 80 + 1):
             ground = Ground(j, i)
             world.append(ground)
 
+
+
     prop2 = Props2()
 
     #world.append(prop2)
 
-    man = Man1()
-
-    #world.append(man)
-
-    archer = Archer(0, 0)
 
 
-    world.append(archer)
 
     global character
     character = Character(width // 2, 123)
