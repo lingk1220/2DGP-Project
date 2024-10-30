@@ -3,6 +3,7 @@ import random
 from pico2d import load_image, get_events, clear_canvas, update_canvas
 from sdl2 import SDL_QUIT, SDL_KEYDOWN, SDLK_ESCAPE
 
+import game_framework
 from background import Background
 from character import Character
 from ground import Ground
@@ -47,18 +48,17 @@ class Props2:
 
 
 def handle_events():
-    global running
     events = get_events()
     for event in events:
         if event.type == SDL_QUIT:
-            running = False
+            game_framework.quit()
         elif event.type == SDL_KEYDOWN and event.key == SDLK_ESCAPE:
-            running = False
+            game_framework.quit()
         else:
             character.handle_event(event)
 
 
-def reset_world():
+def init():
     global running
 
     global world
@@ -95,16 +95,26 @@ def reset_world():
     world.append(character)
 
 
-def update_world():
+def update():
     global world
     for o in world:
         o.update()
     pass
 
 
-def render_world():
+def draw():
     global world
     clear_canvas()
     for o in world:
         o.draw()
     update_canvas()
+
+
+def finish():
+    pass
+
+def pause():
+    pass
+
+def resume():
+    pass
