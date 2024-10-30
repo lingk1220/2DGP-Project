@@ -2,9 +2,7 @@ import random
 
 from pico2d import *
 
-from state_machine import StateMachine
-
-
+from state_machine import StateMachine, right_down, right_up, left_down, left_up, lshift_down, lshift_up
 
 
 class Character:
@@ -44,42 +42,27 @@ class Character:
         self.state_machine = StateMachine(self)
         self.state_machine.start(Idle)
 
+
+        self.state_machine.set_transitions(
+            {
+
+                Idle : {right_down : Walk, right_up : Walk, left_down : Walk, left_up : Walk, lshift_down: Idleshift},
+                Idleshift: {right_down: Run, right_up: Run, left_down: Run, left_up: Run, lshift_up: Idle},
+
+                Walk: {right_down: Idle, right_up: Idle, left_down: Idle, left_up: Idle, lshift_down: Run},
+                Run: {right_down: Idleshift, right_up: Idleshift, left_down: Idleshift, left_up: Idleshift, lshift_up: Walk},
+                #Sleep: { space_down : Idle, right_down : Run, right_up : Idle, left_down : Run, left_up : Idle,},
+
+            }
+        )
+
+
     def update(self):
         self.state_machine.update()
         pass
 
     def handle_event(self, event):
-        if event.type == SDL_KEYDOWN:
-            if event.key == SDLK_RIGHT:
-                self.dir += 1
-            elif event.key == SDLK_LEFT:
-                self.dir -= 1
-            elif event.key == SDLK_LSHIFT:
-                self.run = 1
-            elif event.key == SDLK_ESCAPE:
-                running = False
-
-
-        if event.type == SDL_KEYUP:
-            if event.key == SDLK_RIGHT:
-                self.dir -= 1
-            elif event.key == SDLK_LEFT:
-                self.dir += 1
-            elif event.key == SDLK_LSHIFT:
-                self.run = 0
-
-        if self.dir == 0 and self.state_machine.cur_state != Idle:
-            self.state_machine.start(Idle)
-
-        elif self.dir != 0:
-            if self.dir == 1:
-                self.flip_v = ''
-            else: self.flip_v = 'h'
-            if self.run == 0 and self.state_machine.cur_state != Walk:
-                self.state_machine.start(Walk)
-            elif self.run == 1 and self.state_machine.cur_state != Run:
-                self.state_machine.start(Run)
-
+        self.state_machine.add_event(('INPUT', event))
         pass
 
 
@@ -89,14 +72,39 @@ class Character:
 
 class Idle:
     @staticmethod
-    def enter(character):
+    def enter(character, e):
         character.index_v = 9 - 1
         character.index_h = 0
-        print('Character Idle Enter')
 
     @staticmethod
-    def exit(character):
-        print('Character Idle Exit')
+    def exit(character, e):
+        pass
+
+    @staticmethod
+    def do(character):
+        character.need_update_frame = (character.need_update_frame + 1 ) % 2
+        if character.need_update_frame:
+            character.index_h = (character.index_h + 1) % 12
+
+    @staticmethod
+    def draw(character):
+        character.image.clip_composite_draw(character.index_h // 2 * character.size_h,
+                                  character.index_v * character.size_v,
+                                  character.size_h,
+                                  character.size_v,
+                                  0,
+                                  character.flip_v,
+                                  character.pos_x, character.pos_y, character.size_h * 2, character.size_v * 2)
+
+class Idleshift:
+    @staticmethod
+    def enter(character, e):
+        character.index_v = 9 - 1
+        character.index_h = 0
+
+    @staticmethod
+    def exit(character, e):
+        pass
 
     @staticmethod
     def do(character):
@@ -117,13 +125,13 @@ class Idle:
 
 class Walk:
     @staticmethod
-    def enter(character):
+    def enter(character, e):
         character.index_v = 8 - 1
         character.index_h = 0
         print('Character Walk Enter')
 
     @staticmethod
-    def exit(character):
+    def exit(character, e):
         print('Character Walk Exit')
 
     @staticmethod
@@ -150,13 +158,13 @@ class Walk:
 
 class Run:
     @staticmethod
-    def enter(character):
+    def enter(character, e):
         character.index_v = 7 - 1
         character.index_h = 0
         print('Character Run Enter')
 
     @staticmethod
-    def exit(character):
+    def exit(character, e):
         print('Character Run Exit')
 
     @staticmethod
