@@ -23,7 +23,7 @@ class Character:
         self.dir = 0
         self.run = 0
 
-        self.flip_v = ''
+        self.flip_h = ''
 
         self.count_h = 37
         self.count_v = 9
@@ -93,7 +93,7 @@ class Idle:
                                   character.size_h,
                                   character.size_v,
                                   0,
-                                  character.flip_v,
+                                  character.flip_h,
                                   character.pos_x, character.pos_y, character.size_h * 2, character.size_v * 2)
 
 class Idleshift:
@@ -119,13 +119,20 @@ class Idleshift:
                                   character.size_h,
                                   character.size_v,
                                   0,
-                                  character.flip_v,
+                                  character.flip_h,
                                   character.pos_x, character.pos_y, character.size_h * 2, character.size_v * 2)
 
 
 class Walk:
     @staticmethod
     def enter(character, e):
+        if right_down(e) or left_up(e):
+            character.dir = 1
+            character.flip_h = ''
+        elif left_down(e) or right_up(e):
+            character.dir = -1
+            character.flip_h = 'h'
+
         character.index_v = 8 - 1
         character.index_h = 0
         print('Character Walk Enter')
@@ -152,13 +159,20 @@ class Walk:
                                   character.size_h,
                                   character.size_v,
                                   0,
-                                  character.flip_v,
+                                  character.flip_h,
                                   character.pos_x, character.pos_y, character.size_h * 2, character.size_v * 2)
 
 
 class Run:
     @staticmethod
     def enter(character, e):
+        if right_down(e) or left_up(e):
+            character.dir = 1
+            character.flip_h = ''
+        elif left_down(e) or right_up(e):
+            character.dir = -1
+            character.flip_h = 'h'
+
         character.index_v = 7 - 1
         character.index_h = 0
         print('Character Run Enter')
@@ -184,5 +198,5 @@ class Run:
                                   character.size_h,
                                   character.size_v,
                                   0,
-                                  character.flip_v,
+                                  character.flip_h,
                                   character.pos_x, character.pos_y, character.size_h * 2, character.size_v * 2)
