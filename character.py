@@ -1,9 +1,13 @@
 import random
+import game_framework
 
 from pico2d import *
 
 from state_machine import StateMachine, right_down, right_up, left_down, left_up, lshift_down, lshift_up
 
+TIME_PER_ACTION = 0.5
+ACTION_PER_TIME = 1.0 / TIME_PER_ACTION
+#FRAMES_PER_ACTION = 8
 
 class Character:
 
@@ -32,7 +36,7 @@ class Character:
         self.size_v = (self.height_image // self.count_v)
 
         self.index_h = 0
-        self.index_v = 0
+        self.index_v = 8
         self.x, self.y = random.randint(0, 0), 0
         self.draw_x = 0
         self.draw_y = 0
@@ -73,8 +77,9 @@ class Character:
 class Idle:
     @staticmethod
     def enter(character, e):
-        character.index_v = 9 - 1
-        character.index_h = 0
+        if not lshift_up(e):
+            character.index_v = 9 - 1
+            character.index_h = 0
 
     @staticmethod
     def exit(character, e):
@@ -82,13 +87,11 @@ class Idle:
 
     @staticmethod
     def do(character):
-        character.need_update_frame = (character.need_update_frame + 1 ) % 2
-        if character.need_update_frame:
-            character.index_h = (character.index_h + 1) % 12
+        character.index_h = (character.index_h + 6 * 1.5 * game_framework.frame_time) % 6
 
     @staticmethod
     def draw(character):
-        character.image.clip_composite_draw(character.index_h // 2 * character.size_h,
+        character.image.clip_composite_draw(int(character.index_h) * character.size_h,
                                   character.index_v * character.size_v,
                                   character.size_h,
                                   character.size_v,
@@ -99,8 +102,9 @@ class Idle:
 class Idleshift:
     @staticmethod
     def enter(character, e):
-        character.index_v = 9 - 1
-        character.index_h = 0
+        if not lshift_down(e):
+            character.index_v = 9 - 1
+            character.index_h = 0
 
     @staticmethod
     def exit(character, e):
@@ -108,13 +112,14 @@ class Idleshift:
 
     @staticmethod
     def do(character):
-        character.need_update_frame = (character.need_update_frame + 1 ) % 2
-        if character.need_update_frame:
-            character.index_h = (character.index_h + 1) % 12
+
+        character.index_h = (character.index_h + 6 * 1.5 * game_framework.frame_time) % 6
+
+
 
     @staticmethod
     def draw(character):
-        character.image.clip_composite_draw(character.index_h // 2 * character.size_h,
+        character.image.clip_composite_draw(int(character.index_h)  * character.size_h,
                                   character.index_v * character.size_v,
                                   character.size_h,
                                   character.size_v,
@@ -143,18 +148,18 @@ class Walk:
 
     @staticmethod
     def do(character):
-        character.need_update_frame = (character.need_update_frame + 1 ) % 2
-        if character.need_update_frame:
-            character.index_h = character.index_h + 1
-            if character.index_h >= 20:
-                character.index_h = 2
+
+        character.index_h = (character.index_h + 18 * 1 * game_framework.frame_time)
+        if character.index_h >= 20:
+            character.index_h = 2
+
 
         character.pos_x += character.dir * character.speed_walk
 
     @staticmethod
     def draw(character):
 
-        character.image.clip_composite_draw(character.index_h * character.size_h,
+        character.image.clip_composite_draw(int(character.index_h) * character.size_h,
                                   character.index_v * character.size_v,
                                   character.size_h,
                                   character.size_v,
@@ -183,17 +188,15 @@ class Run:
 
     @staticmethod
     def do(character):
-        character.need_update_frame = (character.need_update_frame + 1) % 2
-        if character.need_update_frame:
-            character.index_h = character.index_h + 1
-            if character.index_h >= 9:
-                character.index_h = 2
+        character.index_h = (character.index_h + 7 * 2 * game_framework.frame_time)
+        if character.index_h >= 9:
+            character.index_h = 2
 
         character.pos_x += character.dir * character.speed_run
 
     @staticmethod
     def draw(character):
-        character.image.clip_composite_draw(character.index_h * character.size_h,
+        character.image.clip_composite_draw(int(character.index_h) * character.size_h,
                                   character.index_v * character.size_v,
                                   character.size_h,
                                   character.size_v,

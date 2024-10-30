@@ -1,6 +1,7 @@
 import random
 
 from pico2d import load_image, get_events, clear_canvas, update_canvas
+from pico2d import delay
 from sdl2 import SDL_QUIT, SDL_KEYDOWN, SDLK_ESCAPE
 
 import game_framework
@@ -99,6 +100,8 @@ def update():
     global world
     for o in world:
         o.update()
+
+    delay(0.02)
     pass
 
 
