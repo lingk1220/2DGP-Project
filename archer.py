@@ -1,5 +1,7 @@
 import math
 import random
+import time
+
 import game_framework
 
 
@@ -29,20 +31,27 @@ class Archer:
         self.x, self.y = random.randint(0, 0), 0
         self.draw_x = 0
         self.draw_y = 0
+
+        self.state = Walk
         if Archer.image == None:
             Archer.image = load_image('Archer.png')
 
         self.build_behavior_tree()
-        #self.state_machine = StateMachine(self)
-        #self.state_machine.start(Idle)
+        self.state_machine = StateMachine(self)
+        self.state_machine.start(Idle)
 
 
 
 
     def update(self):
-        #self.state_machine.update()
-        self.index_h = (self.index_h + 8 * 1.5 * game_framework.frame_time) % 8
         self.bt.run()
+        #print(f'{self.state}')
+        print(f'{self.state_machine.cur_state}')
+
+        if self.state_machine.cur_state != self.state:
+            self.state_machine.start(self.state)
+        self.state_machine.update()
+
         pass
 
     def handle_event(self, event):
@@ -50,23 +59,8 @@ class Archer:
 
 
     def draw(self):
-        #self.state_machine.draw()
-        if math.cos(self.dir) > 0:
-            self.image.clip_draw(int(self.index_h) * self.size_h,
-                                 self.index_v * self.size_v,
-                                 self.size_h - self.center_error_x,
-                                 self.size_v,
-                                 self.pos_x,
-                                 self.pos_y + 29, 100, 100  * self.size_v / (self.size_h - self.center_error_x))
-        else:
-            self.image.clip_composite_draw(int(self.index_h) * self.size_h,
-                                 self.index_v * self.size_v,
-                                 self.size_h - self.center_error_x,
-                                 self.size_v,
-                                 0,
-                                 'h',
-                                 self.pos_x,
-                                 self.pos_y + 29, 100, 100 * self.size_v / (self.size_h - self.center_error_x))
+        self.state_machine.draw()
+
 
 
     def set_target_location(self, x=None, y=None):
@@ -87,7 +81,7 @@ class Archer:
         self.pos_y += self.speed * math.sin(self.dir) * game_framework.frame_time
 
     def move_to(self, r=10):
-        self.state = 'Walk'
+        self.state = Walk
         self.move_slightly_to(self.tx, self.ty)
         if self.distance_less_than(self.tx, self.ty, self.pos_x, self.pos_y, r):
             return BehaviorTree.SUCCESS
@@ -98,6 +92,20 @@ class Archer:
         self.tx, self.ty = self.pos_x + ((2 * random.randint(0, 1)  - 1) *  random.randint(100, 101)), self.pos_y
         print(f'tx = {self.tx}')
         # self.tx, self.ty = 1000, 100
+        return BehaviorTree.SUCCESS
+
+
+    def wait_time(self):
+        if get_time() - self.time_wait_started > self.time_wait_for:
+            return BehaviorTree.SUCCESS
+        else:
+            return BehaviorTree.RUNNING
+        pass
+
+    def set_wait_time(self):
+        self.state = Idle
+        self.time_wait_started = get_time()
+        self.time_wait_for = random.randint(5, 30) / 10
         return BehaviorTree.SUCCESS
 
     def is_rabbit_nearby(self, distance):
@@ -116,10 +124,13 @@ class Archer:
         return BehaviorTree.SUCCESS
 
     def build_behavior_tree(self):
+        a0 = Action('Wait', self.wait_time)
+        ACT_set_wait_time = Action('Set Wait Time', self.set_wait_time)
+        SEQ_wait_time = Sequence('Wait', ACT_set_wait_time, a0)
         a1 = Action('Move to', self.move_to)
 
         a2 = Action('Set random location', self.set_random_location)
-        root = SEQ_wander = Sequence('Wander', a2, a1)
+        root = SEQ_wander = Sequence('Wander', a2, a1, SEQ_wait_time)
 
         c1 = Condition('토끼가 근처에 있는가?', self.is_rabbit_nearby, 7)
         a3 = Action('접근', self.move_to_rabbit)
@@ -162,12 +173,24 @@ class Idle:
 
     @staticmethod
     def draw(archer):
-        archer.image.clip_draw(int(archer.index_h) * archer.size_h,
-                             archer.index_v * archer.size_v,
-                             archer.size_h,
-                             archer.size_v,
-                             archer.pos_x,
-                             archer.pos_y + 26, 110, 110)
+        if math.cos(archer.dir) > 0:
+            archer.image.clip_draw(int(archer.index_h) * archer.size_h,
+                                   archer.index_v * archer.size_v,
+                                   archer.size_h - archer.center_error_x,
+                                   archer.size_v,
+                                   archer.pos_x,
+                                   archer.pos_y + 29, 100,
+                                   100 * archer.size_v / (archer.size_h - archer.center_error_x))
+        else:
+            archer.image.clip_composite_draw(int(archer.index_h) * archer.size_h,
+                                             archer.index_v * archer.size_v,
+                                             archer.size_h - archer.center_error_x,
+                                             archer.size_v,
+                                             0,
+                                             'h',
+                                             archer.pos_x,
+                                             archer.pos_y + 29, 100,
+                                             100 * archer.size_v / (archer.size_h - archer.center_error_x))
 
 class Walk:
     @staticmethod
@@ -181,15 +204,26 @@ class Walk:
 
     @staticmethod
     def do(archer):
-        archer.pos_x += 1
         archer.index_h = (archer.index_h + 8 * 1.5 * game_framework.frame_time) % 8
         print(f'            {int(archer.index_h)}')
 
     @staticmethod
     def draw(archer):
-        archer.image.clip_draw(int(archer.index_h) * archer.size_h,
-                               archer.index_v * archer.size_v,
-                               archer.size_h,
-                               archer.size_v,
-                               archer.pos_x,
-                               archer.pos_y + 26, 110, 110)
+        if math.cos(archer.dir) > 0:
+            archer.image.clip_draw(int(archer.index_h) * archer.size_h,
+                                   archer.index_v * archer.size_v,
+                                   archer.size_h - archer.center_error_x,
+                                   archer.size_v,
+                                   archer.pos_x,
+                                   archer.pos_y + 29, 100,
+                                   100 * archer.size_v / (archer.size_h - archer.center_error_x))
+        else:
+            archer.image.clip_composite_draw(int(archer.index_h) * archer.size_h,
+                                             archer.index_v * archer.size_v,
+                                             archer.size_h - archer.center_error_x,
+                                             archer.size_v,
+                                             0,
+                                             'h',
+                                             archer.pos_x,
+                                             archer.pos_y + 29, 100,
+                                             100 * archer.size_v / (archer.size_h - archer.center_error_x))
