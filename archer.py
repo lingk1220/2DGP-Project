@@ -21,7 +21,7 @@ class Archer:
         self.size_h = (self.width_image // self.count_h)
         self.size_v = (self.height_image // self.count_v)
 
-
+        self.center_error_x = 10
         self.pos_x = x
         self.pos_y = y
         self.index_h = 0
@@ -54,19 +54,19 @@ class Archer:
         if math.cos(self.dir) > 0:
             self.image.clip_draw(int(self.index_h) * self.size_h,
                                  self.index_v * self.size_v,
-                                 self.size_h,
+                                 self.size_h - self.center_error_x,
                                  self.size_v,
                                  self.pos_x,
-                                 self.pos_y + 26, 110, 110)
+                                 self.pos_y + 29, 100, 100  * self.size_v / (self.size_h - self.center_error_x))
         else:
             self.image.clip_composite_draw(int(self.index_h) * self.size_h,
                                  self.index_v * self.size_v,
-                                 self.size_h,
+                                 self.size_h - self.center_error_x,
                                  self.size_v,
                                  0,
                                  'h',
                                  self.pos_x,
-                                 self.pos_y + 26, 110, 110)
+                                 self.pos_y + 29, 100, 100 * self.size_v / (self.size_h - self.center_error_x))
 
 
     def set_target_location(self, x=None, y=None):
@@ -95,7 +95,7 @@ class Archer:
             return BehaviorTree.RUNNING
 
     def set_random_location(self):
-        self.tx, self.ty = self.pos_x + ((2 * random.randint(0, 1)  - 1) *  random.randint(200, 400)), self.pos_y
+        self.tx, self.ty = self.pos_x + ((2 * random.randint(0, 1)  - 1) *  random.randint(100, 101)), self.pos_y
         print(f'tx = {self.tx}')
         # self.tx, self.ty = 1000, 100
         return BehaviorTree.SUCCESS
