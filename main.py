@@ -11,4 +11,3 @@ game_framework.run(play_mode)
 # game loop
 # finalization code
 close_canvas()
-delay(0.1)

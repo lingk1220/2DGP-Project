@@ -5,11 +5,13 @@ from pico2d import delay
 from sdl2 import SDL_QUIT, SDL_KEYDOWN, SDLK_ESCAPE
 
 import game_framework
+from archer import Archer
 from background import Background
 from character import Character
 from ground import Ground
 
 
+GROUNDHEIGHT = 120
 width = 1400
 height = 800
 
@@ -89,12 +91,14 @@ def init():
 
 
     global character
-    character = Character(width // 2, 123)
+    character = Character(width // 2, GROUNDHEIGHT)
 
 
 
     world.append(character)
 
+    archer = Archer(width // 2 + 100, GROUNDHEIGHT)
+    world.append(archer)
 
 def update():
     global world

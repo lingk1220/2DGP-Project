@@ -17,7 +17,7 @@ class Character:
         self.height_image = 594
 
         self.pos_x = x
-        self.pos_y = y
+        self.pos_y = y + 3
 
         self.speed_walk = 3
         self.speed_run = 7
