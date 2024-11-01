@@ -4,11 +4,13 @@ import time
 
 import game_framework
 
+import play_mode
 
 from behavior_tree import BehaviorTree, Action, Sequence, Condition, Selector
 from pico2d import load_image, get_time
 
 from state_machine import StateMachine
+
 
 
 class Archer:
@@ -26,13 +28,16 @@ class Archer:
         self.center_error_x = 10
         self.pos_x = x
         self.pos_y = y
+        self.dir = 1
+
         self.index_h = 0
         self.index_v = 3 - 1
         self.x, self.y = random.randint(0, 0), 0
         self.draw_x = 0
         self.draw_y = 0
-
+        self.min_rabbit_dir = 10000
         self.state = Walk
+        self.rabbit_target = None
         if Archer.image == None:
             Archer.image = load_image('Archer.png')
 
@@ -73,9 +78,12 @@ class Archer:
         distance2 = (x1 - x2) ** 2 + (y1 - y2) ** 2
         return distance2 < (1 * r) ** 2
 
+    def distance_pow_get(self, x1, y1, x2, y2):
+        distance2 = (x1 - x2) ** 2 + (y1 - y2) ** 2
+        return distance2
+
     def move_slightly_to(self, tx, ty):
         self.dir = math.atan2(ty - self.pos_y, tx - self.pos_x)
-        print(f'    {ty - self.y}')
         self.speed = 100
         self.pos_x += self.speed * math.cos(self.dir) * game_framework.frame_time
         self.pos_y += self.speed * math.sin(self.dir) * game_framework.frame_time
@@ -108,20 +116,44 @@ class Archer:
         self.time_wait_for = random.randint(5, 30) / 10
         return BehaviorTree.SUCCESS
 
-    def is_rabbit_nearby(self, distance):
-        if self.distance_less_than(0, 0, self.pos_x, self.pos_y, distance):
+    def lockon_rabbit(self, distance):
+        self.min_rabbit_dir = 10000000
+        self.rabbit_target = None
+        for rabbit in play_mode.rabbits:
+            print('bbbb')
+            rabbit_dir = self.distance_pow_get(rabbit.pos_x, rabbit.pos_y, self.pos_x, self.pos_y)
+            if rabbit_dir < distance ** 2:
+                if rabbit_dir < self.min_rabbit_dir:
+                    self.rabbit_target = rabbit
+        if self.rabbit_target == None:
             return BehaviorTree.FAIL
+        else:
+            print('asdfasdf')
+            return BehaviorTree.SUCCESS
+
+    def is_target_nearby(self, distance):
+
+        if self.rabbit_target == None:
+            return BehaviorTree.FAIL
+
+        rabbit_dir = self.distance_pow_get(self.rabbit_target.pos_x, self.rabbit_target.pos_y, self.pos_x, self.pos_y)
+        if rabbit_dir < distance ** 2:
+            return BehaviorTree.SUCCESS
         else:
             return BehaviorTree.FAIL
 
+
     def move_to_rabbit(self):
-        return BehaviorTree.SUCCESS
+        self.state = Walk
+        self.move_slightly_to(self.rabbit_target.pos_x, self.rabbit_target.pos_y)
+        if self.distance_less_than(self.rabbit_target.pos_x, self.rabbit_target.pos_y, self.pos_x, self.pos_y, 10):
+            return BehaviorTree.SUCCESS
+        else:
+            return BehaviorTree.RUNNING
 
     def shoot_to_rabbit(self):
         return BehaviorTree.SUCCESS
 
-    def lockon_rabbit(self):
-        return BehaviorTree.SUCCESS
 
     def build_behavior_tree(self):
         a0 = Action('Wait', self.wait_time)
@@ -132,19 +164,18 @@ class Archer:
         a2 = Action('Set random location', self.set_random_location)
         root = SEQ_wander = Sequence('Wander', a2, a1, SEQ_wait_time)
 
-        c1 = Condition('토끼가 근처에 있는가?', self.is_rabbit_nearby, 7)
+        c1 = Condition('토끼가 근처에 있는가?', self.is_target_nearby, 1001)
         a3 = Action('접근', self.move_to_rabbit)
         root = SEQ_chase_rabbit = Sequence('토끼를 추적', c1, a3)
 
-        c2  = Condition('토끼가 사정거리 안에 있는가?', self.is_rabbit_nearby, 3)
+        c2  = Condition('토끼가 사정거리 안에 있는가?', self.is_target_nearby, 200)
         a4 = Action('화살 발사', self.shoot_to_rabbit)
         root = SEQ_shoot_rabbit = Sequence('토끼를 사냥', c2, a4)
 
 
-        c3 = Condition('시야거리 내에 토끼가 있는가?', self.is_rabbit_nearby, 12)
-        a5 = Action('토끼를 LockOn', self.lockon_rabbit)
-        SEQ_lockon_rabbit = Sequence('LockOn', c3, a5)
-        SEL_hunt_rabbit = Selector('사냥', SEQ_shoot_rabbit, SEQ_chase_rabbit, SEQ_lockon_rabbit )
+        a5 = Action('시야거리 내에 토끼가 있는가?', self.lockon_rabbit, 1001)
+        #SEQ_lockon_rabbit = Sequence('LockOn', c3, a5)
+        SEL_hunt_rabbit = Selector('사냥', SEQ_shoot_rabbit, SEQ_chase_rabbit, a5 )
 
 
         root = SEL_hunt_or_wander = Selector('사냥 또는 wander', SEL_hunt_rabbit, SEQ_wander)

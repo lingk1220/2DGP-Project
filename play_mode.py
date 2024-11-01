@@ -9,7 +9,7 @@ from archer import Archer
 from background import Background
 from character import Character
 from ground import Ground
-
+from rabbit import Rabbit
 
 GROUNDHEIGHT = 120
 width = 1400
@@ -99,6 +99,11 @@ def init():
 
     archer = Archer(width // 2 + 100, GROUNDHEIGHT)
     world.append(archer)
+    global rabbits
+    rabbits = [Rabbit(100, GROUNDHEIGHT) for _  in range (1)]
+    for rabbit in rabbits:
+        world.append(rabbit)
+
 
 def update():
     global world
