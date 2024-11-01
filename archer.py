@@ -25,7 +25,7 @@ class Archer:
         self.pos_x = x
         self.pos_y = y
         self.index_h = 0
-        self.index_v = 0
+        self.index_v = 3 - 1
         self.x, self.y = random.randint(0, 0), 0
         self.draw_x = 0
         self.draw_y = 0
@@ -33,18 +33,15 @@ class Archer:
             Archer.image = load_image('Archer.png')
 
         self.build_behavior_tree()
-        self.state_machine = StateMachine(self)
-        self.state_machine.start(Idle)
+        #self.state_machine = StateMachine(self)
+        #self.state_machine.start(Idle)
 
 
-        self.state_machine.set_transitions(
-            {
 
-            }
-        )
 
     def update(self):
         #self.state_machine.update()
+        self.index_h = (self.index_h + 8 * 1.5 * game_framework.frame_time) % 8
         self.bt.run()
         pass
 
@@ -53,7 +50,23 @@ class Archer:
 
 
     def draw(self):
-        self.state_machine.draw()
+        #self.state_machine.draw()
+        if math.cos(self.dir) > 0:
+            self.image.clip_draw(int(self.index_h) * self.size_h,
+                                 self.index_v * self.size_v,
+                                 self.size_h,
+                                 self.size_v,
+                                 self.pos_x,
+                                 self.pos_y + 26, 110, 110)
+        else:
+            self.image.clip_composite_draw(int(self.index_h) * self.size_h,
+                                 self.index_v * self.size_v,
+                                 self.size_h,
+                                 self.size_v,
+                                 0,
+                                 'h',
+                                 self.pos_x,
+                                 self.pos_y + 26, 110, 110)
 
 
     def set_target_location(self, x=None, y=None):
