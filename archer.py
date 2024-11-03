@@ -152,8 +152,13 @@ class Archer:
             return BehaviorTree.RUNNING
 
     def shoot_to_rabbit(self):
-        return BehaviorTree.SUCCESS
-
+        self.state = Shoot
+        self.dir = self.rabbit_target.pos_x - self.pos_x
+        print(f'index_h: {self.index_h}')
+        if self.index_h < 10:
+            return BehaviorTree.RUNNING
+        if self.index_h >= 10:
+            return BehaviorTree.SUCCESS
 
     def build_behavior_tree(self):
         a0 = Action('Wait', self.wait_time)
@@ -164,18 +169,19 @@ class Archer:
         a2 = Action('Set random location', self.set_random_location)
         root = SEQ_wander = Sequence('Wander', a2, a1, SEQ_wait_time)
 
-        c1 = Condition('토끼가 근처에 있는가?', self.is_target_nearby, 1001)
+        c1 = Condition('토끼가 근처에 있는가?', self.is_target_nearby, 700)
         a3 = Action('접근', self.move_to_rabbit)
         root = SEQ_chase_rabbit = Sequence('토끼를 추적', c1, a3)
 
-        c2  = Condition('토끼가 사정거리 안에 있는가?', self.is_target_nearby, 200)
+        c2  = Condition('토끼가 사정거리 안에 있는가?', self.is_target_nearby, 500)
         a4 = Action('화살 발사', self.shoot_to_rabbit)
         root = SEQ_shoot_rabbit = Sequence('토끼를 사냥', c2, a4)
 
 
-        a5 = Action('시야거리 내에 토끼가 있는가?', self.lockon_rabbit, 1001)
+        a5 = Action('시야거리 내에 토끼가 있는가?', self.lockon_rabbit, 700)
         #SEQ_lockon_rabbit = Sequence('LockOn', c3, a5)
-        SEL_hunt_rabbit = Selector('사냥', SEQ_shoot_rabbit, SEQ_chase_rabbit, a5 )
+        SEQ_shoot_and_wait = Sequence('화살 발사 및 대기', SEQ_shoot_rabbit, SEQ_wait_time)
+        SEL_hunt_rabbit = Selector('사냥', SEQ_shoot_and_wait, SEQ_chase_rabbit, a5 )
 
 
         root = SEL_hunt_or_wander = Selector('사냥 또는 wander', SEL_hunt_rabbit, SEQ_wander)
@@ -237,6 +243,41 @@ class Walk:
     def do(archer):
         archer.index_h = (archer.index_h + 8 * 1.5 * game_framework.frame_time) % 8
         print(f'            {int(archer.index_h)}')
+
+    @staticmethod
+    def draw(archer):
+        if math.cos(archer.dir) > 0:
+            archer.image.clip_draw(int(archer.index_h) * archer.size_h,
+                                   archer.index_v * archer.size_v,
+                                   archer.size_h - archer.center_error_x,
+                                   archer.size_v,
+                                   archer.pos_x,
+                                   archer.pos_y + 29, 100,
+                                   100 * archer.size_v / (archer.size_h - archer.center_error_x))
+        else:
+            archer.image.clip_composite_draw(int(archer.index_h) * archer.size_h,
+                                             archer.index_v * archer.size_v,
+                                             archer.size_h - archer.center_error_x,
+                                             archer.size_v,
+                                             0,
+                                             'h',
+                                             archer.pos_x,
+                                             archer.pos_y + 29, 100,
+                                             100 * archer.size_v / (archer.size_h - archer.center_error_x))
+
+class Shoot:
+    @staticmethod
+    def enter(archer, e):
+        archer.index_v = 4 - 1
+        archer.index_h = 0
+
+    @staticmethod
+    def exit(archer, e):
+        pass
+
+    @staticmethod
+    def do(archer):
+        archer.index_h = (archer.index_h + 11 * 1.5 * game_framework.frame_time) % 11
 
     @staticmethod
     def draw(archer):
