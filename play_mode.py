@@ -100,7 +100,7 @@ def init():
     archer = Archer(width // 2 + 100, GROUNDHEIGHT)
     world.append(archer)
     global rabbits
-    rabbits = [Rabbit(400, GROUNDHEIGHT) for _  in range (1)]
+    rabbits = [Rabbit(100, GROUNDHEIGHT) for _  in range (1)]
     for rabbit in rabbits:
         world.append(rabbit)
 
@@ -110,7 +110,7 @@ def update():
     for o in world:
         o.update()
 
-    delay(0.02)
+    delay(0.01)
     pass
 
 

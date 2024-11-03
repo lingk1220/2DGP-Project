@@ -11,7 +11,7 @@ from pico2d import load_image, get_time
 
 from state_machine import StateMachine
 
-
+from arrow import Arrow
 
 class Archer:
     image = None
@@ -74,24 +74,24 @@ class Archer:
         self.tx, self.ty = x, y
         return BehaviorTree.SUCCESS
 
-    def distance_less_than(self, x1, y1, x2, y2, r):
-        distance2 = (x1 - x2) ** 2 + (y1 - y2) ** 2
-        return distance2 < (1 * r) ** 2
+    def distance_less_than(self, x1, x2, r):
+        distance2 = x2 - x1
+        return distance2 < 1 * r
 
-    def distance_pow_get(self, x1, y1, x2, y2):
-        distance2 = (x1 - x2) ** 2 + (y1 - y2) ** 2
+    def distance_get(self, x1, x2):
+        distance2 = x2 - x1
         return distance2
 
-    def move_slightly_to(self, tx, ty):
-        self.dir = math.atan2(ty - self.pos_y, tx - self.pos_x)
+    def move_slightly_to(self, tx):
+        self.dir = (tx - self.pos_x) / abs(tx - self.pos_x)
         self.speed = 100
-        self.pos_x += self.speed * math.cos(self.dir) * game_framework.frame_time
-        self.pos_y += self.speed * math.sin(self.dir) * game_framework.frame_time
+        self.pos_x += self.speed * self.dir * game_framework.frame_time
 
     def move_to(self, r=10):
         self.state = Walk
-        self.move_slightly_to(self.tx, self.ty)
-        if self.distance_less_than(self.tx, self.ty, self.pos_x, self.pos_y, r):
+        self.move_slightly_to(self.tx)
+        print(f'tx: {self.tx}, pos_x: {self.pos_x}')
+        if self.distance_less_than(self.tx, self.pos_x, r):
             return BehaviorTree.SUCCESS
         else:
             return BehaviorTree.RUNNING
@@ -121,8 +121,8 @@ class Archer:
         self.rabbit_target = None
         for rabbit in play_mode.rabbits:
             print('bbbb')
-            rabbit_dir = self.distance_pow_get(rabbit.pos_x, rabbit.pos_y, self.pos_x, self.pos_y)
-            if rabbit_dir < distance ** 2:
+            rabbit_dir = self.distance_get(rabbit.pos_x, self.pos_x)
+            if rabbit_dir < distance:
                 if rabbit_dir < self.min_rabbit_dir:
                     self.rabbit_target = rabbit
         if self.rabbit_target == None:
@@ -136,8 +136,8 @@ class Archer:
         if self.rabbit_target == None:
             return BehaviorTree.FAIL
 
-        rabbit_dir = self.distance_pow_get(self.rabbit_target.pos_x, self.rabbit_target.pos_y, self.pos_x, self.pos_y)
-        if rabbit_dir < distance ** 2:
+        rabbit_dir = self.distance_get(self.rabbit_target.pos_x, self.pos_x)
+        if rabbit_dir < distance:
             return BehaviorTree.SUCCESS
         else:
             return BehaviorTree.FAIL
@@ -145,8 +145,8 @@ class Archer:
 
     def move_to_rabbit(self):
         self.state = Walk
-        self.move_slightly_to(self.rabbit_target.pos_x, self.rabbit_target.pos_y)
-        if self.distance_less_than(self.rabbit_target.pos_x, self.rabbit_target.pos_y, self.pos_x, self.pos_y, 10):
+        self.move_slightly_to(self.rabbit_target.pos_x)
+        if self.distance_less_than(self.rabbit_target.pos_x, self.pos_x, 10):
             return BehaviorTree.SUCCESS
         else:
             return BehaviorTree.RUNNING
@@ -154,10 +154,14 @@ class Archer:
     def shoot_to_rabbit(self):
         self.state = Shoot
         self.dir = self.rabbit_target.pos_x - self.pos_x
-        print(f'index_h: {self.index_h}')
         if self.index_h < 10:
             return BehaviorTree.RUNNING
         if self.index_h >= 10:
+            self.dir = self.dir / abs(self.dir)
+            print(f'arrow dir: {self.dir}')
+            arrow = Arrow(self.pos_x + self.dir * 20, self.pos_y + 20)
+            arrow.dir = self.dir
+            play_mode.world.append(arrow)
             return BehaviorTree.SUCCESS
 
     def build_behavior_tree(self):
@@ -210,7 +214,7 @@ class Idle:
 
     @staticmethod
     def draw(archer):
-        if math.cos(archer.dir) > 0:
+        if archer.dir > 0:
             archer.image.clip_draw(int(archer.index_h) * archer.size_h,
                                    archer.index_v * archer.size_v,
                                    archer.size_h - archer.center_error_x,
@@ -246,7 +250,7 @@ class Walk:
 
     @staticmethod
     def draw(archer):
-        if math.cos(archer.dir) > 0:
+        if archer.dir > 0:
             archer.image.clip_draw(int(archer.index_h) * archer.size_h,
                                    archer.index_v * archer.size_v,
                                    archer.size_h - archer.center_error_x,
@@ -281,7 +285,7 @@ class Shoot:
 
     @staticmethod
     def draw(archer):
-        if math.cos(archer.dir) > 0:
+        if archer.dir > 0:
             archer.image.clip_draw(int(archer.index_h) * archer.size_h,
                                    archer.index_v * archer.size_v,
                                    archer.size_h - archer.center_error_x,
