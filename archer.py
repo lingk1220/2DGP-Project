@@ -161,7 +161,7 @@ class Archer:
             print(f'arrow dir: {self.dir}')
             arrow = Arrow(self.pos_x + self.dir * 20, self.pos_y + 20)
             arrow.dir = self.dir
-            play_mode.world.append(arrow)
+            play_mode.game_world.add_object(arrow, 3)
             return BehaviorTree.SUCCESS
 
     def build_behavior_tree(self):

@@ -3,10 +3,10 @@ import random
 import time
 
 import game_framework
-
+import play_mode
 
 from behavior_tree import BehaviorTree, Action, Sequence, Condition, Selector
-from pico2d import load_image, get_time
+from pico2d import load_image, get_time, draw_rectangle
 
 from state_machine import StateMachine
 
@@ -35,11 +35,18 @@ class Rabbit:
         if Rabbit.image == None:
             Rabbit.image = load_image('Rabbit.png')
 
+        play_mode.game_world.add_collision_pair('arrow:rabbit', None, self)
         #self.build_behavior_tree()
         #self.state_machine = StateMachine(self)
         #self.state_machine.start(Idle)
 
+    def get_bb(self):
+        return self.pos_x - 50 / 2, self.pos_y - 50 / 2, self.pos_x + 50 / 2, self.pos_y + 50 / 2
 
+    def handle_collision(self, group, other):
+        if group == 'arrow:rabbit':
+            #play_mode.game_world.remove_object(self)
+            pass
 
 
     def update(self):
@@ -51,6 +58,7 @@ class Rabbit:
 
 
     def draw(self):
+
         self.image.clip_draw(0,
                                0,
                                self.size_h,
@@ -58,3 +66,4 @@ class Rabbit:
                                self.pos_x,
                                self.pos_y, 50,
                                50)
+        draw_rectangle(*self.get_bb())

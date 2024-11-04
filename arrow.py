@@ -5,8 +5,10 @@ import time
 import game_framework
 
 
-from pico2d import load_image, get_time
+from pico2d import load_image, get_time, draw_rectangle
 
+import game_world
+import play_mode
 from state_machine import StateMachine
 
 class Arrow:
@@ -35,6 +37,15 @@ class Arrow:
         if Arrow.image == None:
             Arrow.image = load_image('arrow.png')
 
+        play_mode.game_world.add_collision_pair('arrow:rabbit', self, None)
+
+    def get_bb(self):
+        return self.pos_x - self.size_h * 1.5 / 2, self.pos_y - self.size_v * 1.5 / 2, self.pos_x + self.size_h * 1.5 / 2, self.pos_y + self.size_v * 1.5 / 2
+
+    def handle_collision(self, group, other):
+        if group == 'arrow:rabbit':
+            play_mode.game_world.remove_object(self)
+            pass
 
 
 
@@ -49,7 +60,7 @@ class Arrow:
 
 
     def draw(self):
-        print('what')
+        draw_rectangle(*self.get_bb())
 
         if self.dir < 0:
             self.image.clip_composite_draw(0,

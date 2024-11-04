@@ -5,6 +5,7 @@ from pico2d import delay
 from sdl2 import SDL_QUIT, SDL_KEYDOWN, SDLK_ESCAPE
 
 import game_framework
+import game_world
 from archer import Archer
 from background import Background
 from character import Character
@@ -64,28 +65,21 @@ def handle_events():
 def init():
     global running
 
-    global world
 
     running = True
-    world = []
 
-    prop = Props()
 
-    #world.append(prop)
 
     background = Background()
-    world.append(background)
+    game_world.add_object(background, 0)
 
     for i in range (0, 3 + 1):
         for j in range(-80, 45 + 80 + 1):
             ground = Ground(j, i)
-            world.append(ground)
+            game_world.add_object(ground, 1)
 
 
 
-    prop2 = Props2()
-
-    #world.append(prop2)
 
 
 
@@ -95,30 +89,27 @@ def init():
 
 
 
-    world.append(character)
+    game_world.add_object(character, 1)
 
     archer = Archer(width // 2 + 100, GROUNDHEIGHT)
-    world.append(archer)
+    game_world.add_object(archer, 2)
+
     global rabbits
-    rabbits = [Rabbit(100, GROUNDHEIGHT) for _  in range (1)]
+    rabbits = [Rabbit(400, GROUNDHEIGHT) for _  in range (1)]
     for rabbit in rabbits:
-        world.append(rabbit)
+        game_world.add_object(rabbit, 2)
 
 
 def update():
-    global world
-    for o in world:
-        o.update()
-
+    game_world.update()
+    game_world.handle_collisions()
     delay(0.01)
     pass
 
 
 def draw():
-    global world
     clear_canvas()
-    for o in world:
-        o.draw()
+    game_world.render()
     update_canvas()
 
 
