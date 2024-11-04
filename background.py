@@ -13,6 +13,9 @@ class Background:
                 name = 'Sky' + (str)(i+1) + '.png'
                 Background.images[i] = load_image(name)
                 pass
+
+    def get_bb(self):
+        return -10000, -10000, 10000, 10000
     def update(self):
         pass
 

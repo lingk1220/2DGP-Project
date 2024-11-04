@@ -29,8 +29,8 @@ class Arrow:
         self.index_h = 0
         self.index_v = 0
         self.x, self.y = random.randint(0, 0), 0
-        self.draw_x = 0
-        self.draw_y = 0
+        self.draw_x = self.size_h * 1.5
+        self.draw_y = self.size_v * 1.5
 
         self.dir = 1
         #self.state = Idle
@@ -40,7 +40,7 @@ class Arrow:
         play_mode.game_world.add_collision_pair('arrow:rabbit', self, None)
 
     def get_bb(self):
-        return self.pos_x - self.size_h * 1.5 / 2, self.pos_y - self.size_v * 1.5 / 2, self.pos_x + self.size_h * 1.5 / 2, self.pos_y + self.size_v * 1.5 / 2
+        return self.pos_x - self.draw_x / 2, self.pos_y - self.draw_y / 2, self.pos_x + self.draw_x / 2, self.pos_y + self.draw_y / 2
 
     def handle_collision(self, group, other):
         if group == 'arrow:rabbit':

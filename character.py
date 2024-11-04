@@ -38,10 +38,12 @@ class Character:
         self.index_h = 0
         self.index_v = 8
         self.x, self.y = random.randint(0, 0), 0
-        self.draw_x = 0
-        self.draw_y = 0
+        self.draw_x = self.size_h * 2
+        self.draw_y = self.size_v * 2
         if Character.image == None:
             Character.image = load_image('JoannaD\'ArcIII-Sheet#1.png')
+
+
 
         self.state_machine = StateMachine(self)
         self.state_machine.start(Idle)
@@ -60,6 +62,8 @@ class Character:
             }
         )
 
+    def get_bb(self):
+        return self.pos_x - self.draw_x / 4.3 + self.dir * 7 + 25, self.pos_y - self.draw_y / 4, self.pos_x + self.draw_x / 4.3 + self.dir * 7 - 25, self.pos_y + self.draw_y / 2.5
 
     def update(self):
         self.state_machine.update()

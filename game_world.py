@@ -16,8 +16,11 @@ def update():
 def render():
     for layer in objects:
         for o in layer:
-            draw_rectangle(o.get_bb())
             o.draw()
+
+    for layer in objects:
+        for o in layer:
+            draw_rectangle(*o.get_bb())
 
 
 

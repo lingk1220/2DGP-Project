@@ -33,8 +33,8 @@ class Archer:
         self.index_h = 0
         self.index_v = 3 - 1
         self.x, self.y = random.randint(0, 0), 0
-        self.draw_x = 0
-        self.draw_y = 0
+        self.draw_x = 100
+        self.draw_y = 100 * self.size_v / (self.size_h - self.center_error_x)
         self.min_rabbit_dir = 10000
         self.state = Walk
         self.rabbit_target = None
@@ -45,6 +45,8 @@ class Archer:
         self.state_machine = StateMachine(self)
         self.state_machine.start(Idle)
 
+    def get_bb(self):
+        return self.pos_x - self.draw_x / 3, self.pos_y - self.draw_y / 3.5, self.pos_x + self.draw_x / 3, self.pos_y + self.draw_y / 2.5
 
 
 
@@ -220,8 +222,7 @@ class Idle:
                                    archer.size_h - archer.center_error_x,
                                    archer.size_v,
                                    archer.pos_x,
-                                   archer.pos_y + 29, 100,
-                                   100 * archer.size_v / (archer.size_h - archer.center_error_x))
+                                   archer.pos_y + 29, archer.draw_x, archer.draw_y)
         else:
             archer.image.clip_composite_draw(int(archer.index_h) * archer.size_h,
                                              archer.index_v * archer.size_v,
@@ -230,8 +231,7 @@ class Idle:
                                              0,
                                              'h',
                                              archer.pos_x,
-                                             archer.pos_y + 29, 100,
-                                             100 * archer.size_v / (archer.size_h - archer.center_error_x))
+                                             archer.pos_y + 29, archer.draw_x, archer.draw_y)
 
 class Walk:
     @staticmethod
@@ -256,8 +256,7 @@ class Walk:
                                    archer.size_h - archer.center_error_x,
                                    archer.size_v,
                                    archer.pos_x,
-                                   archer.pos_y + 29, 100,
-                                   100 * archer.size_v / (archer.size_h - archer.center_error_x))
+                                   archer.pos_y + 29, archer.draw_x, archer.draw_y)
         else:
             archer.image.clip_composite_draw(int(archer.index_h) * archer.size_h,
                                              archer.index_v * archer.size_v,
@@ -266,8 +265,7 @@ class Walk:
                                              0,
                                              'h',
                                              archer.pos_x,
-                                             archer.pos_y + 29, 100,
-                                             100 * archer.size_v / (archer.size_h - archer.center_error_x))
+                                             archer.pos_y + 29, archer.draw_x, archer.draw_y)
 
 class Shoot:
     @staticmethod
@@ -291,8 +289,7 @@ class Shoot:
                                    archer.size_h - archer.center_error_x,
                                    archer.size_v,
                                    archer.pos_x,
-                                   archer.pos_y + 29, 100,
-                                   100 * archer.size_v / (archer.size_h - archer.center_error_x))
+                                   archer.pos_y + 29, archer.draw_x, archer.draw_y)
         else:
             archer.image.clip_composite_draw(int(archer.index_h) * archer.size_h,
                                              archer.index_v * archer.size_v,
@@ -301,5 +298,4 @@ class Shoot:
                                              0,
                                              'h',
                                              archer.pos_x,
-                                             archer.pos_y + 29, 100,
-                                             100 * archer.size_v / (archer.size_h - archer.center_error_x))
+                                             archer.pos_y + 29, archer.draw_x, archer.draw_y)

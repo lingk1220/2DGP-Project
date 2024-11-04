@@ -16,11 +16,20 @@ class Ground:
 
         self.index_h = 2 - 1
         self.index_v = 14 + y - 1
+
+
         self.x, self.y = x, y + 1
-        self.draw_x = 0
-        self.draw_y = 0
+        self.pos_x = self.size_h * self.x
+        self.pos_y = self.size_v * self.y - 18
+
+        self.draw_x = self.size_h
+        self.draw_y = self.size_v
+
         if Ground.image == None:
             Ground.image = load_image('Ground.png')
+
+    def get_bb(self):
+        return self.pos_x - self.draw_x / 2, self.pos_y - self.draw_y / 2, self.pos_x + self.draw_x / 2, self.pos_y + self.draw_y / 2
 
     def update(self):
         pass

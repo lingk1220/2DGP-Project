@@ -22,14 +22,15 @@ class Rabbit:
         self.size_h = (self.width_image // self.count_h)
         self.size_v = (self.height_image // self.count_v)
 
+
         self.center_error_x = 0
         self.pos_x = x
         self.pos_y = y
         self.index_h = 0
         self.index_v = 0
         self.x, self.y = random.randint(0, 0), 0
-        self.draw_x = 0
-        self.draw_y = 0
+        self.draw_x = 50
+        self.draw_y = 50
 
         #self.state = Idle
         if Rabbit.image == None:
@@ -41,7 +42,7 @@ class Rabbit:
         #self.state_machine.start(Idle)
 
     def get_bb(self):
-        return self.pos_x - 50 / 2, self.pos_y - 50 / 2, self.pos_x + 50 / 2, self.pos_y + 50 / 2
+        return self.pos_x - self.draw_x / 2, self.pos_y - self.draw_y / 2, self.pos_x + self.draw_x / 2, self.pos_y + self.draw_y / 2
 
     def handle_collision(self, group, other):
         if group == 'arrow:rabbit':
@@ -64,6 +65,5 @@ class Rabbit:
                                self.size_h,
                                self.size_v,
                                self.pos_x,
-                               self.pos_y, 50,
-                               50)
+                               self.pos_y, self.draw_x,self.draw_y)
         draw_rectangle(*self.get_bb())
