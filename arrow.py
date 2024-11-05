@@ -23,6 +23,7 @@ class Arrow:
         self.size_h = (self.width_image // self.count_h)
         self.size_v = (self.height_image // self.count_v)
 
+        self.parent = None
         self.center_error_x = 0
         self.pos_x = x
         self.pos_y = y
@@ -45,7 +46,9 @@ class Arrow:
     def handle_collision(self, group, other):
         if group == 'arrow:chicken':
             play_mode.game_world.remove_object(self)
+            self.parent.set_target_none()
             pass
+
 
 
 

@@ -47,7 +47,8 @@ class Chicken:
 
     def handle_collision(self, group, other):
         if group == 'arrow:chicken':
-            #play_mode.game_world.remove_object(self)
+            play_mode.game_world.remove_object(self)
+
             pass
 
 

@@ -3,12 +3,14 @@ import random
 import time
 
 import game_framework
+import game_world
 
 import play_mode
 
 from behavior_tree import BehaviorTree, Action, Sequence, Condition, Selector
 from pico2d import load_image, get_time
 
+from chicken import Chicken
 from state_machine import StateMachine
 
 from arrow import Arrow
@@ -69,6 +71,8 @@ class Archer:
         self.state_machine.draw()
 
 
+    def set_target_none(self):
+        self.chicken_target = None
 
     def set_target_location(self, x=None, y=None):
         if not x or not y:
@@ -121,12 +125,12 @@ class Archer:
     def lockon_chicken(self, distance):
         self.min_chicken_dir = 10000000
         self.chicken_target = None
-        for chicken in play_mode.chickens:
-            print('bbbb')
-            chicken_dir = self.distance_get(chicken.pos_x, self.pos_x)
-            if chicken_dir < distance:
-                if chicken_dir < self.min_chicken_dir:
-                    self.chicken_target = chicken
+        for chicken in game_world.objects[2]:
+            if chicken.__class__ == Chicken:
+                chicken_dir = self.distance_get(chicken.pos_x, self.pos_x)
+                if chicken_dir < distance:
+                    if chicken_dir < self.min_chicken_dir:
+                        self.chicken_target = chicken
         if self.chicken_target == None:
             return BehaviorTree.FAIL
         else:
@@ -134,7 +138,7 @@ class Archer:
             return BehaviorTree.SUCCESS
 
     def is_target_nearby(self, distance):
-
+        print(f'whatthe:{self.chicken_target}')
         if self.chicken_target == None:
             return BehaviorTree.FAIL
 
@@ -163,6 +167,7 @@ class Archer:
             print(f'arrow dir: {self.dir}')
             arrow = Arrow(self.pos_x + self.dir * 20, self.pos_y + 20)
             arrow.dir = self.dir
+            arrow.parent = self
             play_mode.game_world.add_object(arrow, 3)
             return BehaviorTree.SUCCESS
 

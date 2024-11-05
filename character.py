@@ -16,6 +16,7 @@ class Character:
         self.width_image = 3626
         self.height_image = 594
 
+
         self.pos_x = x
         self.pos_y = y + 3
 
