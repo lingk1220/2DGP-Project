@@ -43,7 +43,7 @@ class Chicken:
         self.state_machine.start(Idle)
 
     def get_bb(self):
-        return self.pos_x - self.draw_x / 2 + 15, self.pos_y - self.draw_y / 2 , self.pos_x + self.draw_x / 2 - 15, self.pos_y + self.draw_y / 2 - 30
+        return self.pos_x - self.draw_x / 2 + 18, self.pos_y - self.draw_y / 2 , self.pos_x + self.draw_x / 2 - 18, self.pos_y + self.draw_y / 2 - 20
 
     def handle_collision(self, group, other):
         if group == 'arrow:chicken':
@@ -84,7 +84,7 @@ class Chicken:
     def move_slightly_to(self, tx):
         self.dir = (tx - self.pos_x) / abs(tx - self.pos_x)
         print(f'chic:{self.dir}')
-        self.speed = 100
+        self.speed = 50
         self.pos_x += self.speed * self.dir * game_framework.frame_time
 
     def move_to(self, r=10):
@@ -98,7 +98,7 @@ class Chicken:
 
     def set_random_location(self):
         print('chick!')
-        self.tx, self.ty = self.pos_x + ((2 * random.randint(0, 1)  - 1) *  random.randint(100, 101)), self.pos_y
+        self.tx, self.ty = self.pos_x + ((2 * random.randint(0, 1)  - 1) *  random.randint(50, 120)), self.pos_y
         print(f'tx = {self.tx}')
         # self.tx, self.ty = 1000, 100
         return BehaviorTree.SUCCESS
@@ -106,34 +106,49 @@ class Chicken:
 
     def wait_time(self):
         if get_time() - self.time_wait_started > self.time_wait_for:
+            print("qwer")
             return BehaviorTree.SUCCESS
         else:
             return BehaviorTree.RUNNING
         pass
 
-    def set_wait_time(self):
+    def set_wait_time(self, min = 5, max = 30, rnd = 0):
+        if rnd:
+            if random.randint(0, 1):
+                self.time_wait_for = 0
+
+                return BehaviorTree.SUCCESS
+
         self.state = Idle
         self.time_wait_started = get_time()
-        self.time_wait_for = random.randint(5, 30) / 10
+        self.time_wait_for = random.randint(min, max) / 10
         #self.time_wait_for = 100000
         return BehaviorTree.SUCCESS
 
+    def beak_ground(self):
+        self.state = Beak
+        if get_time() - self.time_wait_started > self.time_wait_for:
+            return BehaviorTree.SUCCESS
+        else:
+            return BehaviorTree.RUNNING
+        pass
 
     def build_behavior_tree(self):
         a0 = Action('Wait', self.wait_time)
-        ACT_set_wait_time = Action('Set Wait Time', self.set_wait_time)
+        ACT_wait2 = Action('Wait2', self.wait_time)
+        ACT_set_wait_time = Action('Set Wait Time', self.set_wait_time, 5, 15)
+        ACT_set_wait_time2 = Action('Set Wait Time2', self.set_wait_time, 5, 15)
         SEQ_wait_time = Sequence('Wait', ACT_set_wait_time, a0)
+
+        SEQ_wait_time2 = Sequence('Wait2', ACT_set_wait_time2, ACT_wait2)
         a1 = Action('Move to', self.move_to)
+        ACT_set_Beak_time = Action('Set Beak Time', self.set_wait_time, 10, 10, 1)
 
+        ACT_Beak = Action('Beak', self.beak_ground)
+        #SEL_beak = Selector('Choose Beak', )
+        SEQ_beak = Sequence('Beak', ACT_set_Beak_time, ACT_Beak)
         a2 = Action('Set random location', self.set_random_location)
-        root = SEQ_wander = Sequence('Wander', a2, a1, SEQ_wait_time)
-
-
-
-
-
-        #root = SEL_hunt_or_wander = Selector('사냥 또는 wander', SEL_hunt_chicken, SEQ_wander)
-
+        root = SEQ_wander = Sequence('Wander', a2, a1, SEQ_wait_time, SEQ_beak, SEQ_wait_time2)
         self.bt = BehaviorTree(root)
 
 class Idle:
@@ -182,7 +197,42 @@ class Walk:
 
     @staticmethod
     def do(chicken):
-        chicken.index_h = 8 + (chicken.index_h - 8 + 5 * 1.0 * game_framework.frame_time) % 5
+        chicken.index_h = 8 + (chicken.index_h - 8 + 6 * 1.0 * game_framework.frame_time) % 6
+        print(f'            {int(chicken.index_h)}')
+
+    @staticmethod
+    def draw(chicken):
+        if chicken.dir > 0:
+            chicken.image.clip_draw(int(chicken.index_h) * chicken.size_h,
+                                   chicken.index_v * chicken.size_v,
+                                   chicken.size_h - chicken.center_error_x,
+                                   chicken.size_v,
+                                   chicken.pos_x,
+                                   chicken.pos_y, chicken.draw_x, chicken.draw_y)
+        else:
+            chicken.image.clip_composite_draw(int(chicken.index_h) * chicken.size_h,
+                                             chicken.index_v * chicken.size_v,
+                                             chicken.size_h - chicken.center_error_x,
+                                             chicken.size_v,
+                                             0,
+                                             'h',
+                                             chicken.pos_x,
+                                             chicken.pos_y, chicken.draw_x, chicken.draw_y)
+
+
+class Beak:
+    @staticmethod
+    def enter(chicken, e):
+        chicken.index_v = 0
+        chicken.index_h = 13
+
+    @staticmethod
+    def exit(chicken, e):
+        pass
+
+    @staticmethod
+    def do(chicken):
+        chicken.index_h = 14 + (chicken.index_h - 14 + 4 * 1.0 * game_framework.frame_time) % 4
         print(f'            {int(chicken.index_h)}')
 
     @staticmethod

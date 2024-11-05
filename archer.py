@@ -112,10 +112,10 @@ class Archer:
             return BehaviorTree.RUNNING
         pass
 
-    def set_wait_time(self):
+    def set_wait_time(self, min = 5, max = 30):
         self.state = Idle
         self.time_wait_started = get_time()
-        self.time_wait_for = random.randint(5, 30) / 10
+        self.time_wait_for = random.randint(min, max) / 10
         return BehaviorTree.SUCCESS
 
     def lockon_chicken(self, distance):
@@ -169,7 +169,9 @@ class Archer:
     def build_behavior_tree(self):
         a0 = Action('Wait', self.wait_time)
         ACT_set_wait_time = Action('Set Wait Time', self.set_wait_time)
+        ACT_set_reload_time = Action('Set Wait Time', self.set_wait_time, 20, 20)
         SEQ_wait_time = Sequence('Wait', ACT_set_wait_time, a0)
+        SEQ_wait_reload = Sequence('Wait Reload', ACT_set_reload_time, a0)
         a1 = Action('Move to', self.move_to)
 
         a2 = Action('Set random location', self.set_random_location)
@@ -186,7 +188,7 @@ class Archer:
 
         a5 = Action('시야거리 내에 토끼가 있는가?', self.lockon_chicken, 700)
         #SEQ_lockon_chicken = Sequence('LockOn', c3, a5)
-        SEQ_shoot_and_wait = Sequence('화살 발사 및 대기', SEQ_shoot_chicken, SEQ_wait_time)
+        SEQ_shoot_and_wait = Sequence('화살 발사 및 대기', SEQ_shoot_chicken, SEQ_wait_reload)
         SEL_hunt_chicken = Selector('사냥', SEQ_shoot_and_wait, SEQ_chase_chicken, a5 )
 
 
