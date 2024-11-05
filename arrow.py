@@ -37,13 +37,13 @@ class Arrow:
         if Arrow.image == None:
             Arrow.image = load_image('arrow.png')
 
-        play_mode.game_world.add_collision_pair('arrow:rabbit', self, None)
+        play_mode.game_world.add_collision_pair('arrow:chicken', self, None)
 
     def get_bb(self):
         return self.pos_x - self.draw_x / 2, self.pos_y - self.draw_y / 2, self.pos_x + self.draw_x / 2, self.pos_y + self.draw_y / 2
 
     def handle_collision(self, group, other):
-        if group == 'arrow:rabbit':
+        if group == 'arrow:chicken':
             play_mode.game_world.remove_object(self)
             pass
 

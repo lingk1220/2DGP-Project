@@ -35,9 +35,9 @@ class Archer:
         self.x, self.y = random.randint(0, 0), 0
         self.draw_x = 100
         self.draw_y = 100 * self.size_v / (self.size_h - self.center_error_x)
-        self.min_rabbit_dir = 10000
+        self.min_chicken_dir = 10000
         self.state = Walk
-        self.rabbit_target = None
+        self.chicken_target = None
         if Archer.image == None:
             Archer.image = load_image('Archer.png')
 
@@ -118,16 +118,16 @@ class Archer:
         self.time_wait_for = random.randint(5, 30) / 10
         return BehaviorTree.SUCCESS
 
-    def lockon_rabbit(self, distance):
-        self.min_rabbit_dir = 10000000
-        self.rabbit_target = None
-        for rabbit in play_mode.rabbits:
+    def lockon_chicken(self, distance):
+        self.min_chicken_dir = 10000000
+        self.chicken_target = None
+        for chicken in play_mode.chickens:
             print('bbbb')
-            rabbit_dir = self.distance_get(rabbit.pos_x, self.pos_x)
-            if rabbit_dir < distance:
-                if rabbit_dir < self.min_rabbit_dir:
-                    self.rabbit_target = rabbit
-        if self.rabbit_target == None:
+            chicken_dir = self.distance_get(chicken.pos_x, self.pos_x)
+            if chicken_dir < distance:
+                if chicken_dir < self.min_chicken_dir:
+                    self.chicken_target = chicken
+        if self.chicken_target == None:
             return BehaviorTree.FAIL
         else:
             print('asdfasdf')
@@ -135,27 +135,27 @@ class Archer:
 
     def is_target_nearby(self, distance):
 
-        if self.rabbit_target == None:
+        if self.chicken_target == None:
             return BehaviorTree.FAIL
 
-        rabbit_dir = self.distance_get(self.rabbit_target.pos_x, self.pos_x)
-        if rabbit_dir < distance:
+        chicken_dir = self.distance_get(self.chicken_target.pos_x, self.pos_x)
+        if chicken_dir < distance:
             return BehaviorTree.SUCCESS
         else:
             return BehaviorTree.FAIL
 
 
-    def move_to_rabbit(self):
+    def move_to_chicken(self):
         self.state = Walk
-        self.move_slightly_to(self.rabbit_target.pos_x)
-        if self.distance_less_than(self.rabbit_target.pos_x, self.pos_x, 10):
+        self.move_slightly_to(self.chicken_target.pos_x)
+        if self.distance_less_than(self.chicken_target.pos_x, self.pos_x, 10):
             return BehaviorTree.SUCCESS
         else:
             return BehaviorTree.RUNNING
 
-    def shoot_to_rabbit(self):
+    def shoot_to_chicken(self):
         self.state = Shoot
-        self.dir = self.rabbit_target.pos_x - self.pos_x
+        self.dir = self.chicken_target.pos_x - self.pos_x
         if self.index_h < 10:
             return BehaviorTree.RUNNING
         if self.index_h >= 10:
@@ -176,21 +176,21 @@ class Archer:
         root = SEQ_wander = Sequence('Wander', a2, a1, SEQ_wait_time)
 
         c1 = Condition('토끼가 근처에 있는가?', self.is_target_nearby, 700)
-        a3 = Action('접근', self.move_to_rabbit)
-        root = SEQ_chase_rabbit = Sequence('토끼를 추적', c1, a3)
+        a3 = Action('접근', self.move_to_chicken)
+        root = SEQ_chase_chicken = Sequence('토끼를 추적', c1, a3)
 
         c2  = Condition('토끼가 사정거리 안에 있는가?', self.is_target_nearby, 500)
-        a4 = Action('화살 발사', self.shoot_to_rabbit)
-        root = SEQ_shoot_rabbit = Sequence('토끼를 사냥', c2, a4)
+        a4 = Action('화살 발사', self.shoot_to_chicken)
+        root = SEQ_shoot_chicken = Sequence('토끼를 사냥', c2, a4)
 
 
-        a5 = Action('시야거리 내에 토끼가 있는가?', self.lockon_rabbit, 700)
-        #SEQ_lockon_rabbit = Sequence('LockOn', c3, a5)
-        SEQ_shoot_and_wait = Sequence('화살 발사 및 대기', SEQ_shoot_rabbit, SEQ_wait_time)
-        SEL_hunt_rabbit = Selector('사냥', SEQ_shoot_and_wait, SEQ_chase_rabbit, a5 )
+        a5 = Action('시야거리 내에 토끼가 있는가?', self.lockon_chicken, 700)
+        #SEQ_lockon_chicken = Sequence('LockOn', c3, a5)
+        SEQ_shoot_and_wait = Sequence('화살 발사 및 대기', SEQ_shoot_chicken, SEQ_wait_time)
+        SEL_hunt_chicken = Selector('사냥', SEQ_shoot_and_wait, SEQ_chase_chicken, a5 )
 
 
-        root = SEL_hunt_or_wander = Selector('사냥 또는 wander', SEL_hunt_rabbit, SEQ_wander)
+        root = SEL_hunt_or_wander = Selector('사냥 또는 wander', SEL_hunt_chicken, SEQ_wander)
 
         self.bt = BehaviorTree(root)
 

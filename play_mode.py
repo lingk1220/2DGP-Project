@@ -10,7 +10,7 @@ from archer import Archer
 from background import Background
 from character import Character
 from ground import Ground
-from rabbit import Rabbit
+from chicken import Chicken
 
 GROUNDHEIGHT = 120
 width = 1400
@@ -94,10 +94,10 @@ def init():
     archer = Archer(width // 2 + 100, GROUNDHEIGHT)
     game_world.add_object(archer, 2)
 
-    global rabbits
-    rabbits = [Rabbit(400, GROUNDHEIGHT) for _  in range (1)]
-    for rabbit in rabbits:
-        game_world.add_object(rabbit, 2)
+    global chickens
+    chickens = [Chicken(400, GROUNDHEIGHT) for _  in range (1)]
+    for chicken in chickens:
+        game_world.add_object(chicken, 2)
 
 
 def update():
