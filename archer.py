@@ -77,7 +77,7 @@ class Archer:
         return BehaviorTree.SUCCESS
 
     def distance_less_than(self, x1, x2, r):
-        distance2 = x2 - x1
+        distance2 = abs(x2 - x1)
         return distance2 < 1 * r
 
     def distance_get(self, x1, x2):
