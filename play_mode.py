@@ -1,4 +1,5 @@
 import random
+from random import randint
 
 from pico2d import load_image, get_events, clear_canvas, update_canvas
 from pico2d import delay
@@ -6,11 +7,13 @@ from sdl2 import SDL_QUIT, SDL_KEYDOWN, SDLK_ESCAPE
 
 import game_framework
 import game_world
+from crop import Crop
 from archer import Archer
 from background import Background
 from character import Character
 from ground import Ground
 from chicken import Chicken
+from maid import Maid
 
 GROUNDHEIGHT = 120
 width = 1400
@@ -95,9 +98,16 @@ def init():
     game_world.add_object(archer, 2)
 
     global chickens
-    chickens = [Chicken(400, GROUNDHEIGHT) for _  in range (1)]
+    chickens = [Chicken(400 + (randint(0, 1) * 2 - 1) * randint(0, 5) * 50, GROUNDHEIGHT) for _  in range (5)]
     for chicken in chickens:
         game_world.add_object(chicken, 2)
+
+
+    maid = Maid(1000, GROUNDHEIGHT)
+    game_world.add_object(maid, 2)
+
+    crop = Crop(1100, GROUNDHEIGHT)
+    game_world.add_object(crop, 2)
 
 
 def update():

@@ -134,11 +134,9 @@ class Archer:
         if self.chicken_target == None:
             return BehaviorTree.FAIL
         else:
-            print('asdfasdf')
             return BehaviorTree.SUCCESS
 
     def is_target_nearby(self, distance):
-        print(f'whatthe:{self.chicken_target}')
         if self.chicken_target == None:
             return BehaviorTree.FAIL
 
