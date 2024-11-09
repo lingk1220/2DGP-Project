@@ -31,6 +31,7 @@ class Archer:
         self.pos_x = x
         self.pos_y = y
         self.dir = 1
+        self.bool_shooting = 0
 
         self.index_h = 0
         self.index_v = 3 - 1
@@ -145,6 +146,11 @@ class Archer:
         else:
             return BehaviorTree.FAIL
 
+    def is_shooting(self):
+        if self.bool_shooting == 1:
+            return BehaviorTree.SUCCESS
+        else:
+            return BehaviorTree.FAIL
 
     def move_to_chicken(self):
         self.state = Walk
@@ -155,11 +161,13 @@ class Archer:
             return BehaviorTree.RUNNING
 
     def shoot_to_chicken(self):
+        self.bool_shooting = 1
         self.state = Shoot
         self.dir = self.chicken_target.pos_x - self.pos_x
         if self.index_h < 10:
             return BehaviorTree.RUNNING
         if self.index_h >= 10:
+            self.bool_shooting = 0
             self.dir = self.dir / abs(self.dir)
             print(f'arrow dir: {self.dir}')
             arrow = Arrow(self.pos_x + self.dir * 20, self.pos_y + 20)
@@ -171,7 +179,7 @@ class Archer:
     def build_behavior_tree(self):
         a0 = Action('Wait', self.wait_time)
         ACT_set_wait_time = Action('Set Wait Time', self.set_wait_time)
-        ACT_set_reload_time = Action('Set Wait Time', self.set_wait_time, 20, 20)
+        ACT_set_reload_time = Action('Set Wait Time', self.set_wait_time, 30, 30)
         SEQ_wait_time = Sequence('Wait', ACT_set_wait_time, a0)
         SEQ_wait_reload = Sequence('Wait Reload', ACT_set_reload_time, a0)
         a1 = Action('Move to', self.move_to)
@@ -180,12 +188,15 @@ class Archer:
         root = SEQ_wander = Sequence('Wander', a2, a1, SEQ_wait_time)
 
         c1 = Condition('토끼가 근처에 있는가?', self.is_target_nearby, 700)
+        CDT_is_shooting = Condition('화살을 발사하고 있는가', self.is_shooting)
+
         a3 = Action('접근', self.move_to_chicken)
         root = SEQ_chase_chicken = Sequence('토끼를 추적', c1, a3)
 
         c2  = Condition('토끼가 사정거리 안에 있는가?', self.is_target_nearby, 500)
+        SEL_in_shoot_state = Selector('발사상태인가', CDT_is_shooting, c2)
         a4 = Action('화살 발사', self.shoot_to_chicken)
-        root = SEQ_shoot_chicken = Sequence('토끼를 사냥', c2, a4)
+        root = SEQ_shoot_chicken = Sequence('토끼를 사냥', SEL_in_shoot_state, a4)
 
 
         a5 = Action('시야거리 내에 토끼가 있는가?', self.lockon_chicken, 700)
