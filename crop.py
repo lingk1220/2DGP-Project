@@ -27,12 +27,15 @@ class Crop:
         self.center_error_x = 0
         self.pos_x = x
         self.pos_y = y + 3
-        self.index_h = 4
+        self.index_h = 1
         self.index_v = 13
         self.x, self.y = random.randint(0, 0), 0
         self.draw_x = self.size_h * 1.5
         self.draw_y = self.size_v * 1.5
 
+        self.growth = 0
+        self.max_growth = 30
+        self.growth_level = 0
         self.dir = 1
         #self.state = Idle
         if Crop.image == None:
@@ -51,8 +54,21 @@ class Crop:
 
 
     def update(self):
+        if self.growth < self.max_growth:
+            self.growth += game_framework.frame_time
+        print(f'growth: {self.growth}')
+        if self.growth > self.max_growth / 3 * 1:
+            self.growth_level = 12
+            self.index_h = 2
 
-        pass
+        if self.growth >= self.max_growth / 3 * 2:
+            self.growth_level = 2
+            self.index_h = 3
+
+        if self.growth >= self.max_growth:
+            self.growth_level = 3
+            self.index_h = 4
+
 
     def handle_event(self, event):
         pass
