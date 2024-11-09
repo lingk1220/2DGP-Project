@@ -126,7 +126,8 @@ class Maid:
         self.min_crop_dir = 10000000
         self.crop_target = None
         for crop in game_world.objects[2]:
-            if crop.__class__ == Crop:
+            if crop.__class__ == Crop and crop.growth_level == 3:
+                print('hio')
                 crop_dir = self.distance_get(crop.pos_x, self.pos_x)
                 if crop_dir < distance:
                     if crop_dir < self.min_crop_dir:
@@ -140,14 +141,14 @@ class Maid:
         if self.crop_target == None:
             return BehaviorTree.FAIL
 
-        crop_dir = self.distance_get(self.crop_target.pos_x, self.pos_x)
-        if crop_dir < distance:
+        if self.distance_less_than(self.crop_target.pos_x, self.pos_x, distance):
             return BehaviorTree.SUCCESS
         else:
             return BehaviorTree.FAIL
 
 
     def move_to_crop(self):
+        print('wssd')
         self.state = Walk
         self.move_slightly_to(self.crop_target.pos_x)
         if self.distance_less_than(self.crop_target.pos_x, self.pos_x, 10):
@@ -157,24 +158,23 @@ class Maid:
 
     def reap_crop(self):
         self.state = Reap
-        self.dir = self.crop_target.pos_x - self.pos_x
-        if self.index_h < 10:
-            return BehaviorTree.RUNNING
-        if self.index_h >= 10:
-            self.dir = self.dir / abs(self.dir)
-            print(f'arrow dir: {self.dir}')
-            arrow = Arrow(self.pos_x + self.dir * 20, self.pos_y + 20)
-            arrow.dir = self.dir
-            arrow.parent = self
-            play_mode.game_world.add_object(arrow, 3)
-            return BehaviorTree.SUCCESS
+        # self.dir = self.crop_target.pos_x - self.pos_x
+        # if self.index_h < 10:
+        #     return BehaviorTree.RUNNING
+        # if self.index_h >= 10:
+        #     self.dir = self.dir / abs(self.dir)
+        #     print(f'arrow dir: {self.dir}')
+        print('widv')
+        play_mode.game_world.remove_object(self.crop_target)
+        self.crop_target = None
+        return BehaviorTree.SUCCESS
 
     def build_behavior_tree(self):
         a0 = Action('Wait', self.wait_time)
         ACT_set_wait_time = Action('Set Wait Time', self.set_wait_time)
-        ACT_set_reload_time = Action('Set Wait Time', self.set_wait_time, 20, 20)
+        ACT_set_reap_time = Action('Set Reap Time', self.set_wait_time, 50, 50)
         SEQ_wait_time = Sequence('Wait', ACT_set_wait_time, a0)
-        SEQ_wait_reload = Sequence('Wait Reload', ACT_set_reload_time, a0)
+        SEQ_wait_reap = Sequence('Wait Reap', ACT_set_reap_time, a0)
         a1 = Action('Move to', self.move_to)
 
         a2 = Action('Set random location', self.set_random_location)
@@ -184,14 +184,14 @@ class Maid:
         a3 = Action('접근', self.move_to_crop)
         root = SEQ_chase_crop = Sequence('작물을 추적', c1, a3)
 
-        c2  = Condition('작물이 수확 거리 안에 있는가?', self.is_target_nearby, 100)
-        a4 = Action('화살 발사', self.reap_crop)
-        root = SEQ_reap_crop = Sequence('작물을 수확', c2, a4)
+        c2  = Condition('작물이 수확 거리 안에 있는가?', self.is_target_nearby, 10)
+        a4 = Action('수확하기', self.reap_crop)
+        root = SEQ_reap_crop = Sequence('작물을 수확', c2, SEQ_wait_reap, a4)
 
 
         a5 = Action('시야거리 내에 작물이 있는가?', self.lockon_crop, 700)
         #SEQ_lockon_crop = Sequence('LockOn', c3, a5)
-        SEQ_reap_and_wait = Sequence('작물 수확 및 대기', SEQ_reap_crop, SEQ_wait_reload)
+        SEQ_reap_and_wait = Sequence('작물 수확',  SEQ_reap_crop )
         SEL_farming = Selector('농사', SEQ_reap_and_wait, SEQ_chase_crop, a5 )
 
 
@@ -222,27 +222,29 @@ class Idle:
     @staticmethod
     def draw(maid):
         if maid.dir > 0:
-            maid.image.clip_draw(int(maid.index_h) * maid.size_h,
-                                   maid.index_v * maid.size_v,
-                                   maid.size_h - maid.center_error_x,
-                                   maid.size_v,
-                                   maid.pos_x,
-                                   maid.pos_y + 29, maid.draw_x, maid.draw_y)
-        else:
             maid.image.clip_composite_draw(int(maid.index_h) * maid.size_h,
                                              maid.index_v * maid.size_v,
                                              maid.size_h - maid.center_error_x,
                                              maid.size_v,
                                              0,
                                              'h',
+                                             maid.pos_x,
+                                             maid.pos_y + 29, maid.draw_x, maid.draw_y)
+        else:
+            maid.image.clip_composite_draw(int(maid.index_h) * maid.size_h,
+                                             maid.index_v * maid.size_v,
+                                             maid.size_h - maid.center_error_x,
+                                             maid.size_v,
+                                             0,
+                                             '',
                                              maid.pos_x,
                                              maid.pos_y + 29, maid.draw_x, maid.draw_y)
 
 class Walk:
     @staticmethod
     def enter(maid, e):
-        maid.index_v = 3 - 1
-        maid.index_h = 0
+        maid.index_v = 5 - 1
+        maid.index_h = 5
 
     @staticmethod
     def exit(maid, e):
@@ -250,19 +252,18 @@ class Walk:
 
     @staticmethod
     def do(maid):
-        maid.index_h = (maid.index_h + 8 * 1.5 * game_framework.frame_time) % 8
-        print(f'            {int(maid.index_h)}')
+        maid.index_h = maid.index_h + 8 * 1.5 * game_framework.frame_time
+        if maid.index_v == 4 and maid.index_h > 9:
+            maid.index_v = 3
+            maid.index_h = 0
+        elif maid.index_v == 3 and maid.index_h > 3:
+            maid.index_v = 4
+            maid.index_h = 5
+        print(f'            maid.index_h: {int(maid.index_h)}')
 
     @staticmethod
     def draw(maid):
         if maid.dir > 0:
-            maid.image.clip_draw(int(maid.index_h) * maid.size_h,
-                                   maid.index_v * maid.size_v,
-                                   maid.size_h - maid.center_error_x,
-                                   maid.size_v,
-                                   maid.pos_x,
-                                   maid.pos_y + 29, maid.draw_x, maid.draw_y)
-        else:
             maid.image.clip_composite_draw(int(maid.index_h) * maid.size_h,
                                              maid.index_v * maid.size_v,
                                              maid.size_h - maid.center_error_x,
@@ -271,11 +272,20 @@ class Walk:
                                              'h',
                                              maid.pos_x,
                                              maid.pos_y + 29, maid.draw_x, maid.draw_y)
+        else:
+            maid.image.clip_composite_draw(int(maid.index_h) * maid.size_h,
+                                             maid.index_v * maid.size_v,
+                                             maid.size_h - maid.center_error_x,
+                                             maid.size_v,
+                                             0,
+                                             '',
+                                             maid.pos_x,
+                                             maid.pos_y + 29, maid.draw_x, maid.draw_y)
 
 class Reap:
     @staticmethod
     def enter(maid, e):
-        maid.index_v = 4 - 1
+        maid.index_v = 5 - 1
         maid.index_h = 0
 
     @staticmethod
@@ -284,23 +294,25 @@ class Reap:
 
     @staticmethod
     def do(maid):
-        maid.index_h = (maid.index_h + 11 * 1.5 * game_framework.frame_time) % 11
+        maid.index_h = (maid.index_h + 5 * 1.5 * game_framework.frame_time) % 5
 
     @staticmethod
     def draw(maid):
         if maid.dir > 0:
-            maid.image.clip_draw(int(maid.index_h) * maid.size_h,
-                                   maid.index_v * maid.size_v,
-                                   maid.size_h - maid.center_error_x,
-                                   maid.size_v,
-                                   maid.pos_x,
-                                   maid.pos_y + 29, maid.draw_x, maid.draw_y)
-        else:
             maid.image.clip_composite_draw(int(maid.index_h) * maid.size_h,
                                              maid.index_v * maid.size_v,
                                              maid.size_h - maid.center_error_x,
                                              maid.size_v,
                                              0,
                                              'h',
+                                             maid.pos_x,
+                                             maid.pos_y + 29, maid.draw_x, maid.draw_y)
+        else:
+            maid.image.clip_composite_draw(int(maid.index_h) * maid.size_h,
+                                             maid.index_v * maid.size_v,
+                                             maid.size_h - maid.center_error_x,
+                                             maid.size_v,
+                                             0,
+                                             '',
                                              maid.pos_x,
                                              maid.pos_y + 29, maid.draw_x, maid.draw_y)

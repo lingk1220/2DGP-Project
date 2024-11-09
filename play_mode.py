@@ -103,7 +103,7 @@ def init():
         game_world.add_object(chicken, 2)
 
 
-    maid = Maid(1000, GROUNDHEIGHT)
+    maid = Maid(700, GROUNDHEIGHT)
     game_world.add_object(maid, 2)
 
     crop = Crop(1100, GROUNDHEIGHT)

@@ -140,8 +140,7 @@ class Archer:
         if self.chicken_target == None:
             return BehaviorTree.FAIL
 
-        chicken_dir = self.distance_get(self.chicken_target.pos_x, self.pos_x)
-        if chicken_dir < distance:
+        if self.distance_less_than(self.chicken_target.pos_x, self.pos_x, distance):
             return BehaviorTree.SUCCESS
         else:
             return BehaviorTree.FAIL

@@ -34,7 +34,7 @@ class Crop:
         self.draw_y = self.size_v * 1.5
 
         self.growth = 0
-        self.max_growth = 30
+        self.max_growth = 1
         self.growth_level = 0
         self.dir = 1
         #self.state = Idle
