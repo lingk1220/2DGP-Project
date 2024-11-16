@@ -55,7 +55,7 @@ class Arrow:
 
 
     def update(self):
-        self.pos_x += self.dir * 10
+        self.pos_x += self.dir * 300 * game_framework.frame_time
         pass
 
     def handle_event(self, event):

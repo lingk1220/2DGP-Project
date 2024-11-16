@@ -9,6 +9,7 @@ from pico2d import load_image, get_time, draw_rectangle
 
 import game_world
 import play_mode
+from chicken import Chicken
 from state_machine import StateMachine
 
 class Camp:
@@ -23,11 +24,12 @@ class Camp:
         self.size_h = (self.width_image // self.count_h)
         self.size_v = (self.height_image // self.count_v)
 
+        self.ground = y
         self.center_error_x = 0
         self.pos_x = x
         self.pos_y = y + self.size_v * 2.2 / 2 + 6
 
-        self.dir = -self.pos_x / abs(self.pos_x)
+
         self.index_h = 4 - 1
         self.index_v = 26 - 1
         self.tiles_h = 3
@@ -38,7 +40,10 @@ class Camp:
         self.growth = 0
         self.max_growth = 1
         self.growth_level = 0
-        self.dir = 1
+        self.dir = -self.pos_x / abs(self.pos_x)
+
+        self.spawn_timer = 0.0
+        self.spawn_delay = 1.0
         #self.state = Idle
         if Camp.image == None:
             Camp.image = load_image('Props2.png')
@@ -56,6 +61,14 @@ class Camp:
 
 
     def update(self):
+        self.spawn_timer += game_framework.frame_time
+
+        if self.spawn_timer > self.spawn_delay:
+            chicken = Chicken(self.pos_x, self.ground)
+            chicken.dir = self.dir
+            chicken.parent = self
+            play_mode.game_world.add_object(chicken, 3)
+            self.spawn_timer = 0
         pass
 
     def handle_event(self, event):

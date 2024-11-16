@@ -111,7 +111,7 @@ def init():
     game_world.add_object(crop, 2)
 
     camp = Camp(100, GROUNDHEIGHT)
-    game_world.add_object(camp, 2)
+    game_world.add_object(camp, 1)
 
 
 def update():
