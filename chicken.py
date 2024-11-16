@@ -25,7 +25,7 @@ class Chicken:
 
         self.center_error_x = 0
         self.pos_x = x
-        self.pos_y = y + 10
+        self.pos_y = y + 8
         self.index_h = 0
         self.index_v = 0
         self.x, self.y = random.randint(0, 0), 0

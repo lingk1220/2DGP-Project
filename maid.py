@@ -148,7 +148,7 @@ class Maid:
 
 
     def move_to_crop(self):
-        print('wssd')
+
         self.state = Walk
         self.move_slightly_to(self.crop_target.pos_x)
         if self.distance_less_than(self.crop_target.pos_x, self.pos_x, 10):
@@ -164,7 +164,7 @@ class Maid:
         # if self.index_h >= 10:
         #     self.dir = self.dir / abs(self.dir)
         #     print(f'arrow dir: {self.dir}')
-        print('widv')
+
         play_mode.game_world.remove_object(self.crop_target)
         self.crop_target = None
         return BehaviorTree.SUCCESS

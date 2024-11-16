@@ -7,6 +7,7 @@ from sdl2 import SDL_QUIT, SDL_KEYDOWN, SDLK_ESCAPE
 
 import game_framework
 import game_world
+from camp import Camp
 from crop import Crop
 from archer import Archer
 from background import Background
@@ -108,6 +109,9 @@ def init():
 
     crop = Crop(1100, GROUNDHEIGHT)
     game_world.add_object(crop, 2)
+
+    camp = Camp(100, GROUNDHEIGHT)
+    game_world.add_object(camp, 2)
 
 
 def update():
