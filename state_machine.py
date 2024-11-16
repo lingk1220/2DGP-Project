@@ -15,11 +15,8 @@ def lshift_down(e): # e가 space down인지 판단 >> True or False
 def lshift_up(e): # e가 space down인지 판단 >> True or False
     return e[0] == 'INPUT' and e[1].type == SDL_KEYUP and e[1].key == SDLK_LSHIFT
 
-def time_out_idle(e):
+def time_out_interact(e):
     return e[0] == 'TIME_OUT' and e[1] == 0
-
-def time_out_autorun(e):
-    return e[0] == 'TIME_OUT' and e[1] == 1
 
 def right_down(e):
     return e[0] == 'INPUT' and e[1].type == SDL_KEYDOWN and e[1].key == SDLK_RIGHT
@@ -31,6 +28,10 @@ def right_down_with_shift(e):
 def right_up(e):
     return e[0] == 'INPUT' and e[1].type == SDL_KEYUP and e[1].key == SDLK_RIGHT
 
+def right_up_with_shift(e):
+    return e[0] == 'INPUT' and e[1].type == SDL_KEYUP and e[1].key == SDLK_RIGHT and e[SHIFT_PRESSED] == 1
+
+
 def left_down(e):
     return e[0] == 'INPUT' and e[1].type == SDL_KEYDOWN and e[1].key == SDLK_LEFT
 
@@ -39,6 +40,9 @@ def left_down_with_shift(e):
 
 def left_up(e):
     return e[0] == 'INPUT' and e[1].type == SDL_KEYUP and e[1].key == SDLK_LEFT
+
+def left_up_with_shift(e):
+    return e[0] == 'INPUT' and e[1].type == SDL_KEYUP and e[1].key == SDLK_LEFT and e[SHIFT_PRESSED] == 1
 
 def a_down(e):
     return e[0] == 'INPUT' and e[1].type == SDL_KEYDOWN and e[1].key == SDLK_a

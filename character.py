@@ -1,10 +1,14 @@
 import random
+from types import NoneType
+
 import game_framework
 
 from pico2d import *
 
+import play_mode
 from state_machine import StateMachine, right_down, right_up, left_down, left_up, lshift_down, lshift_up, interact_down, \
-    interact_up, run_shift, right_down_with_shift, left_down_with_shift
+    interact_up, run_shift, right_down_with_shift, left_down_with_shift, time_out_interact, right_up_with_shift, \
+    left_up_with_shift
 
 TIME_PER_ACTION = 0.5
 ACTION_PER_TIME = 1.0 / TIME_PER_ACTION
@@ -48,6 +52,9 @@ class Character:
         self.interact_size_h = (self.width_image_interact // self.interact_count_h)
         self.interact_size_v = (self.height_image_interact // self.interact_count_v)
 
+        self.nearest_wanderer = None
+        self.wanderer_dist_min = 10000
+
 
         self.index_h = 0
         self.index_v = 8
@@ -59,7 +66,7 @@ class Character:
         if Character.image_interaction == None:
             Character.image_interaction = load_image('character_interact.png')
 
-
+        play_mode.game_world.add_collision_pair('character:wanderer', self, None)
 
         self.state_machine = StateMachine(self)
         self.state_machine.start(Idle)
@@ -68,8 +75,8 @@ class Character:
         self.state_machine.set_transitions(
             {
 
-                Idle : {right_down_with_shift: Run, right_down : Walk ,  right_up : Walk, left_down_with_shift:Run, left_down : Walk, left_up : Walk, lshift_down: Idle, lshift_up: Idle, interact_down:Interact},
-                Interact: {interact_up:Idle, right_down_with_shift: Run, right_down : Walk, left_down_with_shift: Run, left_down : Walk, lshift_down: Interact, lshift_up: Interact},
+                Idle : {right_down_with_shift: Run, right_down : Walk , right_up_with_shift: Run, right_up : Walk, left_down_with_shift:Run, left_down : Walk, left_up_with_shift: Run, left_up : Walk, lshift_down: Idle, lshift_up: Idle, interact_down:Interact},
+                Interact: {time_out_interact:Idle, right_down_with_shift: Run, right_down : Walk, left_down_with_shift: Run, left_down : Walk, lshift_down: Interact, lshift_up: Interact},
                 Walk: {right_down: Idle, right_up: Idle, left_down: Idle, left_up: Idle, lshift_down: Run, run_shift:Run},
                 Run: {right_down: Idle, right_up: Idle, left_down: Idle, left_up: Idle, lshift_up: Walk},
 
@@ -79,7 +86,15 @@ class Character:
     def get_bb(self):
         return self.pos_x - self.draw_x / 4.3 + self.dir * 7 + 25, self.pos_y - self.draw_y / 4, self.pos_x + self.draw_x / 4.3 + self.dir * 7 - 25, self.pos_y + self.draw_y / 2.5
 
+    def handle_collision(self, group, other):
+        if group == 'character:wanderer':
+            if self.wanderer_dist_min > self.pos_x - other.pos_x:
+                self.nearest_wanderer = other
+                self.wanderer_dist_min = self.pos_x - other.pos_x
+            pass
+
     def update(self):
+        self.wanderer_dist_min = 10000
         self.state_machine.update()
         pass
 
@@ -230,8 +245,14 @@ class Interact:
             character.index_v = 8 - 1
             character.index_h = 0
         elif character.index_v == 8 - 1 and character.index_h >= 9:
+            character.state_machine.add_event(('TIME_OUT', 0))
+            if character.nearest_wanderer is not None:
+                play_mode.game_world.remove_object(character.nearest_wanderer)
+
+
             character.index_v = 10 - 1
             character.index_h = 0
+        character.nearest_wanderer = None
 
 
 

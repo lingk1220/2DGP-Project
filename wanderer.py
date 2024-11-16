@@ -4,6 +4,7 @@ from random import randint
 from pico2d import load_image, get_time
 
 import game_framework
+import play_mode
 
 from behavior_tree import BehaviorTree, Action, Sequence, Condition, Selector
 from state_machine import StateMachine
@@ -73,6 +74,7 @@ class Wanderer:
 
 
 
+        play_mode.game_world.add_collision_pair('character:wanderer', None, self)
 
         self.state = Idle
         self.build_behavior_tree()
@@ -80,9 +82,15 @@ class Wanderer:
         self.state_machine.start(Idle)
 
 
-    def get_bb(self):
-        return self.pos_x - self.draw_x / 4, self.pos_y - self.draw_y / 4, self.pos_x + self.draw_x / 4, self.pos_y + self.draw_y / 2
 
+
+    def get_bb(self):
+        return self.pos_x - self.draw_x , self.pos_y - self.draw_y / 4, self.pos_x + self.draw_x, self.pos_y + self.draw_y / 2
+
+    def handle_collision(self, group, other):
+        if group == 'character:wanderer':
+            self.pos_y = 150
+            pass
 
     def update(self):
         self.bt.run()
@@ -96,6 +104,7 @@ class Wanderer:
 
     def draw(self):
         self.state_machine.draw()
+        self.pos_y = 117
         # self.image_skin.clip_draw(0, 0, self.size_h, self.size_v, self.pos_x, self.pos_y, self.x, self.y)
         # self.image_pants.clip_draw(0, 0, self.size_h, self.size_v, self.pos_x, self.pos_y, self.x, self.y)
         # self.image_shirts.clip_draw(0, 0, self.size_h, self.size_v, self.pos_x, self.pos_y, self.x, self.y)

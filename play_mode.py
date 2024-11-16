@@ -21,38 +21,7 @@ width = 1400
 height = 800
 
 
-class Props:
-    global width, height
-    image = None
-    def __init__(self):
-        self.x, self.y = random.randint(0, 0), 0
-        self.draw_x = 0
-        self.draw_y = 0
-        if Props.image == None:
-            Props.image = load_image('Props.png')
 
-    def update(self):
-        pass
-
-    def draw(self):
-        self.image.clip_draw(0, 0, 1024, 1024, width // 2, height // 2 - 100)
-
-
-class Props2:
-    global width, height
-    image = None
-    def __init__(self):
-        self.x, self.y = random.randint(0, 0), 0
-        self.draw_x = 0
-        self.draw_y = 0
-        if Props2.image == None:
-            Props2.image = load_image('Props2.png')
-
-    def update(self):
-        pass
-
-    def draw(self):
-        self.image.clip_draw(0, 0, 1024, 1024, width // 2, height // 2 - 100)
 
 
 def handle_events():
