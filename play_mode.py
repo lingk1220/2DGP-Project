@@ -99,7 +99,7 @@ def init():
     game_world.add_object(archer, 2)
 
     global chickens
-    chickens = [Chicken(400 + (randint(0, 1) * 2 - 1) * randint(0, 5) * 50, GROUNDHEIGHT) for _  in range (5)]
+    chickens = [Chicken(400 + (randint(0, 1) * 2 - 1) * randint(0, 5) * 50, GROUNDHEIGHT) for _  in range (1)]
     for chicken in chickens:
         game_world.add_object(chicken, 2)
 

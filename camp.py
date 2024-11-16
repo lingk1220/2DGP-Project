@@ -1,6 +1,7 @@
 import math
 import random
 import time
+from random import randint
 
 import game_framework
 
@@ -10,6 +11,7 @@ from pico2d import load_image, get_time, draw_rectangle
 import game_world
 import play_mode
 from chicken import Chicken
+from wanderer import Wanderer
 from state_machine import StateMachine
 
 class Camp:
@@ -64,10 +66,15 @@ class Camp:
         self.spawn_timer += game_framework.frame_time
 
         if self.spawn_timer > self.spawn_delay:
-            chicken = Chicken(self.pos_x, self.ground)
-            chicken.dir = self.dir
-            chicken.parent = self
-            play_mode.game_world.add_object(chicken, 3)
+            minx, _ , maxx, _ = self.get_bb()
+            # chicken = Chicken(randint(int(minx), int(maxx)), self.ground)
+            # chicken.dir = self.dir
+            # chicken.parent = self
+            # play_mode.game_world.add_object(chicken, 2)
+            # play_mode.chickens.append(chicken)
+
+            man = Wanderer(randint(int(minx), int(maxx)), self.ground)
+            play_mode.game_world.add_object(man, 2)
             self.spawn_timer = 0
         pass
 
