@@ -33,7 +33,6 @@ class Wanderer:
                         self.image_wanderer[wanderer_index][part_index][part_image_index] = load_image("./wanderer/"+ wanderer_name + "/" + part_name + "/" + part_name + "%d" %(part_image_index+1) + ".png")
 
 
-        print(f'enq: {self.image_wanderer[0][0][0]}')
         # if Wanderer.image_skin == None:
         #     Wanderer.image_skin = load_image('skin1.png')
         # if Wanderer.image_pants == None:
@@ -56,10 +55,10 @@ class Wanderer:
 
         self.load_image()
         self.x, self.y = 0, 0
-        self.pos_x, self.pos_y = x, y - 5
+        self.pos_x, self.pos_y = x, y - 3
         self.center_error_x = 0
-        self.draw_x = self.size_h * 1.6
-        self.draw_y = self.size_v * 1.6
+        self.draw_x = 145
+        self.draw_y = 135 * self.size_v / (self.size_h - self.center_error_x)
         self.dir = 1
 
 

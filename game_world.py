@@ -17,11 +17,13 @@ def render():
     for layer in objects:
         for o in layer:
             o.draw()
-
+    i = 0
     for layer in objects:
-        for o in layer:
-            draw_rectangle(*o.get_bb())
-            pass
+        if i == 2:
+            for o in layer:
+                draw_rectangle(*o.get_bb())
+                pass
+        i += 1
 
 
 

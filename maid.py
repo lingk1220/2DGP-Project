@@ -165,7 +165,8 @@ class Maid:
         #     self.dir = self.dir / abs(self.dir)
         #     print(f'arrow dir: {self.dir}')
 
-        play_mode.game_world.remove_object(self.crop_target)
+        #play_mode.game_world.remove_object(self.crop_target)
+        self.crop_target.growth = 0
         self.crop_target = None
         return BehaviorTree.SUCCESS
 
