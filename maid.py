@@ -125,7 +125,7 @@ class Maid:
     def lockon_crop(self, distance):
         self.min_crop_dir = 10000000
         self.crop_target = None
-        for crop in game_world.objects[2]:
+        for crop in game_world.objects[3]:
             if crop.__class__ == Crop and crop.growth_level == 3:
                 print('hio')
                 crop_dir = self.distance_get(crop.pos_x, self.pos_x)

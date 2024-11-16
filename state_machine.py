@@ -1,6 +1,7 @@
 
-from sdl2 import SDL_KEYDOWN, SDLK_SPACE, SDLK_RIGHT, SDL_KEYUP, SDLK_LEFT, SDLK_a, SDLK_LSHIFT
+from sdl2 import SDL_KEYDOWN, SDLK_SPACE, SDLK_RIGHT, SDL_KEYUP, SDLK_LEFT, SDLK_a, SDLK_LSHIFT, SDLK_e
 
+SHIFT_PRESSED = 2
 
 def start_event(e):
     return e[0] == 'START'
@@ -23,11 +24,18 @@ def time_out_autorun(e):
 def right_down(e):
     return e[0] == 'INPUT' and e[1].type == SDL_KEYDOWN and e[1].key == SDLK_RIGHT
 
+def right_down_with_shift(e):
+    return e[0] == 'INPUT' and e[1].type == SDL_KEYDOWN and e[1].key == SDLK_RIGHT and e[SHIFT_PRESSED] == 1
+
+
 def right_up(e):
     return e[0] == 'INPUT' and e[1].type == SDL_KEYUP and e[1].key == SDLK_RIGHT
 
 def left_down(e):
     return e[0] == 'INPUT' and e[1].type == SDL_KEYDOWN and e[1].key == SDLK_LEFT
+
+def left_down_with_shift(e):
+    return e[0] == 'INPUT' and e[1].type == SDL_KEYDOWN and e[1].key == SDLK_LEFT and e[SHIFT_PRESSED] == 1
 
 def left_up(e):
     return e[0] == 'INPUT' and e[1].type == SDL_KEYUP and e[1].key == SDLK_LEFT
@@ -35,8 +43,17 @@ def left_up(e):
 def a_down(e):
     return e[0] == 'INPUT' and e[1].type == SDL_KEYDOWN and e[1].key == SDLK_a
 
+def interact_down(e):
+    return e[0] == 'INPUT' and e[1].type == SDL_KEYDOWN and e[1].key == SDLK_e
 
+def interact_up(e):
+    return e[0] == 'INPUT' and e[1].type == SDL_KEYUP and e[1].key == SDLK_e
 
+def run_shift(e):
+    return e[0] == 'SHIFT' and e[1] == 'RUN'
+
+def idle_shift(e):
+    return e[0] == 'SHIFT' and e[1] == 'IDLE'
 
 
 

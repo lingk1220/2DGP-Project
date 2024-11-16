@@ -126,7 +126,7 @@ class Archer:
     def lockon_chicken(self, distance):
         self.min_chicken_dir = 10000000
         self.chicken_target = None
-        for chicken in game_world.objects[2]:
+        for chicken in game_world.objects[3]:
             if chicken.__class__ == Chicken:
                 chicken_dir = self.distance_get(chicken.pos_x, self.pos_x)
                 if chicken_dir < distance:
