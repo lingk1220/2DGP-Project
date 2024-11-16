@@ -1,17 +1,19 @@
 import random
+from random import randint
 
 from pico2d import load_image, get_time
 
 import game_framework
 from state_machine import StateMachine
 
-image_counts = [[1, 1, 1, 1], [0, 0, 0, 0]]
+image_counts = [[1, 4, 3, 1, 1], [1, 4, 1, 1, 1]]
 wanderer_names = ['man', 'woman']
-part_names = ['skin', 'pants', 'shirts', 'boots']
+part_names = ['skin', 'hair', 'pants', 'shirts', 'boots']
 
 class Wanderer:
     image_wanderer = None
     image_skin = None
+    image_hair = None
     image_pants = None
     image_boots = None
     image_shirts = None
@@ -23,7 +25,7 @@ class Wanderer:
             for wanderer_index in range(2):
                 self.image_wanderer[wanderer_index] ={}
                 wanderer_name = wanderer_names[wanderer_index]
-                for part_index in range (4):
+                for part_index in range (5):
                     part_name = part_names[part_index]
                     self.image_wanderer[wanderer_index][part_index] = {}
                     for part_image_index in range(0, image_counts[wanderer_index][part_index]):
@@ -56,14 +58,17 @@ class Wanderer:
         self.x, self.y = 0, 0
         self.pos_x, self.pos_y = x, y - 5
         self.center_error_x = 0
-        self.draw_x = self.size_h * 1.8
+        self.draw_x = self.size_h * 1.6
         self.draw_y = self.size_v * 1.6
         self.dir = 1
 
 
-        self.wanderer_index = 0
+        self.wanderer_index = randint(0, 1)
 
-        self.part_image_indices = [0, 0, 0, 0]
+        if self.wanderer_index == 0:
+            self.part_image_indices = [0, randint(0, 3), 2, 0, 0]
+        else:
+            self.part_image_indices = [0, randint(0, 3), 0, 0, 0]
 
 
 
@@ -116,7 +121,7 @@ class Idle:
     def draw(wanderer):
         if wanderer.dir > 0:
             for part_index in range(4):
-                wanderer.image_wanderer[wanderer.wanderer_index][part_index][wanderer.part_image_indices[0]].clip_draw(int(wanderer.index_h) * wanderer.size_h, wanderer.index_v * wanderer.size_v, wanderer.size_h - wanderer.center_error_x, wanderer.size_v, wanderer.pos_x, wanderer.pos_y + 29, wanderer.draw_x, wanderer.draw_y)
+                wanderer.image_wanderer[wanderer.wanderer_index][part_index][wanderer.part_image_indices[part_index]].clip_draw(int(wanderer.index_h) * wanderer.size_h, wanderer.index_v * wanderer.size_v, wanderer.size_h - wanderer.center_error_x, wanderer.size_v, wanderer.pos_x, wanderer.pos_y + 29, wanderer.draw_x, wanderer.draw_y)
 
             # self.image_skin.clip_draw(0, 0, self.size_h, self.size_v, self.pos_x, self.pos_y, self.x, self.y)
             # self.image_pants.clip_draw(0, 0, self.size_h, self.size_v, self.pos_x, self.pos_y, self.x, self.y)
@@ -124,7 +129,7 @@ class Idle:
             # self.image_boots.clip_draw(0, 0, self.size_h, self.size_v, self.pos_x, self.pos_y, self.x, self.y)
         else:
             for part_index in range(4):
-                wanderer.image_wanderer[wanderer.wanderer_index][part_index][wanderer.part_image_indices[0]].clip_draw(int(wanderer.index_h) * wanderer.size_h, wanderer.index_v * wanderer.size_v, wanderer.size_h - wanderer.center_error_x, wanderer.size_v, wanderer.pos_x, wanderer.pos_y + 29, wanderer.draw_x, wanderer.draw_y)
+                wanderer.image_wanderer[wanderer.wanderer_index][part_index][wanderer.part_image_indices[part_index]].clip_draw(int(wanderer.index_h) * wanderer.size_h, wanderer.index_v * wanderer.size_v, wanderer.size_h - wanderer.center_error_x, wanderer.size_v, wanderer.pos_x, wanderer.pos_y + 29, wanderer.draw_x, wanderer.draw_y)
 
 
 class Walk:
