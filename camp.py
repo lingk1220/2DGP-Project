@@ -44,8 +44,8 @@ class Camp:
         self.growth_level = 0
         self.dir = -self.pos_x / abs(self.pos_x)
 
-        self.spawn_timer = 0.0
-        self.spawn_delay = 1.0
+        self.spawn_timer = 10.0
+        self.spawn_delay = 10.0
         #self.state = Idle
         if Camp.image == None:
             Camp.image = load_image('Props2.png')

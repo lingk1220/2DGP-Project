@@ -96,22 +96,22 @@ def init():
     game_world.add_object(character, 1)
 
     archer = Archer(width // 2 + 100, GROUNDHEIGHT)
-    game_world.add_object(archer, 2)
+    game_world.add_object(archer, 3)
 
     global chickens
     chickens = [Chicken(400 + (randint(0, 1) * 2 - 1) * randint(0, 5) * 50, GROUNDHEIGHT) for _  in range (1)]
     for chicken in chickens:
-        game_world.add_object(chicken, 2)
+        game_world.add_object(chicken, 3)
 
 
     maid = Maid(700, GROUNDHEIGHT)
-    game_world.add_object(maid, 2)
+    game_world.add_object(maid, 3)
 
     crop = Crop(1100, GROUNDHEIGHT)
-    game_world.add_object(crop, 2)
+    game_world.add_object(crop, 3)
 
-    camp = Camp(100, GROUNDHEIGHT)
-    game_world.add_object(camp, 1)
+    camp = Camp(500, GROUNDHEIGHT)
+    game_world.add_object(camp, 2)
 
 
 def update():

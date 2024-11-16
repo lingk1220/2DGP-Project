@@ -4,6 +4,8 @@ from random import randint
 from pico2d import load_image, get_time
 
 import game_framework
+
+from behavior_tree import BehaviorTree, Action, Sequence, Condition, Selector
 from state_machine import StateMachine
 
 image_counts = [[1, 4, 3, 1, 1], [1, 4, 1, 1, 1]]
@@ -73,7 +75,7 @@ class Wanderer:
 
 
         self.state = Idle
-        #self.build_behavior_tree()
+        self.build_behavior_tree()
         self.state_machine = StateMachine(self)
         self.state_machine.start(Idle)
 
@@ -83,7 +85,7 @@ class Wanderer:
 
 
     def update(self):
-        #self.bt.run()
+        self.bt.run()
         #print(f'{self.state}')
         print(f'{self.state_machine.cur_state}')
 
@@ -99,6 +101,69 @@ class Wanderer:
         # self.image_shirts.clip_draw(0, 0, self.size_h, self.size_v, self.pos_x, self.pos_y, self.x, self.y)
         # self.image_boots.clip_draw(0, 0, self.size_h, self.size_v, self.pos_x, self.pos_y, self.x, self.y)
 
+
+    def set_target_location(self, x=None, y=None):
+        if not x or not y:
+            raise ValueError('Location should be given')
+        self.tx, self.ty = x, y
+        return BehaviorTree.SUCCESS
+
+    def distance_less_than(self, x1, x2, r):
+        distance2 = abs(x2 - x1)
+        return distance2 < 1 * r
+
+    def distance_get(self, x1, x2):
+        distance2 = x2 - x1
+        return distance2
+
+    def move_slightly_to(self, tx):
+        self.dir = (tx - self.pos_x) / abs(tx - self.pos_x)
+        self.speed = 100
+        self.pos_x += self.speed * self.dir * game_framework.frame_time
+
+    def move_to(self, r=10):
+        self.state = Walk
+        self.move_slightly_to(self.tx)
+        print(f'tx: {self.tx}, pos_x: {self.pos_x}')
+        if self.distance_less_than(self.tx, self.pos_x, r):
+            return BehaviorTree.SUCCESS
+        else:
+            return BehaviorTree.RUNNING
+
+    def set_random_location(self):
+        self.tx, self.ty = self.pos_x + ((2 * random.randint(0, 1)  - 1) *  random.randint(100, 101)), self.pos_y
+        print(f'tx = {self.tx}')
+        # self.tx, self.ty = 1000, 100
+        return BehaviorTree.SUCCESS
+
+
+    def wait_time(self):
+        if get_time() - self.time_wait_started > self.time_wait_for:
+            return BehaviorTree.SUCCESS
+        else:
+            return BehaviorTree.RUNNING
+        pass
+
+    def set_wait_time(self, min = 5, max = 30):
+        self.state = Idle
+        self.time_wait_started = get_time()
+        self.time_wait_for = random.randint(min, max) / 10
+        return BehaviorTree.SUCCESS
+
+
+
+    def build_behavior_tree(self):
+        a0 = Action('Wait', self.wait_time)
+        ACT_set_wait_time = Action('Set Wait Time', self.set_wait_time)
+        SEQ_wait_time = Sequence('Wait', ACT_set_wait_time, a0)
+        a1 = Action('Move to', self.move_to)
+
+        a2 = Action('Set random location', self.set_random_location)
+        root = SEQ_wander = Sequence('Wander', a2, a1, SEQ_wait_time)
+
+
+
+        self.bt = BehaviorTree(root)
 
 class Idle:
     @staticmethod
@@ -134,7 +199,7 @@ class Idle:
 class Walk:
     @staticmethod
     def enter(wanderer, e):
-        wanderer.index_v = 3 - 1
+        wanderer.index_v = 6 - 1
         wanderer.index_h = 0
 
     @staticmethod
@@ -148,17 +213,17 @@ class Walk:
 
     @staticmethod
     def draw(wanderer):
-        if wanderer.dir > 0:
+        if wanderer.dir < 0:
             for part_index in range(4):
-                wanderer.image_wanderer[wanderer.wanderer_index][part_index].clip_draw(
+                wanderer.image_wanderer[wanderer.wanderer_index][part_index][wanderer.part_image_indices[part_index]].clip_draw(
                     int(wanderer.index_h) * wanderer.size_h, wanderer.index_v * wanderer.size_v,
                     wanderer.size_h - wanderer.center_error_x, wanderer.size_v, wanderer.pos_x, wanderer.pos_y + 29,
                     wanderer.draw_x, wanderer.draw_y)
 
         else:
             for part_index in range(4):
-                wanderer.image_wanderer[wanderer.wanderer_index][part_index].clip_draw(
+                wanderer.image_wanderer[wanderer.wanderer_index][part_index][wanderer.part_image_indices[part_index]].clip_composite_draw(
                     int(wanderer.index_h) * wanderer.size_h, wanderer.index_v * wanderer.size_v,
-                    wanderer.size_h - wanderer.center_error_x, wanderer.size_v, wanderer.pos_x, wanderer.pos_y + 29,
+                    wanderer.size_h - wanderer.center_error_x, wanderer.size_v,0, 'h', wanderer.pos_x, wanderer.pos_y + 29,
                     wanderer.draw_x, wanderer.draw_y)
 

@@ -20,8 +20,8 @@ class Character:
         self.pos_x = x
         self.pos_y = y + 3
 
-        self.speed_walk = 3
-        self.speed_run = 7
+        self.speed_walk = 100
+        self.speed_run = 250
         self.frame = 0
         self.need_update_frame = 0
 
@@ -159,7 +159,7 @@ class Walk:
             character.index_h = 2
 
 
-        character.pos_x += character.dir * character.speed_walk
+        character.pos_x += character.dir * character.speed_walk * game_framework.frame_time
 
     @staticmethod
     def draw(character):
@@ -197,7 +197,7 @@ class Run:
         if character.index_h >= 9:
             character.index_h = 2
 
-        character.pos_x += character.dir * character.speed_run
+        character.pos_x += character.dir * character.speed_run * game_framework.frame_time
 
     @staticmethod
     def draw(character):

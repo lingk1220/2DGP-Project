@@ -19,7 +19,7 @@ def render():
             o.draw()
     i = 0
     for layer in objects:
-        if i == 2:
+        if 1 < i and i  <= 3:
             for o in layer:
                 draw_rectangle(*o.get_bb())
                 pass
