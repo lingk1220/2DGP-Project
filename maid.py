@@ -29,7 +29,7 @@ class Maid:
 
         self.center_error_x = 0
         self.pos_x = x
-        self.pos_y = y - 2
+        self.pos_y = y + 27
         self.dir = 1
 
         self.index_h = 0
@@ -48,7 +48,7 @@ class Maid:
         self.state_machine.start(Idle)
 
     def get_bb(self):
-        return self.pos_x - self.draw_x / 3, self.pos_y - self.draw_y / 3.5, self.pos_x + self.draw_x / 3, self.pos_y + self.draw_y / 2.5 + 5
+        return self.pos_x - self.draw_x / 3, self.pos_y - self.draw_y / 2, self.pos_x + self.draw_x / 3, self.pos_y + self.draw_y / 3.5
 
 
 
@@ -230,7 +230,7 @@ class Idle:
                                              0,
                                              'h',
                                              maid.pos_x,
-                                             maid.pos_y + 29, maid.draw_x, maid.draw_y)
+                                             maid.pos_y, maid.draw_x, maid.draw_y)
         else:
             maid.image.clip_composite_draw(int(maid.index_h) * maid.size_h,
                                              maid.index_v * maid.size_v,
@@ -239,7 +239,7 @@ class Idle:
                                              0,
                                              '',
                                              maid.pos_x,
-                                             maid.pos_y + 29, maid.draw_x, maid.draw_y)
+                                             maid.pos_y, maid.draw_x, maid.draw_y)
 
 class Walk:
     @staticmethod
@@ -272,7 +272,7 @@ class Walk:
                                              0,
                                              'h',
                                              maid.pos_x,
-                                             maid.pos_y + 29, maid.draw_x, maid.draw_y)
+                                             maid.pos_y, maid.draw_x, maid.draw_y)
         else:
             maid.image.clip_composite_draw(int(maid.index_h) * maid.size_h,
                                              maid.index_v * maid.size_v,
@@ -281,7 +281,7 @@ class Walk:
                                              0,
                                              '',
                                              maid.pos_x,
-                                             maid.pos_y + 29, maid.draw_x, maid.draw_y)
+                                             maid.pos_y, maid.draw_x, maid.draw_y)
 
 class Reap:
     @staticmethod
@@ -307,7 +307,7 @@ class Reap:
                                              0,
                                              'h',
                                              maid.pos_x,
-                                             maid.pos_y + 29, maid.draw_x, maid.draw_y)
+                                             maid.pos_y, maid.draw_x, maid.draw_y)
         else:
             maid.image.clip_composite_draw(int(maid.index_h) * maid.size_h,
                                              maid.index_v * maid.size_v,
@@ -316,4 +316,4 @@ class Reap:
                                              0,
                                              '',
                                              maid.pos_x,
-                                             maid.pos_y + 29, maid.draw_x, maid.draw_y)
+                                             maid.pos_y, maid.draw_x, maid.draw_y)

@@ -41,7 +41,12 @@ def init():
 
     running = True
 
+    global character
+    character = Character(0, GROUNDHEIGHT)
 
+
+
+    game_world.add_object(character, 4)
 
     background = Background()
     game_world.add_object(background, 0)
@@ -57,12 +62,7 @@ def init():
 
 
 
-    global character
-    character = Character(width // 2, GROUNDHEIGHT)
 
-
-
-    game_world.add_object(character, 1)
 
     archer = Archer(width // 2 + 100, GROUNDHEIGHT)
     game_world.add_object(archer, 3)

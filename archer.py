@@ -29,7 +29,7 @@ class Archer:
 
         self.center_error_x = 10
         self.pos_x = x
-        self.pos_y = y
+        self.pos_y = y + 29
         self.dir = 1
         self.bool_shooting = 0
 
@@ -49,7 +49,7 @@ class Archer:
         self.state_machine.start(Idle)
 
     def get_bb(self):
-        return self.pos_x - self.draw_x / 3, self.pos_y - self.draw_y / 3.5, self.pos_x + self.draw_x / 3, self.pos_y + self.draw_y / 2.5
+        return self.pos_x - self.draw_x / 3, self.pos_y - self.draw_y / 2, self.pos_x + self.draw_x / 3, self.pos_y + self.draw_y / 3.5
 
 
 
@@ -237,7 +237,7 @@ class Idle:
                                    archer.size_h - archer.center_error_x,
                                    archer.size_v,
                                    archer.pos_x,
-                                   archer.pos_y + 29, archer.draw_x, archer.draw_y)
+                                   archer.pos_y, archer.draw_x, archer.draw_y)
         else:
             archer.image.clip_composite_draw(int(archer.index_h) * archer.size_h,
                                              archer.index_v * archer.size_v,
@@ -246,7 +246,7 @@ class Idle:
                                              0,
                                              'h',
                                              archer.pos_x,
-                                             archer.pos_y + 29, archer.draw_x, archer.draw_y)
+                                             archer.pos_y, archer.draw_x, archer.draw_y)
 
 class Walk:
     @staticmethod
@@ -271,7 +271,7 @@ class Walk:
                                    archer.size_h - archer.center_error_x,
                                    archer.size_v,
                                    archer.pos_x,
-                                   archer.pos_y + 29, archer.draw_x, archer.draw_y)
+                                   archer.pos_y, archer.draw_x, archer.draw_y)
         else:
             archer.image.clip_composite_draw(int(archer.index_h) * archer.size_h,
                                              archer.index_v * archer.size_v,
@@ -280,7 +280,7 @@ class Walk:
                                              0,
                                              'h',
                                              archer.pos_x,
-                                             archer.pos_y + 29, archer.draw_x, archer.draw_y)
+                                             archer.pos_y, archer.draw_x, archer.draw_y)
 
 class Shoot:
     @staticmethod
@@ -304,7 +304,7 @@ class Shoot:
                                    archer.size_h - archer.center_error_x,
                                    archer.size_v,
                                    archer.pos_x,
-                                   archer.pos_y + 29, archer.draw_x, archer.draw_y)
+                                   archer.pos_y, archer.draw_x, archer.draw_y)
         else:
             archer.image.clip_composite_draw(int(archer.index_h) * archer.size_h,
                                              archer.index_v * archer.size_v,
@@ -313,4 +313,4 @@ class Shoot:
                                              0,
                                              'h',
                                              archer.pos_x,
-                                             archer.pos_y + 29, archer.draw_x, archer.draw_y)
+                                             archer.pos_y, archer.draw_x, archer.draw_y)

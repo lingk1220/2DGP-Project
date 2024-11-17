@@ -3,7 +3,7 @@ from pico2d import draw_rectangle
 collision_pairs = {}
 
 
-objects = [[], [], [], []]
+objects = [[], [], [], [], []]
 
 def add_object(o, depth = 0):
     objects[depth].append(o)

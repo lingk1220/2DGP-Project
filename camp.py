@@ -39,13 +39,17 @@ class Camp:
         self.draw_x = self.size_h * self.tiles_h * 2.2
         self.draw_y = self.size_v * self.tiles_v * 2.2
 
-        self.growth = 0
-        self.max_growth = 1
-        self.growth_level = 0
-        self.dir = -self.pos_x / abs(self.pos_x)
+
+        self.clip_pos_x = 0
+        self.clip_pos_y = 0
+
+        self.wanderer_count = 0
+        self.wanderer_count_max = 3
+
+        self.dir = self.pos_x / abs(self.pos_x)
 
         self.spawn_timer = 10.0
-        self.spawn_delay = 10.0
+        self.spawn_delay = 1.0
         #self.state = Idle
         if Camp.image == None:
             Camp.image = load_image('Props2.png')
@@ -63,7 +67,8 @@ class Camp:
 
 
     def update(self):
-        self.spawn_timer += game_framework.frame_time
+        if self.wanderer_count < self.wanderer_count_max:
+            self.spawn_timer += game_framework.frame_time
 
         if self.spawn_timer > self.spawn_delay:
             minx, _ , maxx, _ = self.get_bb()
@@ -73,9 +78,11 @@ class Camp:
             # play_mode.game_world.add_object(chicken, 2)
             # play_mode.chickens.append(chicken)
 
-            man = Wanderer(randint(int(minx), int(maxx)), self.ground)
-            play_mode.game_world.add_object(man, 2)
+            new_wanderer = Wanderer(randint(int(minx), int(maxx)), self.ground, self)
+            play_mode.game_world.add_object(new_wanderer, 3)
             self.spawn_timer = 0
+            self.wanderer_count += 1
+
         pass
 
     def handle_event(self, event):
@@ -83,15 +90,17 @@ class Camp:
 
 
     def draw(self):
-        if dir == 1:
+        self.clip_pos_x = 700 - play_mode.character.pos_x + self.pos_x
+        self.clip_pos_y = self.pos_y
+        if self.dir > 0:
             self.image.clip_composite_draw(self.index_h * self.size_h,
                            self.index_v * self.size_v,
                            self.size_h * self.tiles_h,
                            self.size_v * self.tiles_v,
                            0,
                            '',
-                           self.pos_x,
-                           self.pos_y,
+                           self.clip_pos_x,
+                           self.clip_pos_y,
                            self.size_h * self.tiles_h * 2.2, self.size_v * self.tiles_v * 2.2
                            )
 
@@ -102,7 +111,7 @@ class Camp:
                                            self.size_v * self.tiles_v,
                                            0,
                                            'h',
-                                           self.pos_x,
-                                           self.pos_y,
+                                           self.clip_pos_x,
+                                           self.clip_pos_y,
                                            self.size_h * self.tiles_h * 2.2, self.size_v * self.tiles_v * 2.2
                                            )

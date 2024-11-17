@@ -46,6 +46,10 @@ class Character:
         self.interact_count_h = 16
         self.interact_count_v = 19
 
+        self.ground = y
+        self.clip_pos_x = 700
+        self.clip_pos_y = y
+
         self.size_h = (self.width_image // self.count_h)
         self.size_v = (self.height_image // self.count_v)
 
@@ -94,6 +98,7 @@ class Character:
             pass
 
     def update(self):
+
         self.wanderer_dist_min = 10000
         self.state_machine.update()
         pass
@@ -134,7 +139,7 @@ class Idle:
                                   character.size_v,
                                   0,
                                   character.flip_h,
-                                  character.pos_x, character.pos_y, character.size_h * 2, character.size_v * 2)
+                                  character.clip_pos_x, character.clip_pos_y, character.size_h * 2, character.size_v * 2)
 
 
 
@@ -178,7 +183,7 @@ class Walk:
                                   character.size_v,
                                   0,
                                   character.flip_h,
-                                  character.pos_x, character.pos_y, character.size_h * 2, character.size_v * 2)
+                                  character.clip_pos_x, character.clip_pos_y, character.size_h * 2, character.size_v * 2)
 
 
 class Run:
@@ -216,7 +221,7 @@ class Run:
                                   character.size_v,
                                   0,
                                   character.flip_h,
-                                  character.pos_x, character.pos_y, character.size_h * 2, character.size_v * 2)
+                                  character.clip_pos_x, character.clip_pos_y, character.size_h * 2, character.size_v * 2)
 
 
 class Interact:
@@ -238,6 +243,8 @@ class Interact:
     @staticmethod
     def do(character):
         character.index_h = (character.index_h + 22 * 0.8 * game_framework.frame_time)
+
+
         if character.index_v == 10 - 1 and character.index_h >= 6:
             character.index_v = 9 - 1
             character.index_h = 0
@@ -247,7 +254,8 @@ class Interact:
         elif character.index_v == 8 - 1 and character.index_h >= 9:
             character.state_machine.add_event(('TIME_OUT', 0))
             if character.nearest_wanderer is not None:
-                play_mode.game_world.remove_object(character.nearest_wanderer)
+                character.nearest_wanderer.be_civil()
+
 
 
             character.index_v = 10 - 1
@@ -264,4 +272,4 @@ class Interact:
                                   character.interact_size_v,
                                   0,
                                   character.flip_h,
-                                  character.pos_x, character.pos_y + 30, (character.interact_size_h-155) * 2, character.interact_size_v * 2)
+                                  character.clip_pos_x, character.clip_pos_y + 30, (character.interact_size_h-155) * 2, character.interact_size_v * 2)

@@ -5,8 +5,10 @@ from pico2d import load_image, get_time
 
 import game_framework
 import play_mode
+from archer import Archer
 
 from behavior_tree import BehaviorTree, Action, Sequence, Condition, Selector
+from maid import Maid
 from state_machine import StateMachine
 
 image_counts = [[1, 4, 3, 1, 1], [1, 4, 1, 1, 1]]
@@ -46,7 +48,9 @@ class Wanderer:
         #     Wanderer.image_boots = load_image('boots1.png')
 
 
-    def __init__(self, x, y):
+    def __init__(self, x, y, camp):
+        self.camp = camp
+
         self.width_image = 800
         self.height_image = 448
 
@@ -56,17 +60,22 @@ class Wanderer:
         self.size_h = (self.width_image // self.count_h)
         self.size_v = (self.height_image // self.count_v)
 
+        self.ground = y
         self.load_image()
         self.x, self.y = 0, 0
-        self.pos_x, self.pos_y = x, y - 3
+        self.pos_x, self.pos_y = x, y + 26
         self.center_error_x = 0
         self.draw_x = 145
         self.draw_y = 135 * self.size_v / (self.size_h - self.center_error_x)
         self.dir = 1
 
+        self.selected = 0
 
         self.wanderer_index = randint(0, 1)
 
+        self.clip_pos_x = 700 - play_mode.character.pos_x + self.pos_x
+        self.clip_pos_y = self.pos_y
+        
         if self.wanderer_index == 0:
             self.part_image_indices = [0, randint(0, 3), 2, 0, 0]
         else:
@@ -85,11 +94,11 @@ class Wanderer:
 
 
     def get_bb(self):
-        return self.pos_x - self.draw_x , self.pos_y - self.draw_y / 4, self.pos_x + self.draw_x, self.pos_y + self.draw_y / 2
+        return self.clip_pos_x - self.draw_x , self.clip_pos_y - self.draw_y / 2, self.clip_pos_x + self.draw_x, self.clip_pos_y + self.draw_y / 2
 
     def handle_collision(self, group, other):
         if group == 'character:wanderer':
-            self.pos_y = 150
+
             pass
 
     def update(self):
@@ -103,12 +112,27 @@ class Wanderer:
         pass
 
     def draw(self):
+        self.clip_pos_x = 700 - play_mode.character.pos_x + self.pos_x
+        self.clip_pos_y = self.pos_y
+
         self.state_machine.draw()
-        self.pos_y = 117
+
         # self.image_skin.clip_draw(0, 0, self.size_h, self.size_v, self.pos_x, self.pos_y, self.x, self.y)
         # self.image_pants.clip_draw(0, 0, self.size_h, self.size_v, self.pos_x, self.pos_y, self.x, self.y)
         # self.image_shirts.clip_draw(0, 0, self.size_h, self.size_v, self.pos_x, self.pos_y, self.x, self.y)
         # self.image_boots.clip_draw(0, 0, self.size_h, self.size_v, self.pos_x, self.pos_y, self.x, self.y)
+
+    def be_civil(self):
+        self.camp.wanderer_count -= 1
+
+        if self.wanderer_index == 0:
+            new_archer = Archer(self.pos_x, self.ground)
+            play_mode.game_world.add_object(new_archer, 3)
+            play_mode.game_world.remove_object(self)
+        elif self.wanderer_index == 1:
+            new_maid = Maid(self.pos_x, self.ground)
+            play_mode.game_world.add_object(new_maid, 3)
+            play_mode.game_world.remove_object(self)
 
 
     def set_target_location(self, x=None, y=None):
@@ -194,7 +218,7 @@ class Idle:
     def draw(wanderer):
         if wanderer.dir > 0:
             for part_index in range(4):
-                wanderer.image_wanderer[wanderer.wanderer_index][part_index][wanderer.part_image_indices[part_index]].clip_draw(int(wanderer.index_h) * wanderer.size_h, wanderer.index_v * wanderer.size_v, wanderer.size_h - wanderer.center_error_x, wanderer.size_v, wanderer.pos_x, wanderer.pos_y + 29, wanderer.draw_x, wanderer.draw_y)
+                wanderer.image_wanderer[wanderer.wanderer_index][part_index][wanderer.part_image_indices[part_index]].clip_draw(int(wanderer.index_h) * wanderer.size_h, wanderer.index_v * wanderer.size_v, wanderer.size_h - wanderer.center_error_x, wanderer.size_v, wanderer.clip_pos_x, wanderer.clip_pos_y, wanderer.draw_x, wanderer.draw_y)
 
             # self.image_skin.clip_draw(0, 0, self.size_h, self.size_v, self.pos_x, self.pos_y, self.x, self.y)
             # self.image_pants.clip_draw(0, 0, self.size_h, self.size_v, self.pos_x, self.pos_y, self.x, self.y)
@@ -202,7 +226,7 @@ class Idle:
             # self.image_boots.clip_draw(0, 0, self.size_h, self.size_v, self.pos_x, self.pos_y, self.x, self.y)
         else:
             for part_index in range(4):
-                wanderer.image_wanderer[wanderer.wanderer_index][part_index][wanderer.part_image_indices[part_index]].clip_draw(int(wanderer.index_h) * wanderer.size_h, wanderer.index_v * wanderer.size_v, wanderer.size_h - wanderer.center_error_x, wanderer.size_v, wanderer.pos_x, wanderer.pos_y + 29, wanderer.draw_x, wanderer.draw_y)
+                wanderer.image_wanderer[wanderer.wanderer_index][part_index][wanderer.part_image_indices[part_index]].clip_draw(int(wanderer.index_h) * wanderer.size_h, wanderer.index_v * wanderer.size_v, wanderer.size_h - wanderer.center_error_x, wanderer.size_v, wanderer.clip_pos_x, wanderer.clip_pos_y, wanderer.draw_x, wanderer.draw_y)
 
 
 class Walk:
@@ -226,13 +250,13 @@ class Walk:
             for part_index in range(4):
                 wanderer.image_wanderer[wanderer.wanderer_index][part_index][wanderer.part_image_indices[part_index]].clip_draw(
                     int(wanderer.index_h) * wanderer.size_h, wanderer.index_v * wanderer.size_v,
-                    wanderer.size_h - wanderer.center_error_x, wanderer.size_v, wanderer.pos_x, wanderer.pos_y + 29,
+                    wanderer.size_h - wanderer.center_error_x, wanderer.size_v, wanderer.clip_pos_x, wanderer.clip_pos_y,
                     wanderer.draw_x, wanderer.draw_y)
 
         else:
             for part_index in range(4):
                 wanderer.image_wanderer[wanderer.wanderer_index][part_index][wanderer.part_image_indices[part_index]].clip_composite_draw(
                     int(wanderer.index_h) * wanderer.size_h, wanderer.index_v * wanderer.size_v,
-                    wanderer.size_h - wanderer.center_error_x, wanderer.size_v,0, 'h', wanderer.pos_x, wanderer.pos_y + 29,
+                    wanderer.size_h - wanderer.center_error_x, wanderer.size_v,0, 'h', wanderer.clip_pos_x, wanderer.clip_pos_y,
                     wanderer.draw_x, wanderer.draw_y)
 
