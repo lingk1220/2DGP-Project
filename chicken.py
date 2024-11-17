@@ -25,7 +25,7 @@ class Chicken:
 
         self.center_error_x = 0
         self.pos_x = x
-        self.pos_y = y + 8
+        self.pos_y = y + 4
         self.index_h = 0
         self.index_v = 0
         self.x, self.y = random.randint(0, 0), 0
@@ -33,6 +33,9 @@ class Chicken:
         self.draw_y = 70
         self.color = 'white'
         self.state = Idle
+
+        self.clip_pos_x = 700 - play_mode.character.pos_x + self.pos_x
+        self.clip_pos_y = self.pos_y
 
         if Chicken.image == None:
             Chicken.image = load_image('chicken_' + self.color + '.png')
@@ -65,7 +68,8 @@ class Chicken:
 
 
     def draw(self):
-
+        self.clip_pos_x = 700 - play_mode.character.pos_x + self.pos_x
+        self.clip_pos_y = self.pos_y
         self.state_machine.draw()
 
 
@@ -174,8 +178,8 @@ class Idle:
                                    chicken.index_v * chicken.size_v,
                                    chicken.size_h - chicken.center_error_x,
                                    chicken.size_v,
-                                   chicken.pos_x,
-                                   chicken.pos_y, chicken.draw_x, chicken.draw_y)
+                                    chicken.clip_pos_x,
+                                    chicken.clip_pos_y, chicken.draw_x, chicken.draw_y)
         else:
             chicken.image.clip_composite_draw(int(chicken.index_h) * chicken.size_h,
                                              chicken.index_v * chicken.size_v,
@@ -183,8 +187,8 @@ class Idle:
                                              chicken.size_v,
                                              0,
                                              'h',
-                                             chicken.pos_x,
-                                             chicken.pos_y, chicken.draw_x, chicken.draw_y)
+                                             chicken.clip_pos_x,
+                                             chicken.clip_pos_y, chicken.draw_x, chicken.draw_y)
 
 class Walk:
     @staticmethod
@@ -208,8 +212,8 @@ class Walk:
                                    chicken.index_v * chicken.size_v,
                                    chicken.size_h - chicken.center_error_x,
                                    chicken.size_v,
-                                   chicken.pos_x,
-                                   chicken.pos_y, chicken.draw_x, chicken.draw_y)
+                                    chicken.clip_pos_x,
+                                    chicken.clip_pos_y, chicken.draw_x, chicken.draw_y)
         else:
             chicken.image.clip_composite_draw(int(chicken.index_h) * chicken.size_h,
                                              chicken.index_v * chicken.size_v,
@@ -217,8 +221,8 @@ class Walk:
                                              chicken.size_v,
                                              0,
                                              'h',
-                                             chicken.pos_x,
-                                             chicken.pos_y, chicken.draw_x, chicken.draw_y)
+                                             chicken.clip_pos_x,
+                                             chicken.clip_pos_y, chicken.draw_x, chicken.draw_y)
 
 
 class Beak:
@@ -243,8 +247,8 @@ class Beak:
                                    chicken.index_v * chicken.size_v,
                                    chicken.size_h - chicken.center_error_x,
                                    chicken.size_v,
-                                   chicken.pos_x,
-                                   chicken.pos_y, chicken.draw_x, chicken.draw_y)
+                                   chicken.clip_pos_x,
+                                   chicken.clip_pos_y, chicken.draw_x, chicken.draw_y)
         else:
             chicken.image.clip_composite_draw(int(chicken.index_h) * chicken.size_h,
                                              chicken.index_v * chicken.size_v,
@@ -252,6 +256,6 @@ class Beak:
                                              chicken.size_v,
                                              0,
                                              'h',
-                                             chicken.pos_x,
-                                             chicken.pos_y, chicken.draw_x, chicken.draw_y)
+                                             chicken.clip_pos_x,
+                                             chicken.clip_pos_y, chicken.draw_x, chicken.draw_y)
 

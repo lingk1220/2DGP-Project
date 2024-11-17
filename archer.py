@@ -29,7 +29,7 @@ class Archer:
 
         self.center_error_x = 10
         self.pos_x = x
-        self.pos_y = y + 29
+        self.pos_y = y + 25
         self.dir = 1
         self.bool_shooting = 0
 
@@ -41,6 +41,11 @@ class Archer:
         self.min_chicken_dir = 10000
         self.state = Walk
         self.chicken_target = None
+
+        self.clip_pos_x = 700 - play_mode.character.pos_x + self.pos_x
+        self.clip_pos_y = self.pos_y
+
+
         if Archer.image == None:
             Archer.image = load_image('Archer.png')
 
@@ -69,6 +74,8 @@ class Archer:
 
 
     def draw(self):
+        self.clip_pos_x = 700 - play_mode.character.pos_x + self.pos_x
+        self.clip_pos_y = self.pos_y
         self.state_machine.draw()
 
 
@@ -236,8 +243,8 @@ class Idle:
                                    archer.index_v * archer.size_v,
                                    archer.size_h - archer.center_error_x,
                                    archer.size_v,
-                                   archer.pos_x,
-                                   archer.pos_y, archer.draw_x, archer.draw_y)
+                                   archer.clip_pos_x,
+                                   archer.clip_pos_y, archer.draw_x, archer.draw_y)
         else:
             archer.image.clip_composite_draw(int(archer.index_h) * archer.size_h,
                                              archer.index_v * archer.size_v,
@@ -245,8 +252,8 @@ class Idle:
                                              archer.size_v,
                                              0,
                                              'h',
-                                             archer.pos_x,
-                                             archer.pos_y, archer.draw_x, archer.draw_y)
+                                             archer.clip_pos_x,
+                                             archer.clip_pos_y, archer.draw_x, archer.draw_y)
 
 class Walk:
     @staticmethod
@@ -270,8 +277,8 @@ class Walk:
                                    archer.index_v * archer.size_v,
                                    archer.size_h - archer.center_error_x,
                                    archer.size_v,
-                                   archer.pos_x,
-                                   archer.pos_y, archer.draw_x, archer.draw_y)
+                                   archer.clip_pos_x,
+                                   archer.clip_pos_y, archer.draw_x, archer.draw_y)
         else:
             archer.image.clip_composite_draw(int(archer.index_h) * archer.size_h,
                                              archer.index_v * archer.size_v,
@@ -279,8 +286,8 @@ class Walk:
                                              archer.size_v,
                                              0,
                                              'h',
-                                             archer.pos_x,
-                                             archer.pos_y, archer.draw_x, archer.draw_y)
+                                             archer.clip_pos_x,
+                                             archer.clip_pos_y, archer.draw_x, archer.draw_y)
 
 class Shoot:
     @staticmethod
@@ -303,8 +310,8 @@ class Shoot:
                                    archer.index_v * archer.size_v,
                                    archer.size_h - archer.center_error_x,
                                    archer.size_v,
-                                   archer.pos_x,
-                                   archer.pos_y, archer.draw_x, archer.draw_y)
+                                   archer.clip_pos_x,
+                                   archer.clip_pos_y, archer.draw_x, archer.draw_y)
         else:
             archer.image.clip_composite_draw(int(archer.index_h) * archer.size_h,
                                              archer.index_v * archer.size_v,
@@ -312,5 +319,5 @@ class Shoot:
                                              archer.size_v,
                                              0,
                                              'h',
-                                             archer.pos_x,
-                                             archer.pos_y, archer.draw_x, archer.draw_y)
+                                             archer.clip_pos_x,
+                                             archer.clip_pos_y, archer.draw_x, archer.draw_y)

@@ -26,7 +26,7 @@ class Crop:
         self.parent = None
         self.center_error_x = 0
         self.pos_x = x
-        self.pos_y = y + 3
+        self.pos_y = y -1
         self.index_h = 1
         self.index_v = 13
         self.x, self.y = random.randint(0, 0), 0
@@ -38,6 +38,9 @@ class Crop:
         self.growth_level = 0
         self.dir = 1
         #self.state = Idle
+        self.clip_pos_x = 700 - play_mode.character.pos_x + self.pos_x
+        self.clip_pos_y = self.pos_y
+
         if Crop.image == None:
             Crop.image = load_image('Crops.png')
 
@@ -75,12 +78,14 @@ class Crop:
 
 
     def draw(self):
+        self.clip_pos_x = 700 - play_mode.character.pos_x + self.pos_x
+        self.clip_pos_y = self.pos_y
 
         self.image.clip_draw(self.index_h * self.size_h,
                            self.index_v * self.size_v,
                            self.size_h,
                            self.size_v,
-                           self.pos_x,
-                           self.pos_y,
+                           self.clip_pos_x,
+                           self.clip_pos_y,
                            self.size_h * 1.8, self.size_v * 1.8
                            )

@@ -1,5 +1,7 @@
 from pico2d import draw_rectangle
 
+import play_mode
+
 collision_pairs = {}
 
 
@@ -19,9 +21,12 @@ def render():
             o.draw()
     i = 0
     for layer in objects:
-        if 1 < i and i  <= 3:
+        if 1 < i and i  <= 4:
             for o in layer:
-                draw_rectangle(*o.get_bb())
+                l, b, r, t = o.get_bb()
+                l = 700 - play_mode.character.pos_x + l
+                r = 700 - play_mode.character.pos_x + r
+                draw_rectangle(l, b, r, t)
                 pass
         i += 1
 

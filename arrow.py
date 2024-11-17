@@ -26,7 +26,7 @@ class Arrow:
         self.parent = None
         self.center_error_x = 0
         self.pos_x = x
-        self.pos_y = y
+        self.pos_y = y - 33
         self.index_h = 0
         self.index_v = 0
         self.x, self.y = random.randint(0, 0), 0
@@ -35,6 +35,9 @@ class Arrow:
 
         self.dir = 1
         #self.state = Idle
+        self.clip_pos_x = 700 - play_mode.character.pos_x + self.pos_x
+        self.clip_pos_y = self.pos_y
+
         if Arrow.image == None:
             Arrow.image = load_image('arrow.png')
 
@@ -63,6 +66,8 @@ class Arrow:
 
 
     def draw(self):
+        self.clip_pos_x = 700 - play_mode.character.pos_x + self.pos_x
+        self.clip_pos_y = self.pos_y
         draw_rectangle(*self.get_bb())
 
         if self.dir < 0:
@@ -72,8 +77,8 @@ class Arrow:
                                            self.size_v,
                                            0,
                                            'h',
-                                           self.pos_x,
-                                           self.pos_y,
+                                           self.clip_pos_x,
+                                           self.clip_pos_y,
                                            self.size_h * 1.5, self.size_v * 1.5
                                            )
         else:
@@ -83,7 +88,7 @@ class Arrow:
                                            self.size_v,
                                            0,
                                            '',
-                                           self.pos_x,
-                                           self.pos_y,
+                                           self.clip_pos_x,
+                                           self.clip_pos_y,
                                            self.size_h * 1.5, self.size_v * 1.5
                                            )

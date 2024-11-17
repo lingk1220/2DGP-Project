@@ -29,7 +29,7 @@ class Maid:
 
         self.center_error_x = 0
         self.pos_x = x
-        self.pos_y = y + 27
+        self.pos_y = y + 23
         self.dir = 1
 
         self.index_h = 0
@@ -40,6 +40,10 @@ class Maid:
         self.min_crop_dir = 10000
         self.state = Walk
         self.crop_target = None
+
+        self.clip_pos_x = 700 - play_mode.character.pos_x + self.pos_x
+        self.clip_pos_y = self.pos_y
+
         if Maid.image == None:
             Maid.image = load_image('Maid.png')
 
@@ -68,6 +72,8 @@ class Maid:
 
 
     def draw(self):
+        self.clip_pos_x = 700 - play_mode.character.pos_x + self.pos_x
+        self.clip_pos_y = self.pos_y
         self.state_machine.draw()
 
 
@@ -229,8 +235,8 @@ class Idle:
                                              maid.size_v,
                                              0,
                                              'h',
-                                             maid.pos_x,
-                                             maid.pos_y, maid.draw_x, maid.draw_y)
+                                             maid.clip_pos_x,
+                                             maid.clip_pos_y, maid.draw_x, maid.draw_y)
         else:
             maid.image.clip_composite_draw(int(maid.index_h) * maid.size_h,
                                              maid.index_v * maid.size_v,
@@ -238,8 +244,8 @@ class Idle:
                                              maid.size_v,
                                              0,
                                              '',
-                                             maid.pos_x,
-                                             maid.pos_y, maid.draw_x, maid.draw_y)
+                                             maid.clip_pos_x,
+                                             maid.clip_pos_y, maid.draw_x, maid.draw_y)
 
 class Walk:
     @staticmethod
@@ -271,8 +277,8 @@ class Walk:
                                              maid.size_v,
                                              0,
                                              'h',
-                                             maid.pos_x,
-                                             maid.pos_y, maid.draw_x, maid.draw_y)
+                                             maid.clip_pos_x,
+                                             maid.clip_pos_y, maid.draw_x, maid.draw_y)
         else:
             maid.image.clip_composite_draw(int(maid.index_h) * maid.size_h,
                                              maid.index_v * maid.size_v,
@@ -280,8 +286,8 @@ class Walk:
                                              maid.size_v,
                                              0,
                                              '',
-                                             maid.pos_x,
-                                             maid.pos_y, maid.draw_x, maid.draw_y)
+                                             maid.clip_pos_x,
+                                             maid.clip_pos_y, maid.draw_x, maid.draw_y)
 
 class Reap:
     @staticmethod
@@ -306,8 +312,8 @@ class Reap:
                                              maid.size_v,
                                              0,
                                              'h',
-                                             maid.pos_x,
-                                             maid.pos_y, maid.draw_x, maid.draw_y)
+                                             maid.clip_pos_x,
+                                             maid.clip_pos_y, maid.draw_x, maid.draw_y)
         else:
             maid.image.clip_composite_draw(int(maid.index_h) * maid.size_h,
                                              maid.index_v * maid.size_v,
@@ -315,5 +321,5 @@ class Reap:
                                              maid.size_v,
                                              0,
                                              '',
-                                             maid.pos_x,
-                                             maid.pos_y, maid.draw_x, maid.draw_y)
+                                             maid.clip_pos_x,
+                                             maid.clip_pos_y, maid.draw_x, maid.draw_y)

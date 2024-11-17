@@ -1,5 +1,7 @@
 from pico2d import load_image
 
+import play_mode
+
 
 class Ground:
     global width, height
@@ -20,10 +22,13 @@ class Ground:
 
         self.x, self.y = x, y + 1
         self.pos_x = self.size_h * self.x
-        self.pos_y = self.size_v * self.y - 18
+        self.pos_y = self.size_v * self.y - 22
 
         self.draw_x = self.size_h
         self.draw_y = self.size_v
+
+        self.clip_pos_x = 700 - play_mode.character.pos_x + self.pos_x
+        self.clip_pos_y = self.pos_y
 
         if Ground.image == None:
             Ground.image = load_image('Ground.png')
@@ -35,9 +40,12 @@ class Ground:
         pass
 
     def draw(self):
+        self.clip_pos_x = 700 - play_mode.character.pos_x + self.pos_x
+        self.clip_pos_y = self.pos_y
+
         self.image.clip_draw(self.index_h * self.size_h,
                              self.index_v * self.size_v,
                              self.size_h,
                              self.size_v,
-                             self.size_h * self.x,
-                             self.size_v * self.y - 18)
+                             self.clip_pos_x,
+                             self.clip_pos_y)

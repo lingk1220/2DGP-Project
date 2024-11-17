@@ -29,7 +29,7 @@ class Camp:
         self.ground = y
         self.center_error_x = 0
         self.pos_x = x
-        self.pos_y = y + self.size_v * 2.2 / 2 + 6
+        self.pos_y = y + self.size_v * 2.2 / 2 + 2
 
 
         self.index_h = 4 - 1

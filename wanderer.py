@@ -63,7 +63,7 @@ class Wanderer:
         self.ground = y
         self.load_image()
         self.x, self.y = 0, 0
-        self.pos_x, self.pos_y = x, y + 26
+        self.pos_x, self.pos_y = x, y + 22
         self.center_error_x = 0
         self.draw_x = 145
         self.draw_y = 135 * self.size_v / (self.size_h - self.center_error_x)
@@ -75,7 +75,7 @@ class Wanderer:
 
         self.clip_pos_x = 700 - play_mode.character.pos_x + self.pos_x
         self.clip_pos_y = self.pos_y
-        
+
         if self.wanderer_index == 0:
             self.part_image_indices = [0, randint(0, 3), 2, 0, 0]
         else:
@@ -94,7 +94,7 @@ class Wanderer:
 
 
     def get_bb(self):
-        return self.clip_pos_x - self.draw_x , self.clip_pos_y - self.draw_y / 2, self.clip_pos_x + self.draw_x, self.clip_pos_y + self.draw_y / 2
+        return self.pos_x - self.draw_x , self.pos_y - self.draw_y / 2, self.pos_x + self.draw_x, self.pos_y + self.draw_y / 2
 
     def handle_collision(self, group, other):
         if group == 'character:wanderer':
@@ -164,7 +164,8 @@ class Wanderer:
             return BehaviorTree.RUNNING
 
     def set_random_location(self):
-        self.tx, self.ty = self.pos_x + ((2 * random.randint(0, 1)  - 1) *  random.randint(100, 101)), self.pos_y
+        minx, _, maxx, _ = self.get_bb()
+        self.tx, self.ty = randint(int(minx), int(maxx)), self.pos_y
         print(f'tx = {self.tx}')
         # self.tx, self.ty = 1000, 100
         return BehaviorTree.SUCCESS
