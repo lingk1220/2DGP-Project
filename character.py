@@ -88,7 +88,7 @@ class Character:
         )
 
     def get_bb(self):
-        return 700 - self.draw_x / 4.3 + self.dir * 7 + 25, 123 - self.draw_y / 4, 700 + self.draw_x / 4.3 + self.dir * 7 - 25, 123 + self.draw_y / 2.5
+        return self.pos_x - self.draw_x / 4.3 + self.dir * 7 + 25, self.pos_y - self.draw_y / 4, self.pos_x + self.draw_x / 4.3 + self.dir * 7 - 25, self.pos_y + self.draw_y / 2.5
 
     def handle_collision(self, group, other):
         if group == 'character:wanderer':

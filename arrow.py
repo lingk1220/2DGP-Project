@@ -68,7 +68,6 @@ class Arrow:
     def draw(self):
         self.clip_pos_x = 700 - play_mode.character.pos_x + self.pos_x
         self.clip_pos_y = self.pos_y
-        draw_rectangle(*self.get_bb())
 
         if self.dir < 0:
             self.image.clip_composite_draw(0,
