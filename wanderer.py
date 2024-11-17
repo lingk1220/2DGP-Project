@@ -164,7 +164,7 @@ class Wanderer:
             return BehaviorTree.RUNNING
 
     def set_random_location(self):
-        minx, _, maxx, _ = self.get_bb()
+        minx, _, maxx, _ = self.camp.get_bb()
         self.tx, self.ty = randint(int(minx), int(maxx)), self.pos_y
         print(f'tx = {self.tx}')
         # self.tx, self.ty = 1000, 100

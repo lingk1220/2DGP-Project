@@ -15,6 +15,7 @@ from character import Character
 from ground import Ground
 from chicken import Chicken
 from maid import Maid
+from skeleton import Skeleton
 
 GROUNDHEIGHT = 120
 width = 1400
@@ -82,6 +83,8 @@ def init():
     camp = Camp(500, GROUNDHEIGHT)
     game_world.add_object(camp, 2)
 
+    skeleton = Skeleton(-1000, GROUNDHEIGHT)
+    game_world.add_object(skeleton, 3)
 
 def update():
     game_world.update()
