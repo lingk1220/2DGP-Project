@@ -6,6 +6,7 @@ import game_framework
 import game_world
 
 import play_mode
+from archer import Archer
 
 from behavior_tree import BehaviorTree, Action, Sequence, Condition, Selector
 from pico2d import load_image, get_time
@@ -14,6 +15,8 @@ from chicken import Chicken
 from state_machine import StateMachine
 
 from arrow import Arrow
+
+allys = ['Archer', 'Maid', 'Character']
 
 class Skeleton:
     image = None
@@ -32,6 +35,8 @@ class Skeleton:
         self.pos_y = y + 38
         self.dir = 1
 
+        self.can_attack = 0
+
         self.index_h = 0
         self.index_v = 3 - 1
         self.x, self.y = random.randint(0, 0), 0
@@ -49,14 +54,22 @@ class Skeleton:
         if Skeleton.image == None:
             Skeleton.image = load_image('./enemy/skeleton.png')
 
+        play_mode.game_world.add_collision_pair('enemy:ally', self, None)
+
         self.build_behavior_tree()
         self.state_machine = StateMachine(self)
         self.state_machine.start(Idle)
 
     def get_bb(self):
-        return self.pos_x - self.draw_x / 3, self.pos_y - self.draw_y / 2, self.pos_x + self.draw_x / 3, self.pos_y + self.draw_y / 3.5
+        if self.bool_attacking:
+            return self.pos_x - self.draw_x / 4 + self.draw_x * self.dir / 4, self.pos_y - self.draw_y / 2, self.pos_x + self.draw_x / 4  + self.draw_x * self.dir / 4, self.pos_y + self.draw_y / 4
+        else:
+            return self.pos_x - self.draw_x / 4, self.pos_y - self.draw_y / 2, self.pos_x + self.draw_x / 4, self.pos_y + self.draw_y / 4
 
-
+    def handle_collision(self, group, other):
+        if group == 'enemy:ally':
+            self.can_attack = 1
+            pass
 
     def update(self):
         self.bt.run()
@@ -135,34 +148,29 @@ class Skeleton:
         self.time_wait_for = random.randint(min, max) / 10
         return BehaviorTree.SUCCESS
 
-    def lockon_chicken(self, distance):
-        self.min_chicken_dir = 10000000
-        self.chicken_target = None
-        for chicken in game_world.objects[3]:
-            if chicken.__class__ == Chicken:
-                chicken_dir = self.distance_get(chicken.pos_x, self.pos_x)
-                if chicken_dir < distance:
-                    if chicken_dir < self.min_chicken_dir:
-                        self.chicken_target = chicken
-        if self.chicken_target == None:
-            return BehaviorTree.FAIL
-        else:
-            return BehaviorTree.SUCCESS
+
+
+
+    # def is_target_nearby(self, distance):
+    #     for ally in game_world.objects[3]:
+    #         if ally.__class__ in allys :
+    #             if self.distance_less_than(ally.pos_x, self.pos_x, distance):
+    #                 return BehaviorTree.SUCCESS
+    #             else:
+    #                 return BehaviorTree.FAIL
+    #         return BehaviorTree.FAIL
 
     def is_target_nearby(self, distance):
-        if self.chicken_target == None:
-            return BehaviorTree.FAIL
+        if self.can_attack:
+            self.can_attack = 0
 
-        if self.distance_less_than(self.chicken_target.pos_x, self.pos_x, distance):
+            self.bool_attacking = 1
             return BehaviorTree.SUCCESS
         else:
             return BehaviorTree.FAIL
 
-    def is_shooting(self):
-        if self.bool_shooting == 1:
-            return BehaviorTree.SUCCESS
-        else:
-            return BehaviorTree.FAIL
+
+
 
     def is_attacking(self):
         if self.bool_attacking == 1:
@@ -170,39 +178,15 @@ class Skeleton:
         else:
             return BehaviorTree.FAIL
 
-    def move_to_chicken(self):
-        self.state = Walk
-        self.move_slightly_to(self.chicken_target.pos_x)
-        if self.distance_less_than(self.chicken_target.pos_x, self.pos_x, 10):
-            return BehaviorTree.SUCCESS
-        else:
-            return BehaviorTree.RUNNING
-
-    def shoot_to_chicken(self):
-        self.bool_shooting = 1
-        self.state = Shoot
-        self.dir = self.chicken_target.pos_x - self.pos_x
-        if self.index_h < 10:
-            return BehaviorTree.RUNNING
-        if self.index_h >= 10:
-            self.bool_shooting = 0
-            self.dir = self.dir / abs(self.dir)
-            print(f'arrow dir: {self.dir}')
-            arrow = Arrow(self.pos_x + self.dir * 20, self.pos_y + 20)
-            arrow.dir = self.dir
-            arrow.parent = self
-            play_mode.game_world.add_object(arrow, 3)
-            return BehaviorTree.SUCCESS
 
     def attack_ally(self):
-        self.bool_attacking = 1
         self.state = Attack
-        self.dir = 0 - self.pos_x
-        if self.index_h < 6:
+        self.dir = - self.pos_x / abs(self.pos_x)
+        if self.index_h < 5:
             return BehaviorTree.RUNNING
-        if self.index_h >= 6:
+        if self.index_h >= 5:
             self.bool_attacking = 0
-            self.dir = self.dir / abs(self.dir)
+
             print('ATTACK!')
             return BehaviorTree.SUCCESS
 
@@ -210,7 +194,7 @@ class Skeleton:
     def build_behavior_tree(self):
         a0 = Action('Wait', self.wait_time)
         ACT_set_wait_time = Action('Set Wait Time', self.set_wait_time)
-        ACT_set_reload_time = Action('Set Wait Time', self.set_wait_time, 30, 30)
+        ACT_set_reload_time = Action('Set Wait Time', self.set_wait_time, 3, 3)
         SEQ_wait_time = Sequence('Wait', ACT_set_wait_time, a0)
         SEQ_wait_reload = Sequence('Wait Reload', ACT_set_reload_time, a0)
         a1 = Action('Move to', self.move_to)
@@ -243,104 +227,104 @@ class Skeleton:
 
 class Idle:
     @staticmethod
-    def enter(archer, e):
-        archer.idle_start_time = get_time()
-        archer.index_v = 4 - 1
-        archer.index_h = 0
+    def enter(skeleton, e):
+        skeleton.idle_start_time = get_time()
+        skeleton.index_v = 4 - 1
+        skeleton.index_h = 0
 
     @staticmethod
-    def exit(archer, e):
+    def exit(skeleton, e):
         pass
 
     @staticmethod
-    def do(archer):
-        archer.index_h = (archer.index_h + 10 * 1.5 * game_framework.frame_time) % 10
+    def do(skeleton):
+        skeleton.index_h = (skeleton.index_h + 10 * 1.5 * game_framework.frame_time) % 10
 
 
     @staticmethod
-    def draw(archer):
-        if archer.dir < 0:
-            archer.image.clip_draw(int(archer.index_h) * archer.size_h,
-                                   archer.index_v * archer.size_v,
-                                   archer.size_h - archer.center_error_x,
-                                   archer.size_v,
-                                   archer.clip_pos_x,
-                                   archer.clip_pos_y, archer.draw_x, archer.draw_y)
+    def draw(skeleton):
+        if skeleton.dir < 0:
+            skeleton.image.clip_draw(int(skeleton.index_h) * skeleton.size_h,
+                                   skeleton.index_v * skeleton.size_v,
+                                   skeleton.size_h - skeleton.center_error_x,
+                                   skeleton.size_v,
+                                   skeleton.clip_pos_x,
+                                   skeleton.clip_pos_y, skeleton.draw_x, skeleton.draw_y)
         else:
-            archer.image.clip_composite_draw(int(archer.index_h) * archer.size_h,
-                                             archer.index_v * archer.size_v,
-                                             archer.size_h - archer.center_error_x,
-                                             archer.size_v,
+            skeleton.image.clip_composite_draw(int(skeleton.index_h) * skeleton.size_h,
+                                             skeleton.index_v * skeleton.size_v,
+                                             skeleton.size_h - skeleton.center_error_x,
+                                             skeleton.size_v,
                                              0,
                                              'h',
-                                             archer.clip_pos_x,
-                                             archer.clip_pos_y, archer.draw_x, archer.draw_y)
+                                             skeleton.clip_pos_x,
+                                             skeleton.clip_pos_y, skeleton.draw_x, skeleton.draw_y)
 
 class Walk:
     @staticmethod
-    def enter(archer, e):
-        archer.index_v = 7 - 1
-        archer.index_h = 0
+    def enter(skeleton, e):
+        skeleton.index_v = 7 - 1
+        skeleton.index_h = 0
 
     @staticmethod
-    def exit(archer, e):
+    def exit(skeleton, e):
         pass
 
     @staticmethod
-    def do(archer):
-        archer.index_h = (archer.index_h + 8 * 1.5 * game_framework.frame_time) % 8
-        print(f'            {int(archer.index_h)}')
+    def do(skeleton):
+        skeleton.index_h = (skeleton.index_h + 8 * 1.5 * game_framework.frame_time) % 8
+        print(f'            {int(skeleton.index_h)}')
 
     @staticmethod
-    def draw(archer):
-        if archer.dir < 0:
-            archer.image.clip_draw(int(archer.index_h) * archer.size_h,
-                                   archer.index_v * archer.size_v,
-                                   archer.size_h - archer.center_error_x,
-                                   archer.size_v,
-                                   archer.clip_pos_x,
-                                   archer.clip_pos_y, archer.draw_x, archer.draw_y)
+    def draw(skeleton):
+        if skeleton.dir < 0:
+            skeleton.image.clip_draw(int(skeleton.index_h) * skeleton.size_h,
+                                   skeleton.index_v * skeleton.size_v,
+                                   skeleton.size_h - skeleton.center_error_x,
+                                   skeleton.size_v,
+                                   skeleton.clip_pos_x,
+                                   skeleton.clip_pos_y, skeleton.draw_x, skeleton.draw_y)
         else:
-            archer.image.clip_composite_draw(int(archer.index_h) * archer.size_h,
-                                             archer.index_v * archer.size_v,
-                                             archer.size_h - archer.center_error_x,
-                                             archer.size_v,
+            skeleton.image.clip_composite_draw(int(skeleton.index_h) * skeleton.size_h,
+                                             skeleton.index_v * skeleton.size_v,
+                                             skeleton.size_h - skeleton.center_error_x,
+                                             skeleton.size_v,
                                              0,
                                              'h',
-                                             archer.clip_pos_x,
-                                             archer.clip_pos_y, archer.draw_x, archer.draw_y)
+                                             skeleton.clip_pos_x,
+                                             skeleton.clip_pos_y, skeleton.draw_x, skeleton.draw_y)
 
 
 
 class Attack:
     @staticmethod
-    def enter(archer, e):
-        archer.index_v = 3 - 1
-        archer.index_h = 0
+    def enter(skeleton, e):
+        skeleton.index_v = 3 - 1
+        skeleton.index_h = 0
 
     @staticmethod
-    def exit(archer, e):
+    def exit(skeleton, e):
         pass
 
     @staticmethod
-    def do(archer):
-        archer.index_h = (archer.index_h + 6 * 1.5 * game_framework.frame_time) % 6
+    def do(skeleton):
+        skeleton.index_h = (skeleton.index_h + 6 * 1.5 * game_framework.frame_time) % 6
 
     @staticmethod
-    def draw(archer):
-        if archer.dir < 0:
-            archer.image.clip_draw(int(archer.index_h) * archer.size_h,
-                                   archer.index_v * archer.size_v,
-                                   archer.size_h - archer.center_error_x,
-                                   archer.size_v,
-                                   archer.clip_pos_x,
-                                   archer.clip_pos_y, archer.draw_x, archer.draw_y)
+    def draw(skeleton):
+        if skeleton.dir < 0:
+            skeleton.image.clip_draw(int(skeleton.index_h) * skeleton.size_h,
+                                   skeleton.index_v * skeleton.size_v,
+                                   skeleton.size_h - skeleton.center_error_x,
+                                   skeleton.size_v,
+                                   skeleton.clip_pos_x,
+                                   skeleton.clip_pos_y, skeleton.draw_x, skeleton.draw_y)
         else:
-            archer.image.clip_composite_draw(int(archer.index_h) * archer.size_h,
-                                             archer.index_v * archer.size_v,
-                                             archer.size_h - archer.center_error_x,
-                                             archer.size_v,
+            skeleton.image.clip_composite_draw(int(skeleton.index_h) * skeleton.size_h,
+                                             skeleton.index_v * skeleton.size_v,
+                                             skeleton.size_h - skeleton.center_error_x,
+                                             skeleton.size_v,
                                              0,
                                              'h',
-                                             archer.clip_pos_x,
-                                             archer.clip_pos_y, archer.draw_x, archer.draw_y)
+                                             skeleton.clip_pos_x,
+                                             skeleton.clip_pos_y, skeleton.draw_x, skeleton.draw_y)

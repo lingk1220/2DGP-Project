@@ -65,7 +65,7 @@ def init():
 
 
 
-    archer = Archer(width // 2 + 100, GROUNDHEIGHT)
+    archer = Archer(-500, GROUNDHEIGHT)
     game_world.add_object(archer, 3)
 
     global chickens

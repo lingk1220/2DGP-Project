@@ -49,12 +49,19 @@ class Archer:
         if Archer.image == None:
             Archer.image = load_image('Archer.png')
 
+        play_mode.game_world.add_collision_pair('enemy:ally', None, self)
+
         self.build_behavior_tree()
         self.state_machine = StateMachine(self)
         self.state_machine.start(Idle)
 
     def get_bb(self):
         return self.pos_x - self.draw_x / 3, self.pos_y - self.draw_y / 2, self.pos_x + self.draw_x / 3, self.pos_y + self.draw_y / 3.5
+
+    def handle_collision(self, group, other):
+        if group == 'enemy:ally':
+
+            pass
 
 
 
@@ -135,7 +142,7 @@ class Archer:
         self.chicken_target = None
         for chicken in game_world.objects[3]:
             if chicken.__class__ == Chicken:
-                chicken_dir = self.distance_get(chicken.pos_x, self.pos_x)
+                chicken_dir = abs(self.distance_get(chicken.pos_x, self.pos_x))
                 if chicken_dir < distance:
                     if chicken_dir < self.min_chicken_dir:
                         self.chicken_target = chicken
