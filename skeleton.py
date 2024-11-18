@@ -74,7 +74,9 @@ class Skeleton:
                 if self.bool_attack:
                     other.attacked(self)
                     self.bool_attack = 0
-                self.can_attack = 1
+
+                if not other.is_dying and self.bool_attacking == 0:
+                    self.can_attack = 1
             pass
 
     def update(self):
@@ -200,7 +202,7 @@ class Skeleton:
     def build_behavior_tree(self):
         a0 = Action('Wait', self.wait_time)
         ACT_set_wait_time = Action('Set Wait Time', self.set_wait_time)
-        ACT_set_reload_time = Action('Set Wait Time', self.set_wait_time, 3, 3)
+        ACT_set_reload_time = Action('Set Wait Time', self.set_wait_time, 15, 15)
         SEQ_wait_time = Sequence('Wait', ACT_set_wait_time, a0)
         SEQ_wait_reload = Sequence('Wait Reload', ACT_set_reload_time, a0)
         a1 = Action('Move to', self.move_to)
@@ -216,7 +218,6 @@ class Skeleton:
         ACT_attack = Action('공격', self.attack_ally)
         SEL_in_attack_state = Selector('공격 상태인가?', CDT_is_attacking, CDT_target_nearby)
 
-        SEL_attack = Selector('공격', CDT_target_nearby, )
 
         root = SEQ_attack_ally = Sequence('아군을 공격', SEL_in_attack_state, ACT_attack)
 

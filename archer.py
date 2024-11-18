@@ -34,6 +34,8 @@ class Archer:
         self.bool_shooting = 0
         self.is_dying = 0
 
+        self.hp = 3
+
         self.index_h = 0
         self.index_v = 3 - 1
         self.x, self.y = random.randint(0, 0), 0
@@ -42,7 +44,6 @@ class Archer:
         self.min_chicken_dir = 10000
         self.state = Walk
         self.chicken_target = None
-
         self.clip_pos_x = 700 - play_mode.character.pos_x + self.pos_x
         self.clip_pos_y = self.pos_y
 
@@ -90,8 +91,10 @@ class Archer:
 
 
     def attacked(self, other):
-        self.is_dying = 1
-        self.state = Die
+        self.hp -= 1
+        if self.hp <= 0:
+            self.is_dying = 1
+            self.state = Die
         #play_mode.game_world.remove_object(self)
 
     def set_target_none(self):
