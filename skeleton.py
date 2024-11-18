@@ -47,6 +47,7 @@ class Skeleton:
         self.chicken_target = None
         self.bool_shooting = 0
         self.bool_attacking = 0
+        self.bool_attack = 0
         self.clip_pos_x = 700 - play_mode.character.pos_x + self.pos_x
         self.clip_pos_y = self.pos_y
 
@@ -68,7 +69,12 @@ class Skeleton:
 
     def handle_collision(self, group, other):
         if group == 'enemy:ally':
-            self.can_attack = 1
+
+            if not other.is_dying:
+                if self.bool_attack:
+                    other.attacked(self)
+                    self.bool_attack = 0
+                self.can_attack = 1
             pass
 
     def update(self):
@@ -184,10 +190,10 @@ class Skeleton:
         self.dir = - self.pos_x / abs(self.pos_x)
         if self.index_h < 5:
             return BehaviorTree.RUNNING
-        if self.index_h >= 5:
+        elif self.index_h >= 5 and self.state == Attack:
             self.bool_attacking = 0
+            self.bool_attack = 1
 
-            print('ATTACK!')
             return BehaviorTree.SUCCESS
 
 

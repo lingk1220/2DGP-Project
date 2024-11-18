@@ -83,7 +83,7 @@ def init():
     camp = Camp(500, GROUNDHEIGHT)
     game_world.add_object(camp, 2)
 
-    skeleton = Skeleton(-1000, GROUNDHEIGHT)
+    skeleton = Skeleton(-700, GROUNDHEIGHT)
     game_world.add_object(skeleton, 3)
 
 def update():

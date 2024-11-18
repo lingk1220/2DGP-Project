@@ -32,6 +32,7 @@ class Archer:
         self.pos_y = y + 25
         self.dir = 1
         self.bool_shooting = 0
+        self.is_dying = 0
 
         self.index_h = 0
         self.index_v = 3 - 1
@@ -66,7 +67,8 @@ class Archer:
 
 
     def update(self):
-        self.bt.run()
+        if not self.is_dying:
+            self.bt.run()
         #print(f'{self.state}')
         print(f'{self.state_machine.cur_state}')
 
@@ -85,6 +87,12 @@ class Archer:
         self.clip_pos_y = self.pos_y
         self.state_machine.draw()
 
+
+
+    def attacked(self, other):
+        self.is_dying = 1
+        self.state = Die
+        #play_mode.game_world.remove_object(self)
 
     def set_target_none(self):
         self.chicken_target = None
@@ -328,3 +336,41 @@ class Shoot:
                                              'h',
                                              archer.clip_pos_x,
                                              archer.clip_pos_y, archer.draw_x, archer.draw_y)
+
+
+class Die:
+    @staticmethod
+    def enter(archer, e):
+        archer.index_v = 1 - 1
+        archer.index_h = 0
+
+    @staticmethod
+    def exit(archer, e):
+        pass
+
+    @staticmethod
+    def do(archer):
+        if archer.index_h < 5:
+            archer.index_h = archer.index_h + 6 * 1.5 * game_framework.frame_time
+        else:
+            archer.index_h = 5
+
+    @staticmethod
+    def draw(archer):
+        if archer.dir > 0:
+            archer.image.clip_draw(int(archer.index_h) * archer.size_h,
+                                   archer.index_v * archer.size_v,
+                                   archer.size_h,
+                                   archer.size_v,
+                                   archer.clip_pos_x + archer.center_error_x // 2,
+                                   archer.clip_pos_y, archer.draw_x + archer.center_error_x, archer.draw_y)
+        else:
+            archer.image.clip_composite_draw(int(archer.index_h) * archer.size_h,
+                                             archer.index_v * archer.size_v,
+                                             archer.size_h,
+                                             archer.size_v,
+                                             0,
+                                             'h',
+                                             archer.clip_pos_x - archer.center_error_x // 2,
+                                             archer.clip_pos_y, archer.draw_x + archer.center_error_x, archer.draw_y)
+
