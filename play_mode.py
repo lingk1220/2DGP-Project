@@ -16,6 +16,7 @@ from ground import Ground
 from chicken import Chicken
 from maid import Maid
 from skeleton import Skeleton
+from ui import UI
 
 GROUNDHEIGHT = 120
 width = 1400
@@ -85,6 +86,11 @@ def init():
 
     skeleton = Skeleton(-700, GROUNDHEIGHT)
     game_world.add_object(skeleton, 3)
+
+    global ui
+    ui = UI()
+    game_world.add_UI(ui, 0)
+
 
 def update():
     game_world.update()

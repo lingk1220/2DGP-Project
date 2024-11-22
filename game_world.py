@@ -7,11 +7,22 @@ collision_pairs = {}
 
 objects = [[], [], [], [], []]
 
+
+UI = [[], [], []]
+
 def add_object(o, depth = 0):
     objects[depth].append(o)
 
+def add_UI(o, depth = 0):
+    objects[depth].append(o)
+
+
 def update():
     for layer in objects:
+        for o in layer:
+            o.update()
+
+    for layer in UI:
         for o in layer:
             o.update()
 
@@ -19,6 +30,11 @@ def render():
     for layer in objects:
         for o in layer:
             o.draw()
+
+    for layer in UI:
+        for o in layer:
+            o.draw()
+
     i = 0
     for layer in objects:
         if 1 < i and i  <= 4:
