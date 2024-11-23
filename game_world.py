@@ -37,7 +37,7 @@ def render():
 
     i = 0
     for layer in objects:
-        if 1 < i and i  <= 4:
+        if 0 < i and i  <= 4:
             for o in layer:
                 l, b, r, t = o.get_bb()
                 l = 700 - play_mode.character.pos_x + l

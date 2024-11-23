@@ -16,6 +16,7 @@ from character import Character
 from ground import Ground
 from chicken import Chicken
 from maid import Maid
+from map import Map
 from skeleton import Skeleton
 from ui import UI
 from ui_play import PlayUI
@@ -91,8 +92,10 @@ def init():
     skeleton = Skeleton(-700, GROUNDHEIGHT)
     game_world.add_object(skeleton, 3)
 
-    wall = Wall(0, GROUNDHEIGHT)
-    game_world.add_object(wall, 2)
+
+
+    map = Map(0, GROUNDHEIGHT)
+    game_world.add_object(map, 2)
 
     global ui
     ui = PlayUI()

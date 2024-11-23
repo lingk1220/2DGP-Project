@@ -3,7 +3,7 @@ from pico2d import load_image
 import play_mode
 
 
-class Wall:
+class Rock:
     image = None
     def __init__(self, x, y):
         self.width_image = 864
@@ -15,23 +15,23 @@ class Wall:
         self.size_h = (self.width_image // self.count_h)
         self.size_v = (self.height_image // self.count_v)
 
-        self.index_h = 14 - 1
+        self.index_h = 7 - 1
         self.index_v = 29 - 1
 
         self.pos_x = x
-        self.pos_y = y + self.size_v * 2 / 2 + 2
+        self.pos_y = y + self.size_v * 2 / 2 -14
 
-        self.tiles_h = 2
+        self.tiles_h = 3
         self.tiles_v = 2
 
-        self.draw_x = self.size_h * self.tiles_h * 2
-        self.draw_y = self.size_v * self.tiles_v * 2
+        self.draw_x = self.size_h * self.tiles_h * 1.5
+        self.draw_y = self.size_v * self.tiles_v * 1.5
 
         self.clip_pos_x = 700 - play_mode.character.pos_x + self.pos_x
         self.clip_pos_y = self.pos_y
 
-        if Wall.image == None:
-            Wall.image = load_image('Props2.png')
+        if Rock.image == None:
+            Rock.image = load_image('Props2.png')
 
     def get_bb(self):
         return self.pos_x - self.draw_x / 2.5, self.pos_y - self.draw_y / 2, self.pos_x + self.draw_x / 2.5, self.pos_y + self.draw_y / 2.8
