@@ -42,7 +42,7 @@ def render():
                 l, b, r, t = o.get_bb()
                 l = 700 - play_mode.character.pos_x + l
                 r = 700 - play_mode.character.pos_x + r
-                #draw_rectangle(l, b, r, t)
+                draw_rectangle(l, b, r, t)
                 pass
         i += 1
 

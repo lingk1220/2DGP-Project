@@ -19,6 +19,7 @@ from maid import Maid
 from skeleton import Skeleton
 from ui import UI
 from ui_play import PlayUI
+from wall import Wall
 
 GROUNDHEIGHT = 120
 width = 1400
@@ -89,6 +90,9 @@ def init():
 
     skeleton = Skeleton(-700, GROUNDHEIGHT)
     game_world.add_object(skeleton, 3)
+
+    wall = Wall(0, GROUNDHEIGHT)
+    game_world.add_object(wall, 2)
 
     global ui
     ui = PlayUI()
