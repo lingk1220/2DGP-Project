@@ -110,7 +110,7 @@ def finish():
     pass
 
 def pause():
-    game_world.render()
+    character.state_machine.add_event(('CHANGE MODE', 'PLAY'))
     pass
 
 def resume():

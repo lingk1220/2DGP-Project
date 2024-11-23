@@ -59,6 +59,8 @@ def run_shift(e):
 def idle_shift(e):
     return e[0] == 'SHIFT' and e[1] == 'IDLE'
 
+def change_mode_play(e):
+    return e[0] == 'CHANGE MODE' and e[1] == 'PLAY'
 
 
 class StateMachine:

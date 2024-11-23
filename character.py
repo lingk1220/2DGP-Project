@@ -8,7 +8,7 @@ from pico2d import *
 import play_mode
 from state_machine import StateMachine, right_down, right_up, left_down, left_up, lshift_down, lshift_up, interact_down, \
     interact_up, run_shift, right_down_with_shift, left_down_with_shift, time_out_interact, right_up_with_shift, \
-    left_up_with_shift
+    left_up_with_shift, change_mode_play
 
 TIME_PER_ACTION = 0.5
 ACTION_PER_TIME = 1.0 / TIME_PER_ACTION
@@ -79,10 +79,10 @@ class Character:
         self.state_machine.set_transitions(
             {
 
-                Idle : {right_down_with_shift: Run, right_down : Walk , right_up_with_shift: Run, right_up : Walk, left_down_with_shift:Run, left_down : Walk, left_up_with_shift: Run, left_up : Walk, lshift_down: Idle, lshift_up: Idle, interact_down:Interact},
-                Interact: {time_out_interact:Idle, right_down_with_shift: Run, right_down : Walk, left_down_with_shift: Run, left_down : Walk, lshift_down: Interact, lshift_up: Interact},
-                Walk: {right_down: Idle, right_up: Idle, left_down: Idle, left_up: Idle, lshift_down: Run, run_shift:Run},
-                Run: {right_down: Idle, right_up: Idle, left_down: Idle, left_up: Idle, lshift_up: Walk},
+                Idle : {right_down_with_shift: Run, right_down : Walk , right_up_with_shift: Run, right_up : Walk, left_down_with_shift:Run, left_down : Walk, left_up_with_shift: Run, left_up : Walk, lshift_down: Idle, lshift_up: Idle, interact_down:Interact, change_mode_play:Idle},
+                Interact: {time_out_interact:Idle, right_down_with_shift: Run, right_down : Walk, left_down_with_shift: Run, left_down : Walk, lshift_down: Interact, lshift_up: Interact, change_mode_play:Idle},
+                Walk: {right_down: Idle, right_up: Idle, left_down: Idle, left_up: Idle, lshift_down: Run, run_shift:Run, change_mode_play:Idle},
+                Run: {right_down: Idle, right_up: Idle, left_down: Idle, left_up: Idle, lshift_up: Walk, change_mode_play:Idle},
 
             }
         )
