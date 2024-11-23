@@ -2,7 +2,7 @@
 
 
 
-from pico2d import load_image
+from pico2d import load_image, load_font
 
 
 class InformationUI:
@@ -40,6 +40,8 @@ class InformationUI:
                       (-4 - self.height_image[self.image_index[7]] / 2) * self.draw_rate[7]
                       ]
 
+        self.font = load_font('./Font/ByteBounce.TTF', 64)
+
         for i in range(0, 7):
             if InformationUI.images[i] == None:
                 name = './UI/' + 'Info' + '/' + self.image_names[i] +  '.png'
@@ -54,6 +56,7 @@ class InformationUI:
         pass
 
     def draw(self, x, y):
+        self.font.draw(700, 400, f'Exit Game', (210,201,165))
         self.draw_offset_x = x
         self.draw_offset_y = y
         for i in range(8):
