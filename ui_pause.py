@@ -1,14 +1,10 @@
-
-
-
-
 from pico2d import load_image, load_font
 
 
-class InformationUI:
+class PauseUI:
 
     images = [None] * 7
-    def __init__(self, offset_x, offset_y):
+    def __init__(self):
         self.width_image = [160, 41, 128, 120, 120, 32, 32]
         self.height_image = [41, 41, 16, 8, 8, 32, 32]
         self.draw_rate = [2, 1.7, 1.7, 1.7, 1.7, 3, 2, 2]
@@ -18,8 +14,8 @@ class InformationUI:
         self.canvas_width = 1400
         self.canvas_height = 800
 
-        self.draw_offset_x = offset_x
-        self.draw_offset_y = offset_y
+        self.draw_offset_x = 0
+        self.draw_offset_y = 0
         self.pos_x = [(0 + self.width_image[self.image_index[0]]  / 2)* self.draw_rate[0],
                       (50 + self.width_image[self.image_index[2]] / 2) * self.draw_rate[2],
                       (50 + self.width_image[self.image_index[2]] / 2) * self.draw_rate[2],
@@ -40,12 +36,13 @@ class InformationUI:
                       (-4 - self.height_image[self.image_index[7]] / 2) * self.draw_rate[7]
                       ]
 
+        self.font = load_font('./Font/ByteBounce.TTF', 64)
 
         for i in range(0, 7):
-            if InformationUI.images[i] == None:
+            if PauseUI.images[i] == None:
                 name = './UI/' + 'Info' + '/' + self.image_names[i] +  '.png'
                 print(name)
-                InformationUI.images[i] = load_image(name)
+                PauseUI.images[i] = load_image(name)
                 pass
 
     def get_bb(self):
@@ -55,6 +52,8 @@ class InformationUI:
         pass
 
     def draw(self):
+        self.font.draw(700, 400, f'Exit Game', (210,201,165))
+        print('12374fy9')
         for i in range(8):
             if i is not 6:
                 d = self.image_index[i]

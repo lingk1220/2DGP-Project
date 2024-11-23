@@ -7,6 +7,7 @@ from sdl2 import SDL_QUIT, SDL_KEYDOWN, SDLK_ESCAPE
 
 import game_framework
 import game_world
+import pause_mode
 from camp import Camp
 from crop import Crop
 from archer import Archer
@@ -17,6 +18,7 @@ from chicken import Chicken
 from maid import Maid
 from skeleton import Skeleton
 from ui import UI
+from ui_play import PlayUI
 
 GROUNDHEIGHT = 120
 width = 1400
@@ -30,9 +32,10 @@ def handle_events():
     events = get_events()
     for event in events:
         if event.type == SDL_QUIT:
+
             game_framework.quit()
         elif event.type == SDL_KEYDOWN and event.key == SDLK_ESCAPE:
-            game_framework.quit()
+            game_framework.push_mode(pause_mode)
         else:
             character.handle_event(event)
 
@@ -88,7 +91,7 @@ def init():
     game_world.add_object(skeleton, 3)
 
     global ui
-    ui = UI()
+    ui = PlayUI()
     game_world.add_UI(ui, 0)
 
 
@@ -100,15 +103,14 @@ def update():
 
 
 def draw():
-    clear_canvas()
     game_world.render()
-    update_canvas()
 
 
 def finish():
     pass
 
 def pause():
+    game_world.render()
     pass
 
 def resume():
