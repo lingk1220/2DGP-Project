@@ -1,3 +1,5 @@
+from random import randint
+
 from pico2d import load_image
 
 import play_mode
@@ -18,6 +20,7 @@ class Rock:
         self.index_h = 7 - 1
         self.index_v = 29 - 1
 
+        self.dir = randint(0, 1) * 2 - 1
         self.pos_x = x
         self.pos_y = y + self.size_v * 2 / 2 -14
 
@@ -43,16 +46,28 @@ class Rock:
         self.clip_pos_x = 700 - play_mode.character.pos_x + self.pos_x
         self.clip_pos_y = self.pos_y
 
-        self.image.clip_composite_draw(self.index_h * self.size_h,
-                                        self.index_v * self.size_v,
-                                        self.size_h * self.tiles_h,
-                                       self.size_v * self.tiles_v,
-                                       0,
-                                       '',
-                                       self.clip_pos_x,
-                                       self.clip_pos_y,
-                                       self.draw_x, self.draw_y
-                                       )
+        if self.dir > 0:
+            self.image.clip_composite_draw(self.index_h * self.size_h,
+                                            self.index_v * self.size_v,
+                                            self.size_h * self.tiles_h,
+                                            self.size_v * self.tiles_v,
+                                            0,
+                                            '',
+                                            self.clip_pos_x,
+                                            self.clip_pos_y,
+                                            self.draw_x, self.draw_y
+                                            )
 
+        else:
+            self.image.clip_composite_draw(self.index_h * self.size_h,
+                                            self.index_v * self.size_v,
+                                            self.size_h * self.tiles_h,
+                                            self.size_v * self.tiles_v,
+                                            0,
+                                            'h',
+                                            self.clip_pos_x,
+                                            self.clip_pos_y,
+                                            self.draw_x, self.draw_y
+                                            )
 
 

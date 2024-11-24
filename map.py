@@ -1,3 +1,5 @@
+from random import randint
+
 import play_mode
 from rock import Rock
 from wall import Wall
@@ -16,8 +18,8 @@ class Map:
         for i in range(10):
             self.input_walls(0, i)
 
-        for i in range(10):
-            self.input_building(1, i)
+        self.init_buildings(0, 1)
+        self.init_buildings(1, 1)
 
     def get_bb(self):
         return 0, 0, 0, 0
@@ -43,3 +45,10 @@ class Map:
             self.buildings[dir].append(Rock(-1 * x_index * self.tile_size, self.ground))
         else:
             self.buildings[dir].append(Rock(1 * x_index * self.tile_size, self.ground))
+
+
+    def init_buildings(self, dir, x_index):
+        print('dpd')
+        self.input_building(dir, x_index)
+        if x_index < 100:
+            self.init_buildings(dir, x_index + randint(5, 10))
