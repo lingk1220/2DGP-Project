@@ -56,8 +56,8 @@ class Character:
         self.interact_size_h = (self.width_image_interact // self.interact_count_h)
         self.interact_size_v = (self.height_image_interact // self.interact_count_v)
 
-        self.nearest_wanderer = None
-        self.wanderer_dist_min = 10000
+        self.nearest_interactor = None
+        self.interactor_dist_min = 10000
 
 
         self.index_h = 0
@@ -91,10 +91,11 @@ class Character:
         return self.pos_x - self.draw_x / 4.3 + self.dir * 7 + 25, self.pos_y - self.draw_y / 4, self.pos_x + self.draw_x / 4.3 + self.dir * 7 - 25, self.pos_y + self.draw_y / 2.5
 
     def handle_collision(self, group, other):
-        if group == 'character:wanderer':
-            if self.wanderer_dist_min > self.pos_x - other.pos_x:
-                self.nearest_wanderer = other
+        if group == 'character:wanderer' or group == 'character:building':
+            if self.interactor_dist_min > self.pos_x - other.pos_x:
+                self.nearest_interactor = other
                 self.wanderer_dist_min = self.pos_x - other.pos_x
+
             pass
 
     def update(self):
@@ -253,14 +254,14 @@ class Interact:
             character.index_h = 0
         elif character.index_v == 8 - 1 and character.index_h >= 9:
             character.state_machine.add_event(('TIME_OUT', 0))
-            if character.nearest_wanderer is not None:
-                character.nearest_wanderer.be_civil()
+            if character.nearest_interactor is not None:
+                character.nearest_interactor.interact()
 
 
 
             character.index_v = 10 - 1
             character.index_h = 0
-        character.nearest_wanderer = None
+        character.nearest_interactor = None
 
 
 

@@ -121,6 +121,8 @@ class Wanderer:
         # self.image_pants.clip_draw(0, 0, self.size_h, self.size_v, self.pos_x, self.pos_y, self.x, self.y)
         # self.image_shirts.clip_draw(0, 0, self.size_h, self.size_v, self.pos_x, self.pos_y, self.x, self.y)
         # self.image_boots.clip_draw(0, 0, self.size_h, self.size_v, self.pos_x, self.pos_y, self.x, self.y)
+    def interact(self):
+        self.be_civil()
 
     def be_civil(self):
         self.camp.wanderer_count -= 1

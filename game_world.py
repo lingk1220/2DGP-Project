@@ -1,6 +1,7 @@
 from pico2d import draw_rectangle
 
 import play_mode
+from map import Map
 
 collision_pairs = {}
 
@@ -39,6 +40,10 @@ def render():
     for layer in objects:
         if 0 < i and i  <= 4:
             for o in layer:
+                if o.__class__ == Map:
+                    o.draw_bb()
+                    pass
+
                 l, b, r, t = o.get_bb()
                 l = 700 - play_mode.character.pos_x + l
                 r = 700 - play_mode.character.pos_x + r

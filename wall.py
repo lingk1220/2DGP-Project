@@ -5,10 +5,11 @@ import play_mode
 
 class Wall:
     image = None
-    def __init__(self, x, y):
+    def __init__(self,map, x, y):
         self.width_image = 864
         self.height_image = 1280
 
+        self.map = map
         self.count_h = 27
         self.count_v = 40
 
@@ -19,22 +20,30 @@ class Wall:
         self.index_v = 29 - 1
 
         self.pos_x = x
-        self.pos_y = y + self.size_v * 2 / 2 + 2
+        self.pos_y = y + self.size_v * 2 / 2 - 3
 
         self.tiles_h = 2
         self.tiles_v = 2
 
-        self.draw_x = self.size_h * self.tiles_h * 2
-        self.draw_y = self.size_v * self.tiles_v * 2
+        self.draw_x = self.size_h * self.tiles_h * 1.9
+        self.draw_y = self.size_v * self.tiles_v * 1.9
 
         self.clip_pos_x = 700 - play_mode.character.pos_x + self.pos_x
         self.clip_pos_y = self.pos_y
+
+        play_mode.game_world.add_collision_pair('character:building', None, self)
 
         if Wall.image == None:
             Wall.image = load_image('Props2.png')
 
     def get_bb(self):
         return self.pos_x - self.draw_x / 2.5, self.pos_y - self.draw_y / 2, self.pos_x + self.draw_x / 2.5, self.pos_y + self.draw_y / 2.8
+
+    def handle_collision(self, group, other):
+        if group == 'character:building':
+
+            pass
+
 
     def update(self):
         pass
@@ -56,3 +65,5 @@ class Wall:
 
 
 
+    def interact(self):
+        print('Interact With Wall')
