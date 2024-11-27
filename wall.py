@@ -5,7 +5,7 @@ import play_mode
 
 class Wall:
     image = None
-    def __init__(self,map, x, y):
+    def __init__(self,map, dir, x, y):
         self.width_image = 864
         self.height_image = 1280
 
@@ -19,7 +19,10 @@ class Wall:
         self.index_h = 14 - 1
         self.index_v = 29 - 1
 
-        self.pos_x = x
+        self.dir = dir
+
+
+        self.pos_x = x * map.tile_size * (dir * 2 - 1)
         self.pos_y = y + self.size_v * 2 / 2 - 3
 
         self.tiles_h = 2

@@ -67,18 +67,20 @@ class Map:
 
     def input_wall(self, dir, x_index):
         if dir == 0:
-            self.walls[dir].append(Wall(self, -1 * x_index * self.tile_size, self.ground))
+            self.walls[dir].append(Wall(self, dir , x_index, self.ground))
         else:
-            self.walls[dir].append(Wall(self, 1 * x_index * self.tile_size, self.ground))
+            self.walls[dir].append(Wall(self, dir, x_index, self.ground))
 
     def input_building(self, dir, x_index):
         if dir == 0:
-            self.buildings[dir].append(Rock(self, -1 * x_index * self.tile_size, self.ground))
+            self.buildings[dir].append(Rock(self, dir, x_index, self.ground))
         else:
-            self.buildings[dir].append(Rock(self, 1 * x_index * self.tile_size, self.ground))
+            self.buildings[dir].append(Rock(self, dir, x_index, self.ground))
 
 
     def build_walls(self, dir, x_index):
+        print(f'input: {len(self.walls[dir]), x_index}')
+
         for i in range(len(self.walls[dir]), x_index):
             self.input_wall(dir, i)
         pass

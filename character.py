@@ -71,6 +71,7 @@ class Character:
             Character.image_interaction = load_image('character_interact.png')
 
         play_mode.game_world.add_collision_pair('character:wanderer', self, None)
+        play_mode.game_world.add_collision_pair('character:building', self, None)
 
         self.state_machine = StateMachine(self)
         self.state_machine.start(Idle)
