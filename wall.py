@@ -21,6 +21,7 @@ class Wall:
 
         self.dir = dir
 
+        self.x_index = x
 
         self.pos_x = x * map.tile_size * (dir * 2 - 1)
         self.pos_y = y + self.size_v * 2 / 2 - 3
@@ -77,6 +78,7 @@ class Wall:
     def attacked(self, other):
         self.hp -= 1
         if self.hp <= 0:
-            self.map.remove_object(self)
+
+            self.map.remove_walls(self)
             self.is_dying = 1
         print('Wall Under Attacked!')

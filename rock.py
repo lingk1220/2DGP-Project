@@ -15,7 +15,7 @@ class Rock:
         self.count_h = 27
         self.count_v = 40
 
-        self.x = x
+        self.x_index = x
 
         self.size_h = (self.width_image // self.count_h)
         self.size_v = (self.height_image // self.count_v)

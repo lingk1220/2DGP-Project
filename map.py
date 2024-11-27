@@ -1,4 +1,6 @@
+from os import remove
 from random import randint
+from urllib.request import build_opener
 
 from pico2d import draw_rectangle
 
@@ -102,7 +104,15 @@ class Map:
         if x_index < 100:
             self.init_buildings(dir, x_index + randint(5, 10))
 
-    def remove_object(self, o):
+    def remove_walls(self, o):
+        dir = o.dir
+        i = o.x_index
+        while self.buildings[dir][i].__class__ != 'Rock' and i >0:
+            self.remove_map_object(self.walls[dir][i])
+            i -= 1
+
+
+    def remove_map_object(self, o):
         if o in self.walls[0]:
             self.walls[0].remove(o)
         if o in self.walls[1]:

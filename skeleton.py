@@ -144,6 +144,7 @@ class Skeleton:
 
 
     def wait_time(self):
+        self.state = Idle
         if get_time() - self.time_wait_started > self.time_wait_for:
             return BehaviorTree.SUCCESS
         else:
@@ -219,9 +220,9 @@ class Skeleton:
         SEL_in_attack_state = Selector('공격 상태인가?', CDT_is_attacking, CDT_target_nearby)
 
 
-        root = SEQ_attack_ally = Sequence('아군을 공격', SEL_in_attack_state, ACT_attack)
+        root = SEQ_attack_ally = Sequence('아군을 공격', SEL_in_attack_state, ACT_attack, SEQ_wait_reload)
 
-        SEQ_attack_and_wait = Sequence('공격 및 대기', SEQ_attack_ally, SEQ_wait_reload)
+        SEQ_attack_and_wait = Sequence('공격 및 대기', SEQ_attack_ally)
 
 
         root = SEL_attack_approach = Selector('공격 또는 approach', SEQ_attack_and_wait, SEL_approach_center)
