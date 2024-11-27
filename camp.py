@@ -16,9 +16,11 @@ from state_machine import StateMachine
 
 class Camp:
     image = None
-    def __init__(self, x, y):
+    def __init__(self,map, dir, x, y):
         self.width_image = 864
         self.height_image = 1280
+
+        self.map = map
 
         self.count_h = 27
         self.count_v = 40
@@ -28,7 +30,7 @@ class Camp:
 
         self.ground = y
         self.center_error_x = 0
-        self.pos_x = x
+        self.pos_x = x * map.tile_size * (dir * 2 - 1)
         self.pos_y = y + self.size_v * 2.2 / 2 + 2
 
 
@@ -48,8 +50,8 @@ class Camp:
 
         self.dir = self.pos_x / abs(self.pos_x)
 
-        self.spawn_timer = 10.0
-        self.spawn_delay = 1.0
+        self.spawn_timer = 0
+        self.spawn_delay = 10.0 + randint(10, 100) / 10
         #self.state = Idle
         if Camp.image == None:
             Camp.image = load_image('Props2.png')
@@ -67,6 +69,7 @@ class Camp:
 
 
     def update(self):
+        print('feoiw')
         if self.wanderer_count < self.wanderer_count_max:
             self.spawn_timer += game_framework.frame_time
 
@@ -81,6 +84,7 @@ class Camp:
             new_wanderer = Wanderer(randint(int(minx), int(maxx)), self.ground, self)
             play_mode.game_world.add_object(new_wanderer, 3)
             self.spawn_timer = 0
+            self.spawn_delay = 10.0 + randint(10, 100) / 10
             self.wanderer_count += 1
 
         pass

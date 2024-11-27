@@ -2,7 +2,9 @@ from random import randint
 
 from pico2d import draw_rectangle
 
+import game_world
 import play_mode
+from camp import Camp
 from rock import Rock
 from wall import Wall
 
@@ -21,13 +23,23 @@ class Map:
         self.build_walls(0, 5)
         self.build_walls(1, 7)
 
-        self.init_buildings(0, 1)
-        self.init_buildings(1, 1)
+        self.init_buildings(0, 5)
+        self.init_buildings(1, 5)
 
     def get_bb(self):
         return 0, 0, 0, 0
 
     def update(self):
+        for i in range(len(self.walls[0])):
+            self.walls[0][i].update()
+        for i in range(len(self.walls[1])):
+            self.walls[1][i].update()
+
+        for i in range(len(self.buildings[0])):
+            self.buildings[0][i].update()
+        for i in range(len(self.buildings[1])):
+            self.buildings[1][i].update()
+
         pass
 
     def draw(self):
@@ -66,27 +78,39 @@ class Map:
 
 
     def input_wall(self, dir, x_index):
-        if dir == 0:
-            self.walls[dir].append(Wall(self, dir , x_index, self.ground))
-        else:
-            self.walls[dir].append(Wall(self, dir, x_index, self.ground))
+        self.walls[dir].append(Wall(self, dir, x_index, self.ground))
+
 
     def input_building(self, dir, x_index):
-        if dir == 0:
-            self.buildings[dir].append(Rock(self, dir, x_index, self.ground))
-        else:
+        factor = randint(0, 100)
+        if 0 <= factor < 20:
+            self.buildings[dir].append(Camp(self, dir, x_index, self.ground))
+        elif 20 <= factor < 100:
             self.buildings[dir].append(Rock(self, dir, x_index, self.ground))
 
 
     def build_walls(self, dir, x_index):
-        print(f'input: {len(self.walls[dir]), x_index}')
+            print(f'input: {len(self.walls[dir]), x_index}')
 
-        for i in range(len(self.walls[dir]), x_index):
-            self.input_wall(dir, i)
-        pass
+            for i in range(len(self.walls[dir]), x_index):
+                self.input_wall(dir, i)
+            pass
 
     def init_buildings(self, dir, x_index):
-        print('dpd')
+
         self.input_building(dir, x_index)
         if x_index < 100:
             self.init_buildings(dir, x_index + randint(5, 10))
+
+    def remove_object(self, o):
+        if o in self.walls[0]:
+            self.walls[0].remove(o)
+        if o in self.walls[1]:
+            self.walls[1].remove(o)
+
+        if o in self.buildings[0]:
+            self.buildings[0].remove(o)
+        if o in self.buildings[1]:
+            self.buildings[1].remove(o)
+
+        game_world.remove_collision_object(o)

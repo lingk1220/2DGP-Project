@@ -71,7 +71,7 @@ def init():
 
 
 
-    archer = Archer(-500, GROUNDHEIGHT)
+    archer = Archer(500, GROUNDHEIGHT)
     game_world.add_object(archer, 3)
 
     global chickens
@@ -86,8 +86,7 @@ def init():
     crop = Crop(1100, GROUNDHEIGHT)
     game_world.add_object(crop, 3)
 
-    camp = Camp(500, GROUNDHEIGHT)
-    game_world.add_object(camp, 2)
+
 
     skeleton = Skeleton(-700, GROUNDHEIGHT)
     game_world.add_object(skeleton, 3)
@@ -95,7 +94,7 @@ def init():
 
 
     map = Map(0, GROUNDHEIGHT)
-    game_world.add_object(map, 2)
+    game_world.add_map(map)
 
     global ui
     ui = PlayUI()

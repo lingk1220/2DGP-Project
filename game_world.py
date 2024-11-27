@@ -5,6 +5,7 @@ from map import Map
 
 collision_pairs = {}
 
+map = None
 
 objects = [[], [], [], [], []]
 
@@ -14,21 +15,28 @@ UI = [[], [], []]
 def add_object(o, depth = 0):
     objects[depth].append(o)
 
-def add_UI(o, depth = 0):
-    objects[depth].append(o)
+def add_UI(o,depth = 0):
+    UI[depth].append(o)
 
+def add_map(o):
+    global map
+    map = o
 
 def update():
     for layer in objects:
         for o in layer:
             o.update()
 
+    map.update()
+
     for layer in UI:
         for o in layer:
             o.update()
 
 def render():
-    for layer in objects:
+    for index, layer in enumerate(objects):
+        if(index == 2):
+            map.draw()
         for o in layer:
             o.draw()
 
@@ -40,10 +48,6 @@ def render():
     for layer in objects:
         if 0 < i and i  <= 4:
             for o in layer:
-                if o.__class__ == Map:
-                    o.draw_bb()
-                    pass
-
                 l, b, r, t = o.get_bb()
                 l = 700 - play_mode.character.pos_x + l
                 r = 700 - play_mode.character.pos_x + r
@@ -51,6 +55,7 @@ def render():
                 pass
         i += 1
 
+    map.draw_bb()
 
 
 def collide(a, b):
@@ -95,4 +100,5 @@ def remove_object(o):
             remove_collision_object(o)
             del o
             return
+
     raise ValueError('Cannot delete non existing object')

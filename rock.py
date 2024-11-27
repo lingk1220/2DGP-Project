@@ -83,4 +83,4 @@ class Rock:
 
     def interact(self):
         print('Interact With Rock')
-        self.map.build_walls(self.dir, self.x)
+        self.map.build_walls(self.dir, self.x + 1)

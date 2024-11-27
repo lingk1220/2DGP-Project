@@ -28,6 +28,8 @@ class Wall:
         self.tiles_h = 2
         self.tiles_v = 2
 
+        self.is_dying = 0
+        self.hp = 3
         self.draw_x = self.size_h * self.tiles_h * 1.9
         self.draw_y = self.size_v * self.tiles_v * 1.9
 
@@ -35,6 +37,7 @@ class Wall:
         self.clip_pos_y = self.pos_y
 
         play_mode.game_world.add_collision_pair('character:building', None, self)
+        play_mode.game_world.add_collision_pair('enemy:ally', None, self)
 
         if Wall.image == None:
             Wall.image = load_image('Props2.png')
@@ -70,3 +73,10 @@ class Wall:
 
     def interact(self):
         print('Interact With Wall')
+
+    def attacked(self, other):
+        self.hp -= 1
+        if self.hp <= 0:
+            self.map.remove_object(self)
+            self.is_dying = 1
+        print('Wall Under Attacked!')
