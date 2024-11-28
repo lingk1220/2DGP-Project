@@ -135,7 +135,7 @@ class Idle:
 
     @staticmethod
     def draw(character):
-        character.image.clip_composite_draw(int(character.index_h) * character.size_h,
+        Character.image.clip_composite_draw(int(character.index_h) * character.size_h,
                                   character.index_v * character.size_v,
                                   character.size_h,
                                   character.size_v,
@@ -179,7 +179,7 @@ class Walk:
     @staticmethod
     def draw(character):
 
-        character.image.clip_composite_draw(int(character.index_h) * character.size_h,
+        Character.image.clip_composite_draw(int(character.index_h) * character.size_h,
                                   character.index_v * character.size_v,
                                   character.size_h,
                                   character.size_v,
@@ -217,7 +217,7 @@ class Run:
 
     @staticmethod
     def draw(character):
-        character.image.clip_composite_draw(int(character.index_h) * character.size_h,
+        Character.image.clip_composite_draw(int(character.index_h) * character.size_h,
                                   character.index_v * character.size_v,
                                   character.size_h,
                                   character.size_v,
@@ -268,7 +268,7 @@ class Interact:
 
     @staticmethod
     def draw(character):
-        character.image_interaction.clip_composite_draw(int(character.index_h) * character.interact_size_h,
+        Character.image_interaction.clip_composite_draw(int(character.index_h) * character.interact_size_h,
                                   character.index_v * character.interact_size_v,
                                   character.interact_size_h - 155,
                                   character.interact_size_v,

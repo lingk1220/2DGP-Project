@@ -95,7 +95,7 @@ class Obelisk:
     def draw(self):
         self.clip_pos_x = 700 - play_mode.character.pos_x + self.pos_x
         self.clip_pos_y = self.pos_y
-        self.image.clip_composite_draw(int(self.frame) * self.size_h,
+        Obelisk.image.clip_composite_draw(int(self.frame) * self.size_h,
                             25,
                            self.size_h,
                            self.size_v,

@@ -296,14 +296,14 @@ class Idle:
     @staticmethod
     def draw(archer):
         if archer.dir > 0:
-            archer.image.clip_draw(int(archer.index_h) * archer.size_h,
+            Archer.image.clip_draw(int(archer.index_h) * archer.size_h,
                                    archer.index_v * archer.size_v,
                                    archer.size_h - archer.center_error_x,
                                    archer.size_v,
                                    archer.clip_pos_x,
                                    archer.clip_pos_y, archer.draw_x, archer.draw_y)
         else:
-            archer.image.clip_composite_draw(int(archer.index_h) * archer.size_h,
+            Archer.image.clip_composite_draw(int(archer.index_h) * archer.size_h,
                                              archer.index_v * archer.size_v,
                                              archer.size_h - archer.center_error_x,
                                              archer.size_v,
@@ -330,14 +330,14 @@ class Walk:
     @staticmethod
     def draw(archer):
         if archer.dir > 0:
-            archer.image.clip_draw(int(archer.index_h) * archer.size_h,
+            Archer.image.clip_draw(int(archer.index_h) * archer.size_h,
                                    archer.index_v * archer.size_v,
                                    archer.size_h - archer.center_error_x,
                                    archer.size_v,
                                    archer.clip_pos_x,
                                    archer.clip_pos_y, archer.draw_x, archer.draw_y)
         else:
-            archer.image.clip_composite_draw(int(archer.index_h) * archer.size_h,
+            Archer.image.clip_composite_draw(int(archer.index_h) * archer.size_h,
                                              archer.index_v * archer.size_v,
                                              archer.size_h - archer.center_error_x,
                                              archer.size_v,
@@ -363,14 +363,14 @@ class Shoot:
     @staticmethod
     def draw(archer):
         if archer.dir > 0:
-            archer.image.clip_draw(int(archer.index_h) * archer.size_h,
+            Archer.image.clip_draw(int(archer.index_h) * archer.size_h,
                                    archer.index_v * archer.size_v,
                                    archer.size_h - archer.center_error_x,
                                    archer.size_v,
                                    archer.clip_pos_x,
                                    archer.clip_pos_y, archer.draw_x, archer.draw_y)
         else:
-            archer.image.clip_composite_draw(int(archer.index_h) * archer.size_h,
+            Archer.image.clip_composite_draw(int(archer.index_h) * archer.size_h,
                                              archer.index_v * archer.size_v,
                                              archer.size_h - archer.center_error_x,
                                              archer.size_v,
@@ -400,14 +400,14 @@ class Die:
     @staticmethod
     def draw(archer):
         if archer.dir > 0:
-            archer.image.clip_draw(int(archer.index_h) * archer.size_h,
+            Archer.image.clip_draw(int(archer.index_h) * archer.size_h,
                                    archer.index_v * archer.size_v,
                                    archer.size_h,
                                    archer.size_v,
                                    archer.clip_pos_x + archer.center_error_x // 2,
                                    archer.clip_pos_y, archer.draw_x + archer.center_error_x, archer.draw_y)
         else:
-            archer.image.clip_composite_draw(int(archer.index_h) * archer.size_h,
+            Archer.image.clip_composite_draw(int(archer.index_h) * archer.size_h,
                                              archer.index_v * archer.size_v,
                                              archer.size_h,
                                              archer.size_v,

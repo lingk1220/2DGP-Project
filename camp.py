@@ -46,12 +46,13 @@ class Camp:
         self.clip_pos_y = 0
 
         self.wanderer_count = 0
+        self.wanderer_count_cur = 0
         self.wanderer_count_max = 3
 
         self.dir = self.pos_x / abs(self.pos_x)
 
         self.spawn_timer = 0
-        self.spawn_delay = 10.0 + randint(10, 100) / 10
+        self.spawn_delay = 0.0 + randint(10, 100) / 10
         #self.state = Idle
         if Camp.image == None:
             Camp.image = load_image('Props2.png')
@@ -73,6 +74,14 @@ class Camp:
             self.spawn_timer += game_framework.frame_time
 
         if self.spawn_timer > self.spawn_delay:
+            self.spawn_timer = 10.0
+            self.spawn_delay = 10.0 + randint(10, 100) / 10
+            self.wanderer_count += 1
+
+        if abs(play_mode.character.pos_x - self.pos_x) > 1000:
+            return
+
+        while self.wanderer_count_cur < self.wanderer_count:
             minx, _ , maxx, _ = self.get_bb()
             # chicken = Chicken(randint(int(minx), int(maxx)), self.ground)
             # chicken.dir = self.dir
@@ -82,10 +91,7 @@ class Camp:
 
             new_wanderer = Wanderer(randint(int(minx), int(maxx)), self.ground, self)
             play_mode.game_world.add_object(new_wanderer, 3)
-            self.spawn_timer = 10.0
-            self.spawn_delay = 10.0 + randint(10, 100) / 10
-            self.wanderer_count += 1
-
+            self.wanderer_count_cur += 1
         pass
 
     def handle_event(self, event):

@@ -25,17 +25,16 @@ class Wanderer:
 
 
     def load_image(self):
-        if self.image_wanderer == None:
-            self.image_wanderer = {}
+        if Wanderer.image_wanderer == None:
+            Wanderer.image_wanderer = {}
             for wanderer_index in range(2):
-                self.image_wanderer[wanderer_index] ={}
+                Wanderer.image_wanderer[wanderer_index] ={}
                 wanderer_name = wanderer_names[wanderer_index]
                 for part_index in range (5):
                     part_name = part_names[part_index]
-                    self.image_wanderer[wanderer_index][part_index] = {}
+                    Wanderer.image_wanderer[wanderer_index][part_index] = {}
                     for part_image_index in range(0, image_counts[wanderer_index][part_index]):
-                        print("./wanderer/" + wanderer_name + "/" + part_name + "/" + part_name + "%d" % (part_image_index+1) + ".png")
-                        self.image_wanderer[wanderer_index][part_index][part_image_index] = load_image("./wanderer/"+ wanderer_name + "/" + part_name + "/" + part_name + "%d" %(part_image_index+1) + ".png")
+                        Wanderer.image_wanderer[wanderer_index][part_index][part_image_index] = load_image("./wanderer/"+ wanderer_name + "/" + part_name + "/" + part_name + "%d" %(part_image_index+1) + ".png")
 
 
         # if Wanderer.image_skin == None:
@@ -130,7 +129,7 @@ class Wanderer:
 
     def be_civil(self):
         self.camp.wanderer_count -= 1
-
+        self.camp.wanderer_count_cur -= 1
         if self.wanderer_index == 0:
             new_archer = Archer(self.pos_x, self.ground)
             play_mode.game_world.add_object(new_archer, 3)
@@ -226,7 +225,7 @@ class Idle:
     def draw(wanderer):
         if wanderer.dir > 0:
             for part_index in range(4):
-                wanderer.image_wanderer[wanderer.wanderer_index][part_index][wanderer.part_image_indices[part_index]].clip_draw(int(wanderer.index_h) * wanderer.size_h, wanderer.index_v * wanderer.size_v, wanderer.size_h - wanderer.center_error_x, wanderer.size_v, wanderer.clip_pos_x, wanderer.clip_pos_y, wanderer.draw_x, wanderer.draw_y)
+                Wanderer.image_wanderer[wanderer.wanderer_index][part_index][wanderer.part_image_indices[part_index]].clip_draw(int(wanderer.index_h) * wanderer.size_h, wanderer.index_v * wanderer.size_v, wanderer.size_h - wanderer.center_error_x, wanderer.size_v, wanderer.clip_pos_x, wanderer.clip_pos_y, wanderer.draw_x, wanderer.draw_y)
 
             # self.image_skin.clip_draw(0, 0, self.size_h, self.size_v, self.pos_x, self.pos_y, self.x, self.y)
             # self.image_pants.clip_draw(0, 0, self.size_h, self.size_v, self.pos_x, self.pos_y, self.x, self.y)
@@ -234,7 +233,7 @@ class Idle:
             # self.image_boots.clip_draw(0, 0, self.size_h, self.size_v, self.pos_x, self.pos_y, self.x, self.y)
         else:
             for part_index in range(4):
-                wanderer.image_wanderer[wanderer.wanderer_index][part_index][wanderer.part_image_indices[part_index]].clip_draw(int(wanderer.index_h) * wanderer.size_h, wanderer.index_v * wanderer.size_v, wanderer.size_h - wanderer.center_error_x, wanderer.size_v, wanderer.clip_pos_x, wanderer.clip_pos_y, wanderer.draw_x, wanderer.draw_y)
+                Wanderer.image_wanderer[wanderer.wanderer_index][part_index][wanderer.part_image_indices[part_index]].clip_draw(int(wanderer.index_h) * wanderer.size_h, wanderer.index_v * wanderer.size_v, wanderer.size_h - wanderer.center_error_x, wanderer.size_v, wanderer.clip_pos_x, wanderer.clip_pos_y, wanderer.draw_x, wanderer.draw_y)
 
 
 class Walk:
@@ -256,14 +255,14 @@ class Walk:
     def draw(wanderer):
         if wanderer.dir < 0:
             for part_index in range(4):
-                wanderer.image_wanderer[wanderer.wanderer_index][part_index][wanderer.part_image_indices[part_index]].clip_draw(
+                Wanderer.image_wanderer[wanderer.wanderer_index][part_index][wanderer.part_image_indices[part_index]].clip_draw(
                     int(wanderer.index_h) * wanderer.size_h, wanderer.index_v * wanderer.size_v,
                     wanderer.size_h - wanderer.center_error_x, wanderer.size_v, wanderer.clip_pos_x, wanderer.clip_pos_y,
                     wanderer.draw_x, wanderer.draw_y)
 
         else:
             for part_index in range(4):
-                wanderer.image_wanderer[wanderer.wanderer_index][part_index][wanderer.part_image_indices[part_index]].clip_composite_draw(
+                Wanderer.image_wanderer[wanderer.wanderer_index][part_index][wanderer.part_image_indices[part_index]].clip_composite_draw(
                     int(wanderer.index_h) * wanderer.size_h, wanderer.index_v * wanderer.size_v,
                     wanderer.size_h - wanderer.center_error_x, wanderer.size_v,0, 'h', wanderer.clip_pos_x, wanderer.clip_pos_y,
                     wanderer.draw_x, wanderer.draw_y)
