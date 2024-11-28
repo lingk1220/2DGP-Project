@@ -14,16 +14,16 @@ from chicken import Chicken
 from wanderer import Wanderer
 from state_machine import StateMachine
 
-class Camp:
+class Obelisk2:
     image = None
     def __init__(self,map, dir, x, y):
-        self.width_image = 864
-        self.height_image = 1280
+        self.width_image = 2600
+        self.height_image = 400
 
         self.map = map
 
-        self.count_h = 27
-        self.count_v = 40
+        self.count_h = 13
+        self.count_v = 1
 
         self.size_h = (self.width_image // self.count_h)
         self.size_v = (self.height_image // self.count_v)
@@ -31,15 +31,15 @@ class Camp:
         self.ground = y
         self.center_error_x = 0
         self.pos_x = x * map.tile_size * (dir * 2 - 1)
-        self.pos_y = y + self.size_v * 2.2 / 2 + 2
+        self.pos_y = y + 275
 
+        self.frame = 0
 
-        self.index_h = 4 - 1
-        self.index_v = 26 - 1
-        self.tiles_h = 3
-        self.tiles_v = 2
-        self.draw_x = self.size_h * self.tiles_h * 2.2
-        self.draw_y = self.size_v * self.tiles_v * 2.2
+        self.index_h = 1 - 1
+        self.index_v = 1 - 1
+
+        self.draw_x = self.size_h
+        self.draw_y = self.size_v
 
 
         self.clip_pos_x = 0
@@ -51,10 +51,10 @@ class Camp:
         self.dir = self.pos_x / abs(self.pos_x)
 
         self.spawn_timer = 0
-        self.spawn_delay = 10.0 + randint(10, 100) / 10
+        self.spawn_delay = 10.0
         #self.state = Idle
-        if Camp.image == None:
-            Camp.image = load_image('Props2.png')
+        if Obelisk2.image == None:
+            Obelisk2.image = load_image('obelisk2.png')
 
 
     def get_bb(self):
@@ -69,8 +69,8 @@ class Camp:
 
 
     def update(self):
-        if self.wanderer_count < self.wanderer_count_max:
-            self.spawn_timer += game_framework.frame_time
+        self.frame = (self.frame + 13 * 0.5 * game_framework.frame_time) % 13
+
 
         if self.spawn_timer > self.spawn_delay:
             minx, _ , maxx, _ = self.get_bb()
@@ -93,30 +93,15 @@ class Camp:
 
 
     def draw(self):
-        if abs(play_mode.character.pos_x - self.pos_x) > 1000:
-            return
         self.clip_pos_x = 700 - play_mode.character.pos_x + self.pos_x
         self.clip_pos_y = self.pos_y
-        if self.dir > 0:
-            self.image.clip_composite_draw(self.index_h * self.size_h,
-                           self.index_v * self.size_v,
-                           self.size_h * self.tiles_h,
-                           self.size_v * self.tiles_v,
+        self.image.clip_composite_draw(int(self.frame) * self.size_h,
+                            25,
+                           self.size_h,
+                           self.size_v,
                            0,
                            '',
                            self.clip_pos_x,
                            self.clip_pos_y,
-                           self.size_h * self.tiles_h * 2.2, self.size_v * self.tiles_v * 2.2
+                           self.size_h , self.size_v - 25
                            )
-
-        else:
-            self.image.clip_composite_draw(self.index_h * self.size_h,
-                                           self.index_v * self.size_v,
-                                           self.size_h * self.tiles_h,
-                                           self.size_v * self.tiles_v,
-                                           0,
-                                           'h',
-                                           self.clip_pos_x,
-                                           self.clip_pos_y,
-                                           self.size_h * self.tiles_h * 2.2, self.size_v * self.tiles_v * 2.2
-                                           )

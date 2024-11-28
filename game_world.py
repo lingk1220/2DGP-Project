@@ -46,6 +46,7 @@ def render():
         if(index == 2):
             map.draw()
         for o in layer:
+
             o.draw()
 
     for layer in UI:

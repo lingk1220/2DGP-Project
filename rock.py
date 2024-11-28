@@ -53,6 +53,8 @@ class Rock:
         pass
 
     def draw(self):
+        if abs(play_mode.character.pos_x - self.pos_x) > 1000:
+            return
         self.clip_pos_x = 700 - play_mode.character.pos_x + self.pos_x
         self.clip_pos_y = self.pos_y
 

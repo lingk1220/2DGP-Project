@@ -8,29 +8,45 @@ import game_world
 import play_mode
 from obelisk import Obelisk
 from camp import Camp
+from obelisk2 import Obelisk2
 from rock import Rock
 from wall import Wall
 
 
 class Map:
     def __init__(self,x, ground):
+        self.map_size = 50
         self.tile_size = 96
+
         self.x = 0
         self.ground = ground
+
+        self.elements = None
+
         self.buildings = [[], []]
         self.walls = [[], []]
 
         self.enemy_buildings = [[], []]
 
-        self.build_walls(0, 3)
-        self.build_walls(0, 5)
-        self.build_walls(1, 7)
+        # self.build_walls(0, 3)
+        # self.build_walls(0, 5)
+        # self.build_walls(1, 7)
 
+        self.generate_map()
+
+
+    def generate_map(self):
+        self.elements = []
+        self.elements.append(self.walls)
+        self.elements.append(self.buildings)
+        self.elements.append(self.enemy_buildings)
         self.init_buildings(0, 5)
         self.init_buildings(1, 5)
 
+        self.init_enemy_buildings(0, 0)
+        self.init_enemy_buildings(1, 0)
 
-        self.enemy_buildings[0].append(Obelisk(self, 0, 10, self.ground))
+
 
     def get_bb(self):
         return 0, 0, 0, 0
@@ -115,10 +131,19 @@ class Map:
             pass
 
     def init_buildings(self, dir, x_index):
-
-        self.input_building(dir, x_index)
-        if x_index < 100:
+        if x_index < self.map_size:
+            self.input_building(dir, x_index)
             self.init_buildings(dir, x_index + randint(5, 10))
+
+
+    def input_enemy_building(self, dir, x_index):
+        self.enemy_buildings[dir].append(Obelisk2(self, dir, x_index, self.ground))
+
+
+    def init_enemy_buildings(self, dir, x_index):
+        if x_index < self.map_size :
+            self.input_enemy_building(dir, self.map_size - x_index)
+            self.init_enemy_buildings(dir, x_index + randint(10, 20))
 
     def remove_walls(self, o):
         dir = o.dir
