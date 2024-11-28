@@ -13,7 +13,7 @@ objects = [[], [], [], [], []]
 
 UI = [[], [], []]
 
-time = 0.0
+time = 30.0
 is_day = True
 
 def add_object(o, depth = 0):
@@ -36,7 +36,6 @@ def update():
 
     for layer in UI:
         for o in layer:
-            print(f'이게뭐야 {o}')
             o.update()
 
     update_time()
@@ -115,11 +114,8 @@ def remove_object(o):
 def update_time():
     global time, is_day
     time += game_framework.frame_time
-    print(f'time: {time}')
-    if time > 1:
+    if time > 30:
         is_day = False
-        if time > 2:
+        if time > 60:
             time = 0
             is_day = True
-
-    print(f'isday: {is_day}')

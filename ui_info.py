@@ -57,14 +57,13 @@ class InformationUI:
         return -10000, -10000, 10000, 10000
 
     def update(self):
-        print('fda')
         print(play_mode.game_world.is_day)
         if play_mode.game_world.is_day:
-            self.bool_draw[6] = 0
-            self.bool_draw[7] = 1
-        else:
             self.bool_draw[6] = 1
             self.bool_draw[7] = 0
+        else:
+            self.bool_draw[6] = 0
+            self.bool_draw[7] = 1
 
 
     def draw(self):

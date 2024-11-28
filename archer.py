@@ -89,11 +89,16 @@ class Archer:
         self.state_machine.draw()
 
     def is_day(self):
-        if game_world.is_day:
+        if play_mode.game_world.is_day:
             return BehaviorTree.SUCCESS
         else:
             return BehaviorTree.FAIL
 
+    def is_night(self):
+        if not play_mode.game_world.is_day:
+            return BehaviorTree.SUCCESS
+        else:
+            return BehaviorTree.FAIL
 
 
     def attacked(self, other):
@@ -106,10 +111,9 @@ class Archer:
     def set_target_none(self):
         self.chicken_target = None
 
-    def set_target_location(self, x=None, y=None):
-        if not x or not y:
-            raise ValueError('Location should be given')
-        self.tx, self.ty = x, y
+    def set_target_location(self, x=None):
+
+        self.tx, self.ty = x, self.pos_y
         return BehaviorTree.SUCCESS
 
     def distance_less_than(self, x1, x2, r):
@@ -246,15 +250,24 @@ class Archer:
         root = SEL_hunt_or_wander = Selector('사냥 또는 wander', SEL_hunt_chicken, SEQ_wander)
 
         CDT_is_day =  Condition('낮인가?', self.is_day)
+        CDT_is_night =  Condition('밤인가?', self.is_night)
 
-        root = SEL_day = Selector('낮', CDT_is_day, SEL_hunt_or_wander)
-
-        a10 = Action('asd3', self.a)
-
-        SEL_night = Selector('밤', a10)
+        root = SEQ_day = Sequence('낮', CDT_is_day, SEL_hunt_or_wander)
 
 
-        root = SEL_day_or_night = Selector('낮 또는 밤', SEL_day, SEL_night)
+
+        ACT_set_home = Action('귀환 위치 설정', self.set_target_location, 0)
+        SEQ_go_home = Sequence('기지로 이동', ACT_set_home, a1)
+
+        SEQ_defend = Action('asd3', self.a)
+
+        SEQ_go_home_and_defend = Sequence('귀환 또는 방어', SEQ_go_home, SEQ_defend)
+
+
+        SEQ_night = Sequence('밤', SEQ_go_home_and_defend)
+
+
+        root = SEL_day_or_night = Selector('낮 또는 밤', SEQ_day, SEQ_night)
 
 
 

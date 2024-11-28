@@ -69,7 +69,6 @@ class Camp:
 
 
     def update(self):
-        print('feoiw')
         if self.wanderer_count < self.wanderer_count_max:
             self.spawn_timer += game_framework.frame_time
 
@@ -83,7 +82,7 @@ class Camp:
 
             new_wanderer = Wanderer(randint(int(minx), int(maxx)), self.ground, self)
             play_mode.game_world.add_object(new_wanderer, 3)
-            self.spawn_timer = 0
+            self.spawn_timer = 10.0
             self.spawn_delay = 10.0 + randint(10, 100) / 10
             self.wanderer_count += 1
 

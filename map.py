@@ -85,9 +85,9 @@ class Map:
 
     def input_building(self, dir, x_index):
         factor = randint(0, 100)
-        if 0 <= factor < 20:
+        if 0 <= factor < 60:
             self.buildings[dir].append(Camp(self, dir, x_index, self.ground))
-        elif 20 <= factor < 100:
+        elif 60 <= factor < 100:
             self.buildings[dir].append(Rock(self, dir, x_index, self.ground))
 
 
