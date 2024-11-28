@@ -125,9 +125,10 @@ class Archer:
         return distance2
 
     def move_slightly_to(self, tx):
-        self.dir = (tx - self.pos_x) / abs(tx - self.pos_x)
-        self.speed = 100
-        self.pos_x += self.speed * self.dir * game_framework.frame_time
+        if tx != self.pos_x:
+            self.dir = (tx - self.pos_x) / abs(tx - self.pos_x)
+            self.speed = 100
+            self.pos_x += self.speed * self.dir * game_framework.frame_time
 
     def move_to(self, r=10):
         self.state = Walk
@@ -259,7 +260,7 @@ class Archer:
         ACT_set_home = Action('귀환 위치 설정', self.set_target_location, 0)
         SEQ_go_home = Sequence('기지로 이동', ACT_set_home, a1)
 
-        SEQ_defend = Action('asd3', self.a)
+        SEQ_defend = Sequence('방어', )
 
         SEQ_go_home_and_defend = Sequence('귀환 또는 방어', SEQ_go_home, SEQ_defend)
 

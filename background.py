@@ -25,7 +25,7 @@ class Background:
 
     def draw(self):
         for i in range(0,4):
-            self.images[i].clip_draw_to_origin(int(self.draw_x) , int(self.draw_y) - 400,  2304, 1296, -int(play_mode.character.pos_x / 20 * i) - 300, -200)
+            self.images[i].clip_draw_to_origin(int(self.draw_x) , int(self.draw_y) - 400,  2304, 1296, -int(play_mode.character.pos_x / 50 * i) - 300, -200)
             # self.images[i].clip_draw(0,
             #                          0,
             #                          self.width_image,

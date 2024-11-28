@@ -6,6 +6,7 @@ from pico2d import draw_rectangle
 
 import game_world
 import play_mode
+from chicken_field import ChickenField
 from ground import Ground
 from obelisk import Obelisk
 from camp import Camp
@@ -16,7 +17,7 @@ from wall import Wall
 
 class Map:
     def __init__(self,x, ground):
-        self.map_size = 50
+        self.map_size = 75
         self.tile_size = 96
 
         self.x = 0
@@ -132,12 +133,13 @@ class Map:
 
 
     def input_building(self, dir, x_index):
-        factor = randint(0, 100)
-        if 0 <= factor < 60:
+        factor = randint(0, 150)
+        if 0 <= factor < 50:
             self.buildings[dir].append(Camp(self, dir, x_index, self.ground))
-        elif 60 <= factor < 100:
+        elif 50 <= factor < 100:
             self.buildings[dir].append(Rock(self, dir, x_index, self.ground))
-
+        elif 100 <= factor < 150:
+            self.buildings[dir].append(ChickenField(self, dir, x_index, self.ground))
 
     def build_walls(self, dir, x_index):
 
@@ -166,7 +168,7 @@ class Map:
 
 
     def init_enemy_buildings(self, dir, x_index):
-        if x_index < self.map_size :
+        if x_index < self.map_size / 3:
             self.input_enemy_building(dir, self.map_size - x_index)
             self.init_enemy_buildings(dir, x_index + randint(10, 20))
 

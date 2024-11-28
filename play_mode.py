@@ -71,10 +71,6 @@ def init():
     archer = Archer(500, GROUNDHEIGHT)
     game_world.add_object(archer, 3)
 
-    global chickens
-    chickens = [Chicken(0 + (randint(0, 1) * 2 - 1) * randint(0, 5) * 50, GROUNDHEIGHT) for _  in range (5)]
-    for chicken in chickens:
-        game_world.add_object(chicken, 3)
 
 
     maid = Maid(1000, GROUNDHEIGHT)
@@ -85,8 +81,6 @@ def init():
 
 
 
-    skeleton = Skeleton(-700, GROUNDHEIGHT)
-    game_world.add_object(skeleton, 3)
 
 
 
@@ -101,7 +95,7 @@ def init():
 def update():
     game_world.update()
     game_world.handle_collisions()
-    delay(0.01)
+
     pass
 
 
