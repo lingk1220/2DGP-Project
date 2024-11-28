@@ -58,10 +58,7 @@ def init():
     background = Background()
     game_world.add_object(background, 0)
 
-    for i in range (0, 3):
-        for j in range(-80, 45 + 80 + 1):
-            ground = Ground(j, i)
-            game_world.add_object(ground, 1)
+
 
 
 

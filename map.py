@@ -6,6 +6,7 @@ from pico2d import draw_rectangle
 
 import game_world
 import play_mode
+from ground import Ground
 from obelisk import Obelisk
 from camp import Camp
 from obelisk2 import Obelisk2
@@ -23,6 +24,7 @@ class Map:
 
         self.elements = None
 
+        self.grounds = [[], []]
         self.buildings = [[], []]
         self.walls = [[], []]
 
@@ -37,9 +39,14 @@ class Map:
 
     def generate_map(self):
         self.elements = []
+        self.elements.append(self.grounds)
         self.elements.append(self.walls)
         self.elements.append(self.buildings)
         self.elements.append(self.enemy_buildings)
+
+        self.init_grounds(0, 0)
+        self.init_grounds(1, 0)
+
         self.init_buildings(0, 5)
         self.init_buildings(1, 5)
 
@@ -52,40 +59,48 @@ class Map:
         return 0, 0, 0, 0
 
     def update(self):
-        for i in range(len(self.walls[0])):
-            self.walls[0][i].update()
-        for i in range(len(self.walls[1])):
-            self.walls[1][i].update()
-
-        for i in range(len(self.buildings[0])):
-            self.buildings[0][i].update()
-        for i in range(len(self.buildings[1])):
-            self.buildings[1][i].update()
-
-        for i in range(len(self.enemy_buildings[0])):
-            self.enemy_buildings[0][i].update()
-
-        for i in range(len(self.enemy_buildings[1])):
-            self.enemy_buildings[1][i].update()
-
-        pass
+        for layer in self.elements:
+            for layer_half in layer:
+                for o in layer_half:
+                    o.update()
+        # for i in range(len(self.walls[0])):
+        #     self.walls[0][i].update()
+        # for i in range(len(self.walls[1])):
+        #     self.walls[1][i].update()
+        #
+        # for i in range(len(self.buildings[0])):
+        #     self.buildings[0][i].update()
+        # for i in range(len(self.buildings[1])):
+        #     self.buildings[1][i].update()
+        #
+        # for i in range(len(self.enemy_buildings[0])):
+        #     self.enemy_buildings[0][i].update()
+        #
+        # for i in range(len(self.enemy_buildings[1])):
+        #     self.enemy_buildings[1][i].update()
+        #
+        # pass
 
     def draw(self):
-        for i in range(len(self.walls[0])):
-            self.walls[0][i].draw()
-        for i in range(len(self.walls[1])):
-            self.walls[1][i].draw()
-
-        for i in range(len(self.buildings[0])):
-            self.buildings[0][i].draw()
-        for i in range(len(self.buildings[1])):
-            self.buildings[1][i].draw()
-
-        for i in range(len(self.enemy_buildings[0])):
-            self.enemy_buildings[0][i].draw()
-
-        for i in range(len(self.enemy_buildings[1])):
-            self.enemy_buildings[1][i].draw()
+        for layer in self.elements:
+            for layer_half in layer:
+                for o in layer_half:
+                    o.draw()
+        # for i in range(len(self.walls[0])):
+        #     self.walls[0][i].draw()
+        # for i in range(len(self.walls[1])):
+        #     self.walls[1][i].draw()
+        #
+        # for i in range(len(self.buildings[0])):
+        #     self.buildings[0][i].draw()
+        # for i in range(len(self.buildings[1])):
+        #     self.buildings[1][i].draw()
+        #
+        # for i in range(len(self.enemy_buildings[0])):
+        #     self.enemy_buildings[0][i].draw()
+        #
+        # for i in range(len(self.enemy_buildings[1])):
+        #     self.enemy_buildings[1][i].draw()
 
 
     def draw_bb(self):
@@ -134,6 +149,16 @@ class Map:
         if x_index < self.map_size:
             self.input_building(dir, x_index)
             self.init_buildings(dir, x_index + randint(5, 10))
+
+
+    def input_ground(self, dir, x_index):
+        self.grounds[dir].append(Ground(self, dir, x_index, 0, self.ground))
+        self.grounds[dir].append(Ground(self, dir, x_index, 1, self.ground))
+        self.grounds[dir].append(Ground(self, dir, x_index, 2, self.ground))
+    def init_grounds(self, dir, x_index):
+        if x_index < self.map_size:
+            self.input_ground(dir, x_index)
+            self.init_grounds(dir, x_index + 1)
 
 
     def input_enemy_building(self, dir, x_index):
