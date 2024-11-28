@@ -12,7 +12,7 @@ from state_machine import StateMachine
 
 class Chicken:
     image = None
-    def __init__(self, x, y):
+    def __init__(self, x, y, field):
         self.width_image = 576
         self.height_image = 32
 
@@ -22,6 +22,7 @@ class Chicken:
         self.size_h = (self.width_image // self.count_h)
         self.size_v = (self.height_image // self.count_v)
 
+        self.dir = 1
 
         self.center_error_x = 0
         self.pos_x = x
@@ -88,30 +89,27 @@ class Chicken:
 
     def move_slightly_to(self, tx):
         self.dir = (tx - self.pos_x) / abs(tx - self.pos_x)
-        print(f'chic:{self.dir}')
         self.speed = 50
         self.pos_x += self.speed * self.dir * game_framework.frame_time
 
     def move_to(self, r=10):
         self.state = Walk
         self.move_slightly_to(self.tx)
-        print(f'tx: {self.tx}, pos_x: {self.pos_x}')
         if self.distance_less_than(self.tx, self.pos_x, r):
             return BehaviorTree.SUCCESS
         else:
             return BehaviorTree.RUNNING
 
     def set_random_location(self):
-        print('chick!')
         self.tx, self.ty = self.pos_x + ((2 * random.randint(0, 1)  - 1) *  random.randint(50, 120)), self.pos_y
-        print(f'tx = {self.tx}')
+
         # self.tx, self.ty = 1000, 100
         return BehaviorTree.SUCCESS
 
 
     def wait_time(self):
         if get_time() - self.time_wait_started > self.time_wait_for:
-            print("qwer")
+
             return BehaviorTree.SUCCESS
         else:
             return BehaviorTree.RUNNING
