@@ -134,6 +134,9 @@ class Map:
 
     def input_building(self, dir, x_index):
         factor = randint(0, 150)
+        self.buildings[dir].append(ChickenField(self, dir, x_index, self.ground))
+        return
+
         if 0 <= factor < 50:
             self.buildings[dir].append(Camp(self, dir, x_index, self.ground))
         elif 50 <= factor < 100:

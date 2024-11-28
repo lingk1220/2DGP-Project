@@ -31,15 +31,15 @@ class ChickenField:
         self.ground = y
         self.center_error_x = 0
         self.pos_x = x * map.tile_size * (dir * 2 - 1)
-        self.pos_y = y + self.size_v * 2.2 / 2 + 2
+        self.pos_y = y - 5
 
 
         self.index_h = 10 - 1
         self.index_v = 34 - 1
         self.tiles_h = 3
         self.tiles_v = 2
-        self.draw_x = self.size_h * self.tiles_h * 2.2
-        self.draw_y = self.size_v * self.tiles_v * 2.2
+        self.draw_x = self.size_h * 1.5
+        self.draw_y = self.size_v * 1.5
 
 
         self.clip_pos_x = 0
@@ -47,7 +47,7 @@ class ChickenField:
 
         self.chicken_count = 0
         self.chicken_count_cur = 0
-        self.chicken_count_max = 3
+        self.chicken_count_max = 5
 
         self.dir = self.pos_x / abs(self.pos_x)
 
@@ -59,7 +59,7 @@ class ChickenField:
 
 
     def get_bb(self):
-        return self.pos_x - self.draw_x , self.pos_y - self.draw_y / 2 - 5, self.pos_x + self.draw_x, self.pos_y + self.draw_y / 3 + 7
+        return self.pos_x - self.draw_x * 3 , self.pos_y - self.draw_y / 2, self.pos_x + self.draw_x * 3, self.pos_y + self.draw_y / 2 + 7
 
     def handle_collision(self, group, other):
         pass
@@ -103,26 +103,7 @@ class ChickenField:
             return
         self.clip_pos_x = 700 - play_mode.character.pos_x + self.pos_x
         self.clip_pos_y = self.pos_y
-        if self.dir > 0:
-            self.image.clip_composite_draw(self.index_h * self.size_h,
-                           self.index_v * self.size_v,
-                           self.size_h * self.tiles_h,
-                           self.size_v * self.tiles_v,
-                           0,
-                           '',
-                           self.clip_pos_x,
-                           self.clip_pos_y,
-                           self.size_h * self.tiles_h * 2.2, self.size_v * self.tiles_v * 2.2
-                           )
 
-        else:
-            self.image.clip_composite_draw(self.index_h * self.size_h,
-                                           self.index_v * self.size_v,
-                                           self.size_h * self.tiles_h,
-                                           self.size_v * self.tiles_v,
-                                           0,
-                                           'h',
-                                           self.clip_pos_x,
-                                           self.clip_pos_y,
-                                           self.size_h * self.tiles_h * 2.2, self.size_v * self.tiles_v * 2.2
-                                           )
+        self.image.clip_composite_draw((self.index_h + 1) * self.size_h, self.index_v * self.size_v, self.size_h * 2, self.size_v , 0, '', self.clip_pos_x - self.size_h * 2, self.clip_pos_y, self.size_h * 2 *  1.5, self.size_v * 1.5)
+        self.image.clip_composite_draw(self.index_h * self.size_h, (self.index_v + 2) * self.size_v, self.size_h, self.size_v , 0, '', self.clip_pos_x, self.clip_pos_y, self.size_h * 1.5, self.size_v * 1.5)
+        self.image.clip_composite_draw(self.index_h * self.size_h, (self.index_v + 1) * self.size_v, self.size_h, self.size_v , 0, '', self.clip_pos_x + self.size_h * 2, self.clip_pos_y, self.size_h * 1.5, self.size_v * 1.5)
