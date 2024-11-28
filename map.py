@@ -6,6 +6,7 @@ from pico2d import draw_rectangle
 
 import game_world
 import play_mode
+from obelisk import Obelisk
 from camp import Camp
 from rock import Rock
 from wall import Wall
@@ -19,7 +20,7 @@ class Map:
         self.buildings = [[], []]
         self.walls = [[], []]
 
-
+        self.enemy_buildings = [[], []]
 
         self.build_walls(0, 3)
         self.build_walls(0, 5)
@@ -27,6 +28,9 @@ class Map:
 
         self.init_buildings(0, 5)
         self.init_buildings(1, 5)
+
+
+        self.enemy_buildings[0].append(Obelisk(self, 0, 10, self.ground))
 
     def get_bb(self):
         return 0, 0, 0, 0
@@ -42,6 +46,12 @@ class Map:
         for i in range(len(self.buildings[1])):
             self.buildings[1][i].update()
 
+        for i in range(len(self.enemy_buildings[0])):
+            self.enemy_buildings[0][i].update()
+
+        for i in range(len(self.enemy_buildings[1])):
+            self.enemy_buildings[1][i].update()
+
         pass
 
     def draw(self):
@@ -54,6 +64,13 @@ class Map:
             self.buildings[0][i].draw()
         for i in range(len(self.buildings[1])):
             self.buildings[1][i].draw()
+
+        for i in range(len(self.enemy_buildings[0])):
+            self.enemy_buildings[0][i].draw()
+
+        for i in range(len(self.enemy_buildings[1])):
+            self.enemy_buildings[1][i].draw()
+
 
     def draw_bb(self):
         for i in range(len(self.walls[0])):
@@ -92,7 +109,6 @@ class Map:
 
 
     def build_walls(self, dir, x_index):
-            print(f'input: {len(self.walls[dir]), x_index}')
 
             for i in range(len(self.walls[dir]), x_index):
                 self.input_wall(dir, i)
