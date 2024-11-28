@@ -23,13 +23,14 @@ class UI:
     def get_bb(self):
         return -10000, -10000, 10000, 10000
     def update(self):
-
-        pass
+        for ui in self.uis:
+            print(f'uin: {ui}')
+            ui.update()
 
     def draw(self):
 
-        for i in range(self.UICOUNT):
-            self.uis[i].draw()
+        for ui in self.uis:
+            ui.draw()
 
     def input_UI(self, ui):
         self.UICOUNT += 1

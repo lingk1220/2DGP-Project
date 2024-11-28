@@ -1,5 +1,6 @@
 from pico2d import draw_rectangle
 
+import game_framework
 import play_mode
 from map import Map
 
@@ -12,6 +13,9 @@ objects = [[], [], [], [], []]
 
 UI = [[], [], []]
 
+time = 0.0
+is_day = True
+
 def add_object(o, depth = 0):
     objects[depth].append(o)
 
@@ -23,6 +27,7 @@ def add_map(o):
     map = o
 
 def update():
+
     for layer in objects:
         for o in layer:
             o.update()
@@ -31,7 +36,11 @@ def update():
 
     for layer in UI:
         for o in layer:
+            print(f'이게뭐야 {o}')
             o.update()
+
+    update_time()
+
 
 def render():
     for index, layer in enumerate(objects):
@@ -102,3 +111,15 @@ def remove_object(o):
             return
 
     raise ValueError('Cannot delete non existing object')
+
+def update_time():
+    global time, is_day
+    time += game_framework.frame_time
+    print(f'time: {time}')
+    if time > 1:
+        is_day = False
+        if time > 2:
+            time = 0
+            is_day = True
+
+    print(f'isday: {is_day}')

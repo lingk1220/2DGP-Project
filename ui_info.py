@@ -4,6 +4,8 @@
 
 from pico2d import load_image, load_font
 
+import play_mode
+
 
 class InformationUI:
 
@@ -18,6 +20,9 @@ class InformationUI:
         self.canvas_width = 1400
         self.canvas_height = 800
 
+        self.bool_draw = [1, 1, 1, 1, 1, 1, 1, 1]
+        self.draw_factor = [1, 1, 1, 1, 1, 1, 1]
+
         self.draw_offset_x = offset_x
         self.draw_offset_y = offset_y
         self.pos_x = [(0 + self.width_image[self.image_index[0]]  / 2)* self.draw_rate[0],
@@ -26,8 +31,8 @@ class InformationUI:
                       (50 + self.width_image[self.image_index[2]] /2)* self.draw_rate[2],
                       (50 + self.width_image[self.image_index[2]] / 2) * self.draw_rate[2],
                       (-10 + self.width_image[self.image_index[5]] / 2) * self.draw_rate[5],
-                      (-1 + self.width_image[self.image_index[6]] / 2) * self.draw_rate[6],
-                      (-1 + self.width_image[self.image_index[7]] / 2) * self.draw_rate[7]
+                      ( + self.width_image[self.image_index[6]] / 2) * self.draw_rate[6],
+                      ( + self.width_image[self.image_index[7]] / 2) * self.draw_rate[7]
                       ]
 
         self.pos_y = [( - 0- self.height_image[self.image_index[0]]  / 2)* self.draw_rate[0] ,
@@ -50,13 +55,21 @@ class InformationUI:
 
     def get_bb(self):
         return -10000, -10000, 10000, 10000
-    def update(self):
 
-        pass
+    def update(self):
+        print('fda')
+        print(play_mode.game_world.is_day)
+        if play_mode.game_world.is_day:
+            self.bool_draw[6] = 0
+            self.bool_draw[7] = 1
+        else:
+            self.bool_draw[6] = 1
+            self.bool_draw[7] = 0
+
 
     def draw(self):
         for i in range(8):
-            if i is not 6:
+            if self.bool_draw[i]:
                 d = self.image_index[i]
                 self.images[d].clip_draw(0, 0, self.width_image[d], self.height_image[d], self.pos_x[i] + self.draw_offset_x, self.pos_y[i] + self.draw_offset_y, self.width_image[d]  * self.draw_rate[i], self.height_image[d] * self.draw_rate[i])
             # self.images[i].clip_draw(0,

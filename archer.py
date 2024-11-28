@@ -88,6 +88,12 @@ class Archer:
         self.clip_pos_y = self.pos_y
         self.state_machine.draw()
 
+    def is_day(self):
+        if game_world.is_day:
+            return BehaviorTree.SUCCESS
+        else:
+            return BehaviorTree.FAIL
+
 
 
     def attacked(self, other):
@@ -186,6 +192,8 @@ class Archer:
             return BehaviorTree.RUNNING
 
     def shoot_to_chicken(self):
+        if self.chicken_target.pos_x == None:
+            return BehaviorTree.SUCCESS
         self.bool_shooting = 1
         self.state = Shoot
         self.dir = self.chicken_target.pos_x - self.pos_x
@@ -201,7 +209,12 @@ class Archer:
             play_mode.game_world.add_object(arrow, 3)
             return BehaviorTree.SUCCESS
 
+    def a(self):
+        print('db')
+
+
     def build_behavior_tree(self):
+
         a0 = Action('Wait', self.wait_time)
         ACT_set_wait_time = Action('Set Wait Time', self.set_wait_time)
         ACT_set_reload_time = Action('Set Wait Time', self.set_wait_time, 30, 30)
@@ -231,6 +244,19 @@ class Archer:
 
 
         root = SEL_hunt_or_wander = Selector('사냥 또는 wander', SEL_hunt_chicken, SEQ_wander)
+
+        CDT_is_day =  Condition('낮인가?', self.is_day)
+
+        root = SEL_day = Selector('낮', CDT_is_day, SEL_hunt_or_wander)
+
+        a10 = Action('asd3', self.a)
+
+        SEL_night = Selector('밤', a10)
+
+
+        root = SEL_day_or_night = Selector('낮 또는 밤', SEL_day, SEL_night)
+
+
 
         self.bt = BehaviorTree(root)
 

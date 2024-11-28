@@ -152,9 +152,10 @@ class Wanderer:
         return distance2
 
     def move_slightly_to(self, tx):
-        self.dir = (tx - self.pos_x) / abs(tx - self.pos_x)
-        self.speed = 100
-        self.pos_x += self.speed * self.dir * game_framework.frame_time
+        if tx != self.pos_x:
+            self.dir = (tx - self.pos_x) / abs(tx - self.pos_x)
+            self.speed = 100
+            self.pos_x += self.speed * self.dir * game_framework.frame_time
 
     def move_to(self, r=10):
         self.state = Walk

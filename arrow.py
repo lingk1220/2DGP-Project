@@ -33,6 +33,8 @@ class Arrow:
         self.draw_x = self.size_h * 1.5
         self.draw_y = self.size_v * 1.5
 
+        self.removed = 0
+
         self.dir = 1
         #self.state = Idle
         self.clip_pos_x = 700 - play_mode.character.pos_x + self.pos_x
@@ -48,9 +50,11 @@ class Arrow:
 
     def handle_collision(self, group, other):
         if group == 'arrow:chicken':
-            play_mode.game_world.remove_object(self)
-            self.parent.set_target_none()
-            pass
+            if not self.removed:
+                self.parent.set_target_none()
+                self.removed = 1
+                play_mode.game_world.remove_object(self)
+
 
 
 
