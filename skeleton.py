@@ -20,7 +20,7 @@ allys = ['Archer', 'Maid', 'Character']
 
 class Skeleton:
     image = None
-    def __init__(self, x, y):
+    def __init__(self, x, y, parent):
         self.width_image = 640
         self.height_image = 448
 

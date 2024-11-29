@@ -11,6 +11,7 @@ from pico2d import load_image, get_time, draw_rectangle
 import game_world
 import play_mode
 from chicken import Chicken
+from skeleton import Skeleton
 from wanderer import Wanderer
 from state_machine import StateMachine
 
@@ -45,13 +46,13 @@ class Obelisk2:
         self.clip_pos_x = 0
         self.clip_pos_y = 0
 
-        self.wanderer_count = 0
-        self.wanderer_count_max = 3
+        self.enemy_count = 0
+        self.enemy_count_max = 3
 
         self.dir = self.pos_x / abs(self.pos_x)
 
         self.spawn_timer = 0
-        self.spawn_delay = 10.0
+        self.spawn_delay = 1.0
         #self.state = Idle
         if Obelisk2.image == None:
             Obelisk2.image = load_image('obelisk2.png')
@@ -72,19 +73,15 @@ class Obelisk2:
         self.frame = (self.frame + 13 * 0.5 * game_framework.frame_time) % 13
 
 
+        self.spawn_timer = self.spawn_timer + game_framework.frame_time
         if self.spawn_timer > self.spawn_delay:
             minx, _ , maxx, _ = self.get_bb()
-            # chicken = Chicken(randint(int(minx), int(maxx)), self.ground)
-            # chicken.dir = self.dir
-            # chicken.parent = self
-            # play_mode.game_world.add_object(chicken, 2)
-            # play_mode.chickens.append(chicken)
 
-            new_wanderer = Wanderer(randint(int(minx), int(maxx)), self.ground, self)
-            play_mode.game_world.add_object(new_wanderer, 3)
-            self.spawn_timer = 10.0
-            self.spawn_delay = 10.0 + randint(10, 100) / 10
-            self.wanderer_count += 1
+
+            new_enemy = Skeleton((minx + maxx) // 2, self.ground, self)
+            play_mode.game_world.add_object(new_enemy, 3)
+            self.spawn_timer = 0
+            self.enemy_count += 1
 
         pass
 

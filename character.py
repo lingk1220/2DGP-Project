@@ -93,6 +93,9 @@ class Character:
 
     def handle_collision(self, group, other):
         if group == 'character:wanderer' or group == 'character:building':
+            print(f'ae{other.__class__}')
+            if other.__class__ == 'Wall':
+                return
             if self.interactor_dist_min > self.pos_x - other.pos_x:
                 self.nearest_interactor = other
                 self.wanderer_dist_min = self.pos_x - other.pos_x
