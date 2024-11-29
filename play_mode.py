@@ -8,6 +8,7 @@ from sdl2 import SDL_QUIT, SDL_KEYDOWN, SDLK_ESCAPE
 import game_framework
 import game_world
 import pause_mode
+import time_shift_mode
 from camp import Camp
 from crop import Crop
 from archer import Archer
@@ -38,6 +39,7 @@ def handle_events():
             game_framework.quit()
         elif event.type == SDL_KEYDOWN and event.key == SDLK_ESCAPE:
             game_framework.push_mode(pause_mode)
+            #game_framework.push_mode(time_shift_mode)
         else:
             character.handle_event(event)
 

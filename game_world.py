@@ -2,6 +2,7 @@ from pico2d import draw_rectangle
 
 import game_framework
 import play_mode
+import time_shift_mode
 from map import Map
 
 collision_pairs = {}
@@ -115,8 +116,10 @@ def remove_object(o):
 def update_time():
     global time, is_day
     time += game_framework.frame_time
-    if time > 30:
+    if time > 10:
         is_day = False
-        if time > 60:
+        game_framework.push_mode(time_shift_mode)
+        if time > 20:
             time = 0
             is_day = True
+            game_framework.push_mode(time_shift_mode)

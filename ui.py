@@ -22,11 +22,16 @@ class UI:
 
     def get_bb(self):
         return -10000, -10000, 10000, 10000
+
     def update(self):
+        r = None
         for ui in self.uis:
             print(f'uin: {ui}')
-            ui.update()
+            t = ui.update()
+            if t is not None:
+                r = t
 
+        return r
     def draw(self):
 
         for ui in self.uis:

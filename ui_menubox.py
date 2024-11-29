@@ -1,10 +1,12 @@
 from pico2d import load_font, load_image
+from sdl2.ext import MessageBox
 
 
 class MenuboxUI:
 
     images = [None] * 7
     image_background = None
+    menu_font64 = None
     def __init__(self, offset_x, offset_y):
         self.width_image = [96, 64, 128, 120, 120, 32, 32]
         self.height_image = [96, 16 , 16, 8, 8, 32, 32]
@@ -44,7 +46,8 @@ class MenuboxUI:
                       (-4 - self.height_image[self.image_index[7]] / 2) * self.draw_rate[7]
                       ]
 
-        self.menu_font64 = load_font('./Font/ByteBounce.TTF', 64)
+        if MenuboxUI.menu_font64 == None:
+            MenuboxUI.menu_font64 = load_font('./Font/ByteBounce.TTF', 64)
 
 
         if MenuboxUI.image_background == None:
@@ -65,14 +68,14 @@ class MenuboxUI:
 
     def draw(self):
 
-        self.image_background.clip_draw(0, 0, 128, 128, self.canvas_width // 2, self.canvas_height // 2, self.canvas_width, self.canvas_height)
+        MenuboxUI.image_background.clip_draw(0, 0, 128, 128, self.canvas_width // 2, self.canvas_height // 2, self.canvas_width, self.canvas_height)
         for i in range(self.ui_count):
             if i is not 6:
                 d = self.image_index[i]
-                self.images[d].clip_draw(0, 0, self.width_image[d], self.height_image[d], self.pos_x[i] + self.draw_offset_x, self.pos_y[i] + self.draw_offset_y, self.width_image[d]  * self.draw_rate[i], self.height_image[d] * self.draw_rate[i])
+                MenuboxUI.images[d].clip_draw(0, 0, self.width_image[d], self.height_image[d], self.pos_x[i] + self.draw_offset_x, self.pos_y[i] + self.draw_offset_y, self.width_image[d]  * self.draw_rate[i], self.height_image[d] * self.draw_rate[i])
 
         for i in range(self.text_count):
             ui_index = self.text_parent[i]
             d = self.image_index[ui_index]
-            self.menu_font64.draw(self.text_offset[i][0] + self.pos_x[ui_index] + self.draw_offset_x - ((self.width_image[d]  * self.draw_rate[ui_index]) // 2), self.text_offset[i][1] + self.pos_y[ui_index] + self.draw_offset_y, self.texts[i], (210, 201, 165))
+            MenuboxUI.menu_font64.draw(self.text_offset[i][0] + self.pos_x[ui_index] + self.draw_offset_x - ((self.width_image[d]  * self.draw_rate[ui_index]) // 2), self.text_offset[i][1] + self.pos_y[ui_index] + self.draw_offset_y, self.texts[i], (210, 201, 165))
 

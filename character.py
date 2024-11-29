@@ -80,10 +80,10 @@ class Character:
         self.state_machine.set_transitions(
             {
 
-                Idle : {right_down_with_shift: Run, right_down : Walk , right_up_with_shift: Run, right_up : Walk, left_down_with_shift:Run, left_down : Walk, left_up_with_shift: Run, left_up : Walk, lshift_down: Idle, lshift_up: Idle, interact_down:Interact, change_mode_play:Idle},
-                Interact: {time_out_interact:Idle, right_down_with_shift: Run, right_down : Walk, left_down_with_shift: Run, left_down : Walk, lshift_down: Interact, lshift_up: Interact, change_mode_play:Interact},
-                Walk: {right_down: Idle, right_up: Idle, left_down: Idle, left_up: Idle, lshift_down: Run, run_shift:Run, change_mode_play:Walk},
-                Run: {right_down: Idle, right_up: Idle, left_down: Idle, left_up: Idle, lshift_up: Walk, change_mode_play:Run},
+                Idle : {right_down_with_shift: Run, right_down : Walk , right_up_with_shift: Run, right_up : Walk, left_down_with_shift:Run, left_down : Walk, left_up_with_shift: Run, left_up : Walk, lshift_down: Idle, lshift_up: Idle, interact_down:Interact},
+                Interact: {time_out_interact:Idle, right_down_with_shift: Run, right_down : Walk, left_down_with_shift: Run, left_down : Walk, lshift_down: Interact, lshift_up: Interact},
+                Walk: {right_down: Idle, right_up: Idle, left_down: Idle, left_up: Idle, lshift_down: Run, run_shift:Run},
+                Run: {right_down: Idle, right_up: Idle, left_down: Idle, left_up: Idle, lshift_up: Walk},
 
             }
         )
@@ -109,6 +109,8 @@ class Character:
         self.state_machine.add_event(('INPUT', event, self.shift_pressed))
         pass
 
+    def change_mode(self):
+        self.state_machine.clear_event()
 
     def draw(self):
         self.state_machine.draw()
