@@ -12,9 +12,14 @@ class ScreenBlurUI:
         self.image_count = 1
 
         self.t = 0
-        self.mt = 255
+        self.mt = 100
 
         self.dir = 1
+
+        self.t2 = 0
+        self.mt2 = 200
+
+        self.dir2 = 0
 
         self.text_count = 3
         self.texts = ['Resume', 'Setting', 'Exit Game']
@@ -29,7 +34,7 @@ class ScreenBlurUI:
 
         if ScreenBlurUI.image_background == None:
             ScreenBlurUI.image_background = load_image('./UI/blur/background_blur.png')
-
+            ScreenBlurUI.image_background.opacify(0)
 
 
     def get_bb(self):
@@ -37,16 +42,25 @@ class ScreenBlurUI:
 
     def update(self):
         r = 0
-        self.t = self.t + self.dir * 100 * game_framework.frame_time
-        if 0 > self.t:
-            r = 1
-            self.dir = 1
-            self.t = 0
-        elif self.mt < self.t:
-            self.dir = -1
-            self.t = self.mt
-        self.image_background.opacify(self.t / self.mt)
-        return r
+        if self.dir2 == 1:
+            self.t2 = self.t2 + self.dir2 * 100 * game_framework.frame_time
+            if self.t2 > self.mt2:
+                self.dir2 = 0
+                self.dir = -1
+
+        else:
+            self.t = self.t + self.dir * 100 * game_framework.frame_time
+
+            if 0 > self.t:
+                r = 1
+                self.dir = 1
+                self.t = 0
+            elif self.mt < self.t:
+                self.dir = -1
+                self.dir2 = 1
+                self.t = self.mt
+            self.image_background.opacify(self.t / self.mt)
+            return r
         pass
 
     def draw(self):

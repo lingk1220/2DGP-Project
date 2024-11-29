@@ -26,7 +26,6 @@ class UI:
     def update(self):
         r = None
         for ui in self.uis:
-            print(f'uin: {ui}')
             t = ui.update()
             if t is not None:
                 r = t

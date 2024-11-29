@@ -14,7 +14,7 @@ objects = [[], [], [], [], []]
 
 UI = [[], [], []]
 
-time = 30.0
+time = 9.0
 is_day = True
 
 def add_object(o, depth = 0):
@@ -116,10 +116,13 @@ def remove_object(o):
 def update_time():
     global time, is_day
     time += game_framework.frame_time
-    if time > 10:
+    if time > 10 and is_day == True:
         is_day = False
+        print('ev')
         game_framework.push_mode(time_shift_mode)
-        if time > 20:
-            time = 0
-            is_day = True
-            game_framework.push_mode(time_shift_mode)
+
+    if time > 20 and is_day == False:
+        time = 0
+        is_day = True
+        print('ee')
+        game_framework.push_mode(time_shift_mode)
