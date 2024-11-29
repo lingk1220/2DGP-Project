@@ -2,6 +2,7 @@ from pico2d import get_events, pico2d, delay, update_canvas
 from sdl2 import SDL_QUIT, SDL_KEYDOWN
 
 import game_framework
+import game_world
 import play_mode
 from ui import UI
 from ui_pause import PauseUI
@@ -31,11 +32,14 @@ def init():
 def update():
     play_mode.update()
     r= ui.update()
-    print(f'r: {r}')
+
     if r == 1:
         game_framework.pop_mode()
 
-
+    if r == 2:
+        print(f'r: {r}')
+        game_world.is_day = not game_world.is_day
+        pass
 
 def draw():
     play_mode.draw()
@@ -46,6 +50,8 @@ def draw():
 
 
 def finish():
+    game_world.is_shifted = False
+
     pass
 
 def pause():

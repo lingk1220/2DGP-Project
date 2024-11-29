@@ -47,7 +47,7 @@ class ScreenBlurUI:
             if self.t2 > self.mt2:
                 self.dir2 = 0
                 self.dir = -1
-
+                r = 2
         else:
             self.t = self.t + self.dir * 100 * game_framework.frame_time
 
@@ -60,7 +60,8 @@ class ScreenBlurUI:
                 self.dir2 = 1
                 self.t = self.mt
             self.image_background.opacify(self.t / self.mt)
-            return r
+
+        return r
         pass
 
     def draw(self):
