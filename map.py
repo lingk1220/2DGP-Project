@@ -7,6 +7,7 @@ from pico2d import draw_rectangle
 import game_world
 import play_mode
 from chicken_field import ChickenField
+from enemy_building import EnemyBuilding
 from ground import Ground
 from obelisk import Obelisk
 from camp import Camp
@@ -30,6 +31,8 @@ class Map:
         self.walls = [[], []]
 
         self.enemy_buildings = [[], []]
+
+
 
         # self.build_walls(0, 3)
         # self.build_walls(0, 5)
@@ -64,44 +67,13 @@ class Map:
             for layer_half in layer:
                 for o in layer_half:
                     o.update()
-        # for i in range(len(self.walls[0])):
-        #     self.walls[0][i].update()
-        # for i in range(len(self.walls[1])):
-        #     self.walls[1][i].update()
-        #
-        # for i in range(len(self.buildings[0])):
-        #     self.buildings[0][i].update()
-        # for i in range(len(self.buildings[1])):
-        #     self.buildings[1][i].update()
-        #
-        # for i in range(len(self.enemy_buildings[0])):
-        #     self.enemy_buildings[0][i].update()
-        #
-        # for i in range(len(self.enemy_buildings[1])):
-        #     self.enemy_buildings[1][i].update()
-        #
-        # pass
+
 
     def draw(self):
         for layer in self.elements:
             for layer_half in layer:
                 for o in layer_half:
                     o.draw()
-        # for i in range(len(self.walls[0])):
-        #     self.walls[0][i].draw()
-        # for i in range(len(self.walls[1])):
-        #     self.walls[1][i].draw()
-        #
-        # for i in range(len(self.buildings[0])):
-        #     self.buildings[0][i].draw()
-        # for i in range(len(self.buildings[1])):
-        #     self.buildings[1][i].draw()
-        #
-        # for i in range(len(self.enemy_buildings[0])):
-        #     self.enemy_buildings[0][i].draw()
-        #
-        # for i in range(len(self.enemy_buildings[1])):
-        #     self.enemy_buildings[1][i].draw()
 
 
     def draw_bb(self):
@@ -158,6 +130,7 @@ class Map:
         self.grounds[dir].append(Ground(self, dir, x_index, 0, self.ground))
         self.grounds[dir].append(Ground(self, dir, x_index, 1, self.ground))
         self.grounds[dir].append(Ground(self, dir, x_index, 2, self.ground))
+
     def init_grounds(self, dir, x_index):
         if x_index < self.map_size:
             self.input_ground(dir, x_index)
@@ -165,7 +138,7 @@ class Map:
 
 
     def input_enemy_building(self, dir, x_index):
-        self.enemy_buildings[dir].append(Obelisk2(self, dir, x_index, self.ground))
+        self.enemy_buildings[dir].append(EnemyBuilding(self, dir, x_index, self.ground))
 
 
     def init_enemy_buildings(self, dir, x_index):

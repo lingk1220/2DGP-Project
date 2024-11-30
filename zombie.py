@@ -18,14 +18,14 @@ from arrow import Arrow
 
 allys = ['Archer', 'Maid', 'Character']
 
-class Skeleton:
+class Zombie:
     image = None
     def __init__(self, x, y, parent):
         self.width_image = 640
-        self.height_image = 448
+        self.height_image = 512
 
         self.count_h = 10
-        self.count_v = 7
+        self.count_v = 8
 
         self.size_h = (self.width_image // self.count_h)
         self.size_v = (self.height_image // self.count_v)
@@ -52,8 +52,8 @@ class Skeleton:
         self.clip_pos_y = self.pos_y
 
 
-        if Skeleton.image == None:
-            Skeleton.image = load_image('./enemy/skeleton.png')
+        if Zombie.image == None:
+            Zombie.image = load_image('./enemy/zombie.png')
 
         play_mode.game_world.add_collision_pair('enemy:ally', self, None)
 
@@ -235,104 +235,104 @@ class Skeleton:
 
 class Idle:
     @staticmethod
-    def enter(skeleton, e):
-        skeleton.idle_start_time = get_time()
-        skeleton.index_v = 4 - 1
-        skeleton.index_h = 0
+    def enter(zombie, e):
+        zombie.idle_start_time = get_time()
+        zombie.index_v = 4 - 1
+        zombie.index_h = 0
 
     @staticmethod
-    def exit(skeleton, e):
+    def exit(zombie, e):
         pass
 
     @staticmethod
-    def do(skeleton):
-        skeleton.index_h = (skeleton.index_h + 10 * 1.5 * game_framework.frame_time) % 10
+    def do(zombie):
+        zombie.index_h = (zombie.index_h + 10 * 1.5 * game_framework.frame_time) % 10
 
 
     @staticmethod
-    def draw(skeleton):
-        if skeleton.dir < 0:
-            Skeleton.image.clip_draw(int(skeleton.index_h) * skeleton.size_h,
-                                   skeleton.index_v * skeleton.size_v,
-                                   skeleton.size_h - skeleton.center_error_x,
-                                   skeleton.size_v,
-                                   skeleton.clip_pos_x,
-                                   skeleton.clip_pos_y, skeleton.draw_x, skeleton.draw_y)
+    def draw(zombie):
+        if zombie.dir < 0:
+            Zombie.image.clip_draw(int(zombie.index_h) * zombie.size_h,
+                                   zombie.index_v * zombie.size_v,
+                                   zombie.size_h - zombie.center_error_x,
+                                   zombie.size_v,
+                                   zombie.clip_pos_x,
+                                   zombie.clip_pos_y, zombie.draw_x, zombie.draw_y)
         else:
-            Skeleton.image.clip_composite_draw(int(skeleton.index_h) * skeleton.size_h,
-                                             skeleton.index_v * skeleton.size_v,
-                                             skeleton.size_h - skeleton.center_error_x,
-                                             skeleton.size_v,
+            Zombie.image.clip_composite_draw(int(zombie.index_h) * zombie.size_h,
+                                             zombie.index_v * zombie.size_v,
+                                             zombie.size_h - zombie.center_error_x,
+                                             zombie.size_v,
                                              0,
                                              'h',
-                                             skeleton.clip_pos_x,
-                                             skeleton.clip_pos_y, skeleton.draw_x, skeleton.draw_y)
+                                             zombie.clip_pos_x,
+                                             zombie.clip_pos_y, zombie.draw_x, zombie.draw_y)
 
 class Walk:
     @staticmethod
-    def enter(skeleton, e):
-        skeleton.index_v = 7 - 1
-        skeleton.index_h = 0
+    def enter(zombie, e):
+        zombie.index_v = 8 - 1
+        zombie.index_h = 8
 
     @staticmethod
-    def exit(skeleton, e):
+    def exit(zombie, e):
         pass
 
     @staticmethod
-    def do(skeleton):
-        skeleton.index_h = (skeleton.index_h + 8 * 1.5 * game_framework.frame_time) % 8
-        print(f'            {int(skeleton.index_h)}')
+    def do(zombie):
+        zombie.index_h = (zombie.index_h + 8 * 0.8 * game_framework.frame_time) % 8
+        print(f'            {int(zombie.index_h)}')
 
     @staticmethod
-    def draw(skeleton):
-        if skeleton.dir < 0:
-            Skeleton.image.clip_draw(int(skeleton.index_h) * skeleton.size_h,
-                                   skeleton.index_v * skeleton.size_v,
-                                   skeleton.size_h - skeleton.center_error_x,
-                                   skeleton.size_v,
-                                   skeleton.clip_pos_x,
-                                   skeleton.clip_pos_y, skeleton.draw_x, skeleton.draw_y)
+    def draw(zombie):
+        if zombie.dir < 0:
+            Zombie.image.clip_draw(int((zombie.index_h + 7) % 10) * zombie.size_h,
+                                   (zombie.index_v - int((zombie.index_h + 7) // 10)) * zombie.size_v,
+                                   zombie.size_h - zombie.center_error_x,
+                                   zombie.size_v,
+                                   zombie.clip_pos_x,
+                                   zombie.clip_pos_y, zombie.draw_x, zombie.draw_y)
         else:
-            Skeleton.image.clip_composite_draw(int(skeleton.index_h) * skeleton.size_h,
-                                             skeleton.index_v * skeleton.size_v,
-                                             skeleton.size_h - skeleton.center_error_x,
-                                             skeleton.size_v,
+            Zombie.image.clip_composite_draw(int((zombie.index_h + 7) % 10) * zombie.size_h,
+                                             (zombie.index_v - int((zombie.index_h + 7) // 10)) * zombie.size_v,
+                                             zombie.size_h - zombie.center_error_x,
+                                             zombie.size_v,
                                              0,
                                              'h',
-                                             skeleton.clip_pos_x,
-                                             skeleton.clip_pos_y, skeleton.draw_x, skeleton.draw_y)
+                                             zombie.clip_pos_x,
+                                             zombie.clip_pos_y, zombie.draw_x, zombie.draw_y)
 
 
 
 class Attack:
     @staticmethod
-    def enter(skeleton, e):
-        skeleton.index_v = 3 - 1
-        skeleton.index_h = 0
+    def enter(zombie, e):
+        zombie.index_v = 3 - 1
+        zombie.index_h = 0
 
     @staticmethod
-    def exit(skeleton, e):
+    def exit(zombie, e):
         pass
 
     @staticmethod
-    def do(skeleton):
-        skeleton.index_h = (skeleton.index_h + 6 * 1.5 * game_framework.frame_time) % 6
+    def do(zombie):
+        zombie.index_h = (zombie.index_h + 6 * 1.5 * game_framework.frame_time) % 6
 
     @staticmethod
-    def draw(skeleton):
-        if skeleton.dir < 0:
-            Skeleton.image.clip_draw(int(skeleton.index_h) * skeleton.size_h,
-                                   skeleton.index_v * skeleton.size_v,
-                                   skeleton.size_h - skeleton.center_error_x,
-                                   skeleton.size_v,
-                                   skeleton.clip_pos_x,
-                                   skeleton.clip_pos_y, skeleton.draw_x, skeleton.draw_y)
+    def draw(zombie):
+        if zombie.dir < 0:
+            zombie.image.clip_draw(int(zombie.index_h) * zombie.size_h,
+                                   zombie.index_v * zombie.size_v,
+                                   zombie.size_h - zombie.center_error_x,
+                                   zombie.size_v,
+                                   zombie.clip_pos_x,
+                                   zombie.clip_pos_y, zombie.draw_x, zombie.draw_y)
         else:
-            Skeleton.image.clip_composite_draw(int(skeleton.index_h) * skeleton.size_h,
-                                             skeleton.index_v * skeleton.size_v,
-                                             skeleton.size_h - skeleton.center_error_x,
-                                             skeleton.size_v,
+            zombie.image.clip_composite_draw(int(zombie.index_h) * zombie.size_h,
+                                             zombie.index_v * zombie.size_v,
+                                             zombie.size_h - zombie.center_error_x,
+                                             zombie.size_v,
                                              0,
                                              'h',
-                                             skeleton.clip_pos_x,
-                                             skeleton.clip_pos_y, skeleton.draw_x, skeleton.draw_y)
+                                             zombie.clip_pos_x,
+                                             zombie.clip_pos_y, zombie.draw_x, zombie.draw_y)

@@ -14,6 +14,8 @@ from chicken import Chicken
 from skeleton import Skeleton
 from wanderer import Wanderer
 from state_machine import StateMachine
+from zombie import Zombie
+
 
 class Obelisk2:
     image = None
@@ -52,7 +54,7 @@ class Obelisk2:
         self.dir = self.pos_x / abs(self.pos_x)
 
         self.spawn_timer = 0
-        self.spawn_delay = 1.0
+        self.spawn_delay = 10.0
         #self.state = Idle
         if Obelisk2.image == None:
             Obelisk2.image = load_image('obelisk2.png')
@@ -78,7 +80,7 @@ class Obelisk2:
             minx, _ , maxx, _ = self.get_bb()
 
 
-            new_enemy = Skeleton((minx + maxx) // 2, self.ground, self)
+            new_enemy = Zombie((minx + maxx) // 2, self.ground, self)
             play_mode.game_world.add_object(new_enemy, 3)
             self.spawn_timer = 0
             self.enemy_count += 1
