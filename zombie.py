@@ -20,12 +20,14 @@ allys = ['Archer', 'Maid', 'Character']
 
 class Zombie:
     image = None
-    def __init__(self, x, y, parent):
+    def __init__(self, x, y, parent, cost = 1):
         self.width_image = 640
         self.height_image = 512
 
         self.count_h = 10
         self.count_v = 8
+
+        self.cost = 0.75 + cost / 4
 
         self.size_h = (self.width_image // self.count_h)
         self.size_v = (self.height_image // self.count_v)
@@ -119,7 +121,7 @@ class Zombie:
 
     def move_slightly_to(self, tx):
         self.dir = (tx - self.pos_x) / abs(tx - self.pos_x)
-        self.speed = 100
+        self.speed = 120 * self.cost
         self.pos_x += self.speed * self.dir * game_framework.frame_time
 
     def move_to(self, r=10):

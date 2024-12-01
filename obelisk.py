@@ -11,16 +11,21 @@ from pico2d import load_image, get_time, draw_rectangle
 import game_world
 import play_mode
 from chicken import Chicken
+from skeleton import Skeleton
 from wanderer import Wanderer
 from state_machine import StateMachine
+from zombie import Zombie
+
 
 class Obelisk:
     image = None
-    def __init__(self,map, dir, x, y):
+    def __init__(self,map, dir, x, y, difficulty):
         self.width_image = 2660
         self.height_image = 240
 
+        self.enemy_factors = [3, 2, 1]
         self.map = map
+        self.difficulty = difficulty
 
         self.count_h = 14
         self.count_v = 1
@@ -45,13 +50,12 @@ class Obelisk:
         self.clip_pos_x = 0
         self.clip_pos_y = 0
 
-        self.wanderer_count = 0
-        self.wanderer_count_max = 3
-
+        self.enemy_count = 0
+        self.enemy_count_max = 5 + (self.difficulty ** 5) * 50
         self.dir = self.pos_x / abs(self.pos_x)
 
         self.spawn_timer = 0
-        self.spawn_delay = 10.0
+        self.spawn_delay = 2.0
         #self.state = Idle
         if Obelisk.image == None:
             Obelisk.image = load_image('obelisk.png')
@@ -69,23 +73,30 @@ class Obelisk:
 
 
     def update(self):
-        self.frame = (self.frame + 14 * 0.5 * game_framework.frame_time) % 14
+        self.frame = (self.frame + 13 * 0.5 * game_framework.frame_time) % 13
 
 
+        if game_world.is_day == True:
+            return
+
+        self.spawn_timer = self.spawn_timer + game_framework.frame_time
+
+        if self.enemy_count >= self.enemy_count_max:
+           return
         if self.spawn_timer > self.spawn_delay:
-            minx, _ , maxx, _ = self.get_bb()
-            # chicken = Chicken(randint(int(minx), int(maxx)), self.ground)
-            # chicken.dir = self.dir
-            # chicken.parent = self
-            # play_mode.game_world.add_object(chicken, 2)
-            # play_mode.chickens.append(chicken)
+            new_enemy = None
+            factor = randint(1, 3)
+            cost = min( randint(1, 3), self.enemy_count_max -self.enemy_count)
+            if factor == 1:
+                new_enemy = Zombie(self.pos_x, self.ground, self, cost)
+            elif factor == 2:
+                new_enemy = Skeleton(self.pos_x, self.ground, self, cost)
+            elif factor == 3:
+                new_enemy = Skeleton(self.pos_x, self.ground, self, cost)
 
-            new_wanderer = Wanderer(randint(int(minx), int(maxx)), self.ground, self)
-            play_mode.game_world.add_object(new_wanderer, 3)
-            self.spawn_timer = 10.0
-            self.spawn_delay = 10.0 + randint(10, 100) / 10
-            self.wanderer_count += 1
-
+            play_mode.game_world.add_object(new_enemy, 3)
+            self.spawn_timer = 0
+            self.enemy_count += factor
         pass
 
     def handle_event(self, event):

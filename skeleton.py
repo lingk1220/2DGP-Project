@@ -20,12 +20,14 @@ allys = ['Archer', 'Maid', 'Character']
 
 class Skeleton:
     image = None
-    def __init__(self, x, y, parent):
+    def __init__(self, x, y, parent, cost = 1):
         self.width_image = 640
         self.height_image = 448
 
         self.count_h = 10
         self.count_v = 7
+
+        self.cost = 0.75 + cost / 4
 
         self.size_h = (self.width_image // self.count_h)
         self.size_v = (self.height_image // self.count_v)
@@ -119,7 +121,8 @@ class Skeleton:
 
     def move_slightly_to(self, tx):
         self.dir = (tx - self.pos_x) / abs(tx - self.pos_x)
-        self.speed = 100
+        self.speed = 100 * self.cost
+        print(f'speed: {self.speed}')
         self.pos_x += self.speed * self.dir * game_framework.frame_time
 
     def move_to(self, r=10):
@@ -246,7 +249,7 @@ class Idle:
 
     @staticmethod
     def do(skeleton):
-        skeleton.index_h = (skeleton.index_h + 10 * 1.5 * game_framework.frame_time) % 10
+        skeleton.index_h = (skeleton.index_h + 10 * skeleton.cost * 1.5 * game_framework.frame_time) % 10
 
 
     @staticmethod
@@ -280,7 +283,7 @@ class Walk:
 
     @staticmethod
     def do(skeleton):
-        skeleton.index_h = (skeleton.index_h + 8 * 1.5 * game_framework.frame_time) % 8
+        skeleton.index_h = (skeleton.index_h + 8 * skeleton.cost *  1.5 * game_framework.frame_time) % 8
         print(f'            {int(skeleton.index_h)}')
 
     @staticmethod
@@ -316,7 +319,7 @@ class Attack:
 
     @staticmethod
     def do(skeleton):
-        skeleton.index_h = (skeleton.index_h + 6 * 1.5 * game_framework.frame_time) % 6
+        skeleton.index_h = (skeleton.index_h + 6 * skeleton.cost * 1.5 * game_framework.frame_time) % 6
 
     @staticmethod
     def draw(skeleton):

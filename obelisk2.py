@@ -19,11 +19,13 @@ from zombie import Zombie
 
 class Obelisk2:
     image = None
-    def __init__(self,map, dir, x, y):
+    def __init__(self,map, dir, x, y, difficulty):
         self.width_image = 2600
         self.height_image = 400
 
+        self.enemy_factors = [1, 3, 3]
         self.map = map
+        self.difficulty = difficulty
 
         self.count_h = 13
         self.count_v = 1
@@ -49,12 +51,12 @@ class Obelisk2:
         self.clip_pos_y = 0
 
         self.enemy_count = 0
-        self.enemy_count_max = 3
-
+        self.enemy_count_max = 5 + (self.difficulty ** 5) * 50
+        print(f'cm: {self.difficulty, self.enemy_count_max}')
         self.dir = self.pos_x / abs(self.pos_x)
 
         self.spawn_timer = 0
-        self.spawn_delay = 10.0
+        self.spawn_delay = 1.0
         #self.state = Idle
         if Obelisk2.image == None:
             Obelisk2.image = load_image('obelisk2.png')
@@ -74,16 +76,26 @@ class Obelisk2:
     def update(self):
         self.frame = (self.frame + 13 * 0.5 * game_framework.frame_time) % 13
 
-
+        if game_world.is_day == True:
+            return
         self.spawn_timer = self.spawn_timer + game_framework.frame_time
+
+        if self.enemy_count >= self.enemy_count_max:
+           return
         if self.spawn_timer > self.spawn_delay:
-            minx, _ , maxx, _ = self.get_bb()
+            new_enemy = None
+            factor = randint(1, 3)
+            cost = min( randint(1, 3), self.enemy_count_max -self.enemy_count)
+            if factor == 1:
+                new_enemy = Zombie(self.pos_x, self.ground, self, cost)
+            elif factor == 2:
+                new_enemy = Skeleton(self.pos_x, self.ground, self, cost)
+            elif factor == 3:
+                new_enemy = Skeleton(self.pos_x, self.ground, self, cost)
 
-
-            new_enemy = Zombie((minx + maxx) // 2, self.ground, self)
             play_mode.game_world.add_object(new_enemy, 3)
             self.spawn_timer = 0
-            self.enemy_count += 1
+            self.enemy_count += factor
 
         pass
 
