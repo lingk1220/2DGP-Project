@@ -47,14 +47,27 @@ class EnemyBuilding:
 
 
     def init_building(self):
-        print(f'enb{self.map.map_size / 3 / 3}')
-        if self.x > self.map.map_size -  (self.map.map_size / 3 / 3):
-            self.building = Obelisk2(self.map, self.dir, self.x, self.ground)
+
+        difficulty_cutline = self.map.map_size -  (self.map.map_size * self.map.enemy_cutline / 3)
+        self.difficulty = self.x / self.map.map_size
+        print(f'dif: {self.difficulty}')
+
+        if self.x > difficulty_cutline:
+            self.building = Obelisk2(self.map, self.dir, self.x, self.ground, self.difficulty)
         else:
-            self.building = Obelisk(self.map, self.dir, self.x, self.ground)
+            self.building = Obelisk(self.map, self.dir, self.x, self.ground, self.difficulty)
+
+    def spawn_enemy(self):
+        pass
+
+
+
 
     def update(self):
         self.building.update()
+
+
+
         pass
 
     def handle_event(self, event):

@@ -65,6 +65,11 @@ class Character:
         self.x, self.y = random.randint(0, 0), 0
         self.draw_x = self.size_h * 2
         self.draw_y = self.size_v * 2
+
+
+        self.money = 50
+        self.money_max = 100
+
         if Character.image == None:
             Character.image = load_image('character.png')
         if Character.image_interaction == None:

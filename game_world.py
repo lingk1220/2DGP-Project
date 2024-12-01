@@ -14,7 +14,9 @@ objects = [[], [], [], [], []]
 
 UI = [[], [], []]
 
-time = 9.0
+time = 49.0
+time_one_day = 100.0
+
 is_day = True
 is_shifted = False
 
@@ -115,13 +117,13 @@ def remove_object(o):
     raise ValueError('Cannot delete non existing object')
 
 def update_time():
-    global time, is_day, is_shifted
+    global time, is_day, is_shifted, time_one_day
     time += game_framework.frame_time
-    if time > 10 and is_shifted == False and is_day == True:
+    if time > time_one_day / 2 and is_shifted == False and is_day == True:
         is_shifted = True
         game_framework.push_mode(time_shift_mode)
 
-    if time > 20 and is_shifted == False and is_day == False:
+    if time > time_one_day and is_shifted == False and is_day == False:
         time = 0
         is_shifted = True
         game_framework.push_mode(time_shift_mode)
