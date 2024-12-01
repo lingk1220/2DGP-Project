@@ -41,6 +41,8 @@ class Crop:
         self.clip_pos_x = 700 - play_mode.character.pos_x + self.pos_x
         self.clip_pos_y = self.pos_y
 
+        self.tag = 'Crop'
+
         if Crop.image == None:
             Crop.image = load_image('Crops.png')
 

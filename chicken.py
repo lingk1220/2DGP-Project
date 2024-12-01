@@ -35,6 +35,8 @@ class Chicken:
         self.color = 'white'
         self.state = Idle
 
+        self.tag = 'Chicken'
+
         self.clip_pos_x = 700 - play_mode.character.pos_x + self.pos_x
         self.clip_pos_y = self.pos_y
 
@@ -51,6 +53,7 @@ class Chicken:
 
     def handle_collision(self, group, other):
         if group == 'arrow:chicken':
+            play_mode.character.get_money(1)
             play_mode.game_world.remove_object(self)
 
             pass

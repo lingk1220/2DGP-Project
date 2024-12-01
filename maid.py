@@ -44,6 +44,8 @@ class Maid:
         self.clip_pos_x = 700 - play_mode.character.pos_x + self.pos_x
         self.clip_pos_y = self.pos_y
 
+        self.tag = 'Ally'
+
         if Maid.image == None:
             Maid.image = load_image('Maid.png')
 
@@ -173,6 +175,8 @@ class Maid:
 
         #play_mode.game_world.remove_object(self.crop_target)
         self.crop_target.growth = 0
+
+        play_mode.character.get_money(1)
         self.crop_target = None
         return BehaviorTree.SUCCESS
 

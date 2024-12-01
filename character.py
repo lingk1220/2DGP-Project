@@ -123,6 +123,17 @@ class Character:
     def draw(self):
         self.state_machine.draw()
 
+    def get_money(self, amount):
+        self.money += amount
+        if self.money > self.money_max:
+            self.money = self.money_max
+
+    def lose_money(self, amount):
+        self.money -= amount
+        if self.money < 0:
+            self.money = 0
+
+
 
 class Idle:
     @staticmethod
