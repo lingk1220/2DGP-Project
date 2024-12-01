@@ -1,6 +1,8 @@
 import math
 import random
 import time
+from random import randint
+from zipfile import BZIP2_VERSION
 
 import game_framework
 import game_world
@@ -15,9 +17,13 @@ from state_machine import StateMachine
 
 from arrow import Arrow
 
+enemys = ['Skeleton', 'Zombie']
+
+
 class Archer:
     image = None
     def __init__(self, x, y):
+
         self.width_image = 704
         self.height_image = 320
 
@@ -32,6 +38,7 @@ class Archer:
         self.pos_y = y + 25
         self.dir = 1
         self.bool_shooting = 0
+        self.bool_is_at_home = False
         self.is_dying = 0
 
         self.hp = 3
@@ -44,9 +51,11 @@ class Archer:
         self.min_chicken_dir = 10000
         self.state = Walk
         self.chicken_target = None
+        self.enemy_target = None
         self.clip_pos_x = 700 - play_mode.character.pos_x + self.pos_x
         self.clip_pos_y = self.pos_y
 
+        self.tag = 'Ally'
 
         if Archer.image == None:
             Archer.image = load_image('Archer.png')
@@ -54,6 +63,7 @@ class Archer:
         play_mode.game_world.add_collision_pair('enemy:ally', None, self)
 
         self.build_behavior_tree()
+        self.bt = self.bt_day
         self.state_machine = StateMachine(self)
         self.state_machine.start(Idle)
 
@@ -68,6 +78,11 @@ class Archer:
 
 
     def update(self):
+        if game_world.is_day:
+            self.bt = self.bt_day
+        else:
+            self.bt = self.bt_night
+
         if not self.is_dying:
             self.bt.run()
         #print(f'{self.state}')
@@ -108,8 +123,11 @@ class Archer:
             self.state = Die
         #play_mode.game_world.remove_object(self)
 
-    def set_target_none(self):
+    def set_target_chicken_none(self):
         self.chicken_target = None
+
+    def set_target_enemy_none(self):
+        self.enemy_target = None
 
     def set_target_location(self, x=None):
 
@@ -173,11 +191,35 @@ class Archer:
         else:
             return BehaviorTree.SUCCESS
 
-    def is_target_nearby(self, distance):
+    def lockon_enemy(self, distance):
+        self.min_enemy_dir = 10000000
+        self.enemy_target = None
+        for enemy in game_world.objects[3]:
+            if enemy.tag == 'Enemy':
+                enemy_dir = abs(self.distance_get(enemy.pos_x, self.pos_x))
+                if enemy_dir < distance:
+                    if enemy_dir < self.min_chicken_dir:
+                        self.enemy_target = enemy
+        if self.enemy_target == None:
+            return BehaviorTree.FAIL
+        else:
+            return BehaviorTree.SUCCESS
+
+
+    def is_chicken_nearby(self, distance):
         if self.chicken_target == None:
             return BehaviorTree.FAIL
 
         if self.distance_less_than(self.chicken_target.pos_x, self.pos_x, distance):
+            return BehaviorTree.SUCCESS
+        else:
+            return BehaviorTree.FAIL
+
+    def is_enemy_nearby(self, distance):
+        if self.enemy_target == None:
+            return BehaviorTree.FAIL
+
+        if self.distance_less_than(self.enemy_target.pos_x, self.pos_x, distance):
             return BehaviorTree.SUCCESS
         else:
             return BehaviorTree.FAIL
@@ -197,6 +239,7 @@ class Archer:
             return BehaviorTree.RUNNING
 
     def shoot_to_chicken(self):
+
         if self.chicken_target.pos_x == None:
             return BehaviorTree.SUCCESS
         self.bool_shooting = 1
@@ -214,9 +257,57 @@ class Archer:
             play_mode.game_world.add_object(arrow, 3)
             return BehaviorTree.SUCCESS
 
+
+    def shoot_to_enemy(self):
+        if self.enemy_target == None:
+            return BehaviorTree.FAIL
+        if self.enemy_target.pos_x == None:
+            return BehaviorTree.SUCCESS
+        self.bool_shooting = 1
+        self.state = Shoot
+        self.dir = self.enemy_target.pos_x - self.pos_x
+        if self.index_h < 10:
+            return BehaviorTree.RUNNING
+        if self.index_h >= 10:
+            self.bool_shooting = 0
+            self.dir = self.dir / abs(self.dir)
+            print(f'arrow dir: {self.dir}')
+            arrow = Arrow(self.pos_x + self.dir * 20, self.pos_y + 20)
+            arrow.dir = self.dir
+            arrow.parent = self
+            play_mode.game_world.add_object(arrow, 3)
+            return BehaviorTree.SUCCESS
+
     def a(self):
         print('db')
 
+    def set_home(self):
+        d = randint(0, 1)
+        # if self.pos_x > 0:
+        #     d = 1
+        # else:
+        #     d = 0
+
+        for i in range(0, game_world.map.map_size):
+            if game_world.map.walls[d][i] is None:
+                if i == 0:
+                    self.tx = 0 + (randint(0, 1) * 2 - 1) * randint(0, 30)
+                else:
+                    self.tx = game_world.map.walls[d][i - 1].pos_x - (d * 2 - 1) * randint(30, 120)
+                print(f'eb: {self.tx}')
+                return BehaviorTree.SUCCESS
+        return BehaviorTree.FAIL
+
+
+    def is_at_home(self):
+        if self.bool_is_at_home:
+            return BehaviorTree.SUCCESS
+        else:
+            return BehaviorTree.FAIL
+
+    def get_home(self):
+        self.bool_is_at_home = True
+        return BehaviorTree.SUCCESS
 
     def build_behavior_tree(self):
 
@@ -230,13 +321,13 @@ class Archer:
         a2 = Action('Set random location', self.set_random_location)
         root = SEQ_wander = Sequence('Wander', a2, a1, SEQ_wait_time)
 
-        c1 = Condition('토끼가 근처에 있는가?', self.is_target_nearby, 700)
+        c1 = Condition('토끼가 근처에 있는가?', self.is_chicken_nearby, 700)
         CDT_is_shooting = Condition('화살을 발사하고 있는가', self.is_shooting)
 
         a3 = Action('접근', self.move_to_chicken)
         root = SEQ_chase_chicken = Sequence('토끼를 추적', c1, a3)
 
-        c2  = Condition('토끼가 사정거리 안에 있는가?', self.is_target_nearby, 500)
+        c2  = Condition('토끼가 사정거리 안에 있는가?', self.is_chicken_nearby, 500)
         SEL_in_shoot_state = Selector('발사상태인가', CDT_is_shooting, c2)
         a4 = Action('화살 발사', self.shoot_to_chicken)
         root = SEQ_shoot_chicken = Sequence('토끼를 사냥', SEL_in_shoot_state, a4)
@@ -250,29 +341,44 @@ class Archer:
 
         root = SEL_hunt_or_wander = Selector('사냥 또는 wander', SEL_hunt_chicken, SEQ_wander)
 
-        CDT_is_day =  Condition('낮인가?', self.is_day)
-        CDT_is_night =  Condition('밤인가?', self.is_night)
-
-        root = SEQ_day = Sequence('낮', CDT_is_day, SEL_hunt_or_wander)
 
 
-
-        ACT_set_home = Action('귀환 위치 설정', self.set_target_location, 0)
-        SEQ_go_home = Sequence('기지로 이동', ACT_set_home, a1)
-
-        SEQ_defend = Sequence('방어', )
-
-        SEQ_go_home_and_defend = Sequence('귀환 또는 방어', SEQ_go_home, SEQ_defend)
+        self.bt_day = BehaviorTree(root)
 
 
-        SEQ_night = Sequence('밤', SEQ_go_home_and_defend)
+        ACT_set_home = Action('귀환 위치 설정', self.set_home)
+        ACT_get_home = Action('귀환 완료', self.get_home)
+        ACT_go_home = Action('Move to', self.move_to)
+
+        SEQ_go_home = Sequence('기지로 이동', ACT_set_home, ACT_go_home, ACT_get_home)
+
+        CDT_is_enemy_nearby = Condition('적이 근처에 있는가?', self.is_enemy_nearby, 700)
 
 
-        root = SEL_day_or_night = Selector('낮 또는 밤', SEQ_day, SEQ_night)
+        SEL_in_shoot_state = Selector('발사상태인가', CDT_is_shooting, CDT_is_enemy_nearby)
+        ACT_shoot_enemy = Action('화살 발사', self.shoot_to_enemy)
+        root = SEQ_shoot_enemy = Sequence('적을 사냥', SEL_in_shoot_state, ACT_shoot_enemy)
+
+
+        ACT_lockon_enemy = Action('시야거리 내에 적이 있는가?', self.lockon_enemy, 700)
+        #SEQ_lockon_chicken = Sequence('LockOn', c3, a5)
+        SEQ_shoot_and_wait = Sequence('화살 발사 및 대기', SEQ_shoot_enemy, SEQ_wait_reload)
+        SEL_hunt_enemy = Selector('사냥', SEQ_shoot_and_wait, ACT_lockon_enemy )
+        root = SEL_hunt_or_wait = Selector('사냥 또는 wait', SEL_hunt_enemy, SEQ_wait_time)
+
+        CDT_is_at_home = Condition('집에있', self.is_at_home)
+        SEL_go_home = Selector('집에있는가', CDT_is_at_home, SEQ_go_home)
+
+        SEQ_defend = Sequence('방어', SEL_hunt_or_wait)
+
+        root = SEL_go_home_and_defend = Sequence('귀환 또는 방어', SEL_go_home, SEQ_defend)
 
 
 
-        self.bt = BehaviorTree(root)
+
+
+
+        self.bt_night = BehaviorTree(root)
 
 
 

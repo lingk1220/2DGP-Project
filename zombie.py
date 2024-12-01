@@ -28,6 +28,7 @@ class Zombie:
         self.count_v = 8
 
         self.cost = 0.75 + cost / 4
+        self.hp = cost
 
         self.size_h = (self.width_image // self.count_h)
         self.size_v = (self.height_image // self.count_v)
@@ -53,11 +54,15 @@ class Zombie:
         self.clip_pos_x = 700 - play_mode.character.pos_x + self.pos_x
         self.clip_pos_y = self.pos_y
 
+        self.is_dying = 0
+
+        self.tag = 'Enemy'
 
         if Zombie.image == None:
             Zombie.image = load_image('./enemy/zombie.png')
 
         play_mode.game_world.add_collision_pair('enemy:ally', self, None)
+        play_mode.game_world.add_collision_pair('arrow:enemy', None, self)
 
         self.build_behavior_tree()
         self.state_machine = StateMachine(self)
@@ -81,8 +86,12 @@ class Zombie:
                     self.can_attack = 1
             pass
 
+        if group == 'arrow:enemy':
+            self.attacked(other)
+
     def update(self):
-        self.bt.run()
+        if not self.is_dying:
+            self.bt.run()
         #print(f'{self.state}')
         print(f'{self.state_machine.cur_state}')
 
@@ -100,6 +109,13 @@ class Zombie:
         self.clip_pos_x = 700 - play_mode.character.pos_x + self.pos_x
         self.clip_pos_y = self.pos_y
         self.state_machine.draw()
+
+    def attacked(self, other):
+        self.hp -= 1
+        if self.hp <= 0:
+            self.is_dying = 1
+            self.state = Die
+            other.set_target_enemy_none()
 
 
     def set_target_none(self):
@@ -120,6 +136,8 @@ class Zombie:
         return distance2
 
     def move_slightly_to(self, tx):
+        if tx == self.pos_x:
+            return
         self.dir = (tx - self.pos_x) / abs(tx - self.pos_x)
         self.speed = 120 * self.cost
         self.pos_x += self.speed * self.dir * game_framework.frame_time
@@ -338,3 +356,42 @@ class Attack:
                                              'h',
                                              zombie.clip_pos_x,
                                              zombie.clip_pos_y, zombie.draw_x, zombie.draw_y)
+
+
+
+class Die:
+    @staticmethod
+    def enter(zombie, e):
+        zombie.index_v = 4 - 1
+        zombie.index_h = 2 - 1
+
+    @staticmethod
+    def exit(zombie, e):
+        pass
+
+    @staticmethod
+    def do(zombie):
+        if zombie.index_h < 14:
+            zombie.index_h = zombie.index_h + 14 * 1.5 * game_framework.frame_time
+        else:
+            zombie.index_h = 14
+            game_world.remove_object(zombie)
+
+    @staticmethod
+    def draw(zombie):
+        if zombie.dir > 0:
+            Zombie.image.clip_draw(int(zombie.index_h % 13) * zombie.size_h,
+                                   (zombie.index_v - int(zombie.index_h / 13)) * zombie.size_v,
+                                   zombie.size_h,
+                                   zombie.size_v,
+                                   zombie.clip_pos_x + zombie.center_error_x // 2,
+                                   zombie.clip_pos_y, zombie.draw_x + zombie.center_error_x, zombie.draw_y)
+        else:
+            Zombie.image.clip_composite_draw(int(zombie.index_h % 13) * zombie.size_h,
+                                               (zombie.index_v - int(zombie.index_h / 13)) * zombie.size_v,
+                                             zombie.size_h,
+                                             zombie.size_v,
+                                             0,
+                                             'h',
+                                             zombie.clip_pos_x - zombie.center_error_x // 2,
+                                             zombie.clip_pos_y, zombie.draw_x + zombie.center_error_x, zombie.draw_y)

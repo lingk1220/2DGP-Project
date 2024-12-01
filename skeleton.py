@@ -6,12 +6,13 @@ import game_framework
 import game_world
 
 import play_mode
-from archer import Archer
 
 from behavior_tree import BehaviorTree, Action, Sequence, Condition, Selector
 from pico2d import load_image, get_time
 
+from character import Character
 from chicken import Chicken
+from maid import Maid
 from state_machine import StateMachine
 
 from arrow import Arrow
@@ -28,6 +29,7 @@ class Skeleton:
         self.count_v = 7
 
         self.cost = 0.75 + cost / 4
+        self.hp = cost
 
         self.size_h = (self.width_image // self.count_h)
         self.size_v = (self.height_image // self.count_v)
@@ -52,12 +54,15 @@ class Skeleton:
         self.bool_attack = 0
         self.clip_pos_x = 700 - play_mode.character.pos_x + self.pos_x
         self.clip_pos_y = self.pos_y
+        self.is_dying = 0
 
+        self.tag = 'Enemy'
 
         if Skeleton.image == None:
             Skeleton.image = load_image('./enemy/skeleton.png')
 
         play_mode.game_world.add_collision_pair('enemy:ally', self, None)
+        play_mode.game_world.add_collision_pair('arrow:enemy', None, self)
 
         self.build_behavior_tree()
         self.state_machine = StateMachine(self)
@@ -79,10 +84,15 @@ class Skeleton:
 
                 if not other.is_dying and self.bool_attacking == 0:
                     self.can_attack = 1
-            pass
+
+
+        if group == 'arrow:enemy':
+            self.attacked(other)
+
 
     def update(self):
-        self.bt.run()
+        if not self.is_dying:
+            self.bt.run()
         #print(f'{self.state}')
         print(f'{self.state_machine.cur_state}')
 
@@ -100,6 +110,14 @@ class Skeleton:
         self.clip_pos_x = 700 - play_mode.character.pos_x + self.pos_x
         self.clip_pos_y = self.pos_y
         self.state_machine.draw()
+
+
+    def attacked(self, other):
+        self.hp -= 1
+        if self.hp <= 0:
+            self.is_dying = 1
+            self.state = Die
+            other.set_target_enemy_none()
 
 
     def set_target_none(self):
@@ -120,6 +138,8 @@ class Skeleton:
         return distance2
 
     def move_slightly_to(self, tx):
+        if tx == self.pos_x:
+            return
         self.dir = (tx - self.pos_x) / abs(tx - self.pos_x)
         self.speed = 100 * self.cost
         print(f'speed: {self.speed}')
@@ -339,3 +359,45 @@ class Attack:
                                              'h',
                                              skeleton.clip_pos_x,
                                              skeleton.clip_pos_y, skeleton.draw_x, skeleton.draw_y)
+
+
+
+
+class Die:
+    @staticmethod
+    def enter(skeleton, e):
+        skeleton.index_v = 3 - 1
+        skeleton.index_h = 7 - 1
+
+    @staticmethod
+    def exit(skeleton, e):
+        pass
+
+    @staticmethod
+    def do(skeleton):
+        if skeleton.index_h < 13:
+            skeleton.index_h = skeleton.index_h + 13 * 1.5 * game_framework.frame_time
+        else:
+            skeleton.index_h = 13
+            game_world.remove_object(skeleton)
+
+    @staticmethod
+    def draw(skeleton):
+        if skeleton.dir > 0:
+            Skeleton.image.clip_draw(int(skeleton.index_h % 13) * skeleton.size_h,
+                                   (skeleton.index_v - int(skeleton.index_h / 13)) * skeleton.size_v,
+                                   skeleton.size_h,
+                                   skeleton.size_v,
+                                   skeleton.clip_pos_x + skeleton.center_error_x // 2,
+                                   skeleton.clip_pos_y, skeleton.draw_x + skeleton.center_error_x, skeleton.draw_y)
+        else:
+            Skeleton.image.clip_composite_draw(int(skeleton.index_h % 13) * skeleton.size_h,
+                                               (skeleton.index_v - int(skeleton.index_h / 13)) * skeleton.size_v,
+                                             skeleton.size_h,
+                                             skeleton.size_v,
+                                             0,
+                                             'h',
+                                             skeleton.clip_pos_x - skeleton.center_error_x // 2,
+                                             skeleton.clip_pos_y, skeleton.draw_x + skeleton.center_error_x, skeleton.draw_y)
+
+
