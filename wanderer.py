@@ -81,6 +81,7 @@ class Wanderer:
             self.part_image_indices = [0, randint(0, 3), 0, 0, 0]
 
 
+        self.tag = 'Wanderer'
 
         play_mode.game_world.add_collision_pair('character:wanderer', None, self)
 

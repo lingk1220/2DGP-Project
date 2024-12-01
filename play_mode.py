@@ -69,9 +69,9 @@ def init():
 
 
 
-
-    archer = Archer(500, GROUNDHEIGHT)
-    game_world.add_object(archer, 3)
+    for i in range(10):
+        archer = Archer(-1000, GROUNDHEIGHT)
+        game_world.add_object(archer, 3)
 
 
 

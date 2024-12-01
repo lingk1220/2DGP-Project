@@ -35,11 +35,11 @@ class Map:
 
 
         # self.build_walls(0, 3)
-        # self.build_walls(0, 5)
+
         # self.build_walls(1, 7)
 
         self.generate_map()
-
+        self.build_walls(0, 5)
 
     def generate_map(self):
         self.elements = []
@@ -87,7 +87,8 @@ class Map:
         for layer in self.elements:
             for layer_half in layer:
                 for o in layer_half:
-                    if o != None:
+
+                    if o != None and o.__class__ != Ground:
                         l, b, r, t = o.get_bb()
                         l = 700 - play_mode.character.pos_x + l
                         r = 700 - play_mode.character.pos_x + r
@@ -95,6 +96,7 @@ class Map:
 
 
     def input_wall(self, dir, x_index):
+        play_mode.character.lose_money(1)
         self.walls[dir][x_index] = (Wall(self, dir, x_index, self.ground))
 
 
@@ -149,7 +151,7 @@ class Map:
         i = o.x_index
         self.remove_map_object(self.walls[dir][i])
         i -= 1
-        while (self.buildings[dir][i] == None or self.buildings[dir][i].__class__ == 'Rock') and i >0:
+        while (self.buildings[dir][i] == None or self.buildings[dir][i].__class__ != Rock) and i >0:
             self.remove_map_object(self.walls[dir][i])
             i -= 1
 
