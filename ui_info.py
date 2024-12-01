@@ -14,14 +14,13 @@ class InformationUI:
         self.width_image = [160, 41, 128, 120, 120, 32, 32]
         self.height_image = [41, 41, 16, 8, 8, 32, 32]
         self.draw_rate = [2, 1.7, 1.7, 1.7, 1.7, 3, 2, 2]
-
         self.image_names = ['Heart_Bar_Panel', 'Circle_Box', 'Value_Bar', 'Value_HP', 'Value_Gold', 'sun', 'moon']
         self.image_index = [0, 3, 4, 2, 2, 1, 5, 6]
         self.canvas_width = 1400
         self.canvas_height = 800
 
         self.bool_draw = [1, 1, 1, 1, 1, 1, 1, 1]
-        self.draw_factor = [1, 1, 1, 1, 1, 1, 1]
+        self.draw_factor = [1, 1, 1, 1, 1, 1, 1, 1]
 
         self.draw_offset_x = offset_x
         self.draw_offset_y = offset_y
@@ -57,7 +56,9 @@ class InformationUI:
         return -10000, -10000, 10000, 10000
 
     def update(self):
-        print(play_mode.game_world.is_day)
+
+        self.draw_factor[2] = play_mode.character.money / play_mode.character.money_max
+
         if play_mode.game_world.is_day:
             self.bool_draw[6] = 1
             self.bool_draw[7] = 0
@@ -70,7 +71,7 @@ class InformationUI:
         for i in range(8):
             if self.bool_draw[i]:
                 d = self.image_index[i]
-                self.images[d].clip_draw(0, 0, self.width_image[d], self.height_image[d], self.pos_x[i] + self.draw_offset_x, self.pos_y[i] + self.draw_offset_y, self.width_image[d]  * self.draw_rate[i], self.height_image[d] * self.draw_rate[i])
+                self.images[d].clip_draw(0, 0, self.width_image[d], self.height_image[d], self.pos_x[i] + self.draw_offset_x  - (self.width_image[d]  * self.draw_rate[i] * (1 - self.draw_factor[i]) / 2), self.pos_y[i] + self.draw_offset_y, self.width_image[d]  * self.draw_rate[i] * self.draw_factor[i], self.height_image[d] * self.draw_rate[i])
             # self.images[i].clip_draw(0,
             #                          0,
             #                          self.width_image,
