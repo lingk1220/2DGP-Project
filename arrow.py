@@ -20,6 +20,8 @@ class Arrow:
         self.count_h = 1
         self.count_v = 1
 
+        self.life_time = 3
+        self.shooted_time = time.time()
         self.size_h = (self.width_image // self.count_h)
         self.size_v = (self.height_image // self.count_v)
 
@@ -60,11 +62,14 @@ class Arrow:
 
         if group == 'arrow:enemy':
             if not self.removed:
-                self.removed = 1
-                play_mode.game_world.remove_object(self)
+                if not other.is_dying:
+                    self.removed = 1
+                    play_mode.game_world.remove_object(self)
 
     def update(self):
         self.pos_x += self.dir * 300 * game_framework.frame_time
+        if time.time() - self.shooted_time > self.life_time:
+            play_mode.game_world.remove_object(self)
         pass
 
     def handle_event(self, event):
@@ -74,6 +79,8 @@ class Arrow:
         self.parent.set_target_enemy_none()
 
     def draw(self):
+        if abs(play_mode.character.pos_x - self.pos_x) > 1000:
+            return
         self.clip_pos_x = 700 - play_mode.character.pos_x + self.pos_x
         self.clip_pos_y = self.pos_y
 

@@ -257,8 +257,9 @@ class Idle:
     @staticmethod
     def enter(zombie, e):
         zombie.idle_start_time = get_time()
-        zombie.index_v = 4 - 1
-        zombie.index_h = 0
+
+        zombie.index_v = 8 - 1
+        zombie.index_h = 8
 
     @staticmethod
     def exit(zombie, e):
@@ -266,21 +267,21 @@ class Idle:
 
     @staticmethod
     def do(zombie):
-        zombie.index_h = (zombie.index_h + 10 * 1.5 * game_framework.frame_time) % 10
+        zombie.index_h = (zombie.index_h + 8 * 0.8 * game_framework.frame_time) % 8
 
 
     @staticmethod
     def draw(zombie):
         if zombie.dir < 0:
-            Zombie.image.clip_draw(int(zombie.index_h) * zombie.size_h,
-                                   zombie.index_v * zombie.size_v,
+            Zombie.image.clip_draw(int((zombie.index_h + 7) % 10) * zombie.size_h,
+                                   (zombie.index_v - int((zombie.index_h + 7) // 10)) * zombie.size_v,
                                    zombie.size_h - zombie.center_error_x,
                                    zombie.size_v,
                                    zombie.clip_pos_x,
                                    zombie.clip_pos_y, zombie.draw_x, zombie.draw_y)
         else:
-            Zombie.image.clip_composite_draw(int(zombie.index_h) * zombie.size_h,
-                                             zombie.index_v * zombie.size_v,
+            Zombie.image.clip_composite_draw(int((zombie.index_h + 7) % 10) * zombie.size_h,
+                                             (zombie.index_v - int((zombie.index_h + 7) // 10)) * zombie.size_v,
                                              zombie.size_h - zombie.center_error_x,
                                              zombie.size_v,
                                              0,
@@ -327,8 +328,8 @@ class Walk:
 class Attack:
     @staticmethod
     def enter(zombie, e):
-        zombie.index_v = 3 - 1
-        zombie.index_h = 0
+        zombie.index_v = 8 - 1
+        zombie.index_h = 7 - 1
 
     @staticmethod
     def exit(zombie, e):
@@ -336,20 +337,20 @@ class Attack:
 
     @staticmethod
     def do(zombie):
-        zombie.index_h = (zombie.index_h + 6 * 1.5 * game_framework.frame_time) % 6
+        zombie.index_h = (zombie.index_h + 8 * 1.5 * game_framework.frame_time) % 8
 
     @staticmethod
     def draw(zombie):
         if zombie.dir < 0:
-            zombie.image.clip_draw(int(zombie.index_h) * zombie.size_h,
-                                   zombie.index_v * zombie.size_v,
+            zombie.image.clip_draw(int((zombie.index_h + 6) % 10) * zombie.size_h,
+                                   (zombie.index_v - int((zombie.index_h + 6) / 10)) * zombie.size_v,
                                    zombie.size_h - zombie.center_error_x,
                                    zombie.size_v,
                                    zombie.clip_pos_x,
                                    zombie.clip_pos_y, zombie.draw_x, zombie.draw_y)
         else:
-            zombie.image.clip_composite_draw(int(zombie.index_h) * zombie.size_h,
-                                             zombie.index_v * zombie.size_v,
+            zombie.image.clip_composite_draw(int((zombie.index_h + 6) % 10) * zombie.size_h,
+                                   (zombie.index_v - int((zombie.index_h + 6) / 10)) * zombie.size_v,
                                              zombie.size_h - zombie.center_error_x,
                                              zombie.size_v,
                                              0,
@@ -379,7 +380,7 @@ class Die:
 
     @staticmethod
     def draw(zombie):
-        if zombie.dir > 0:
+        if zombie.dir < 0:
             Zombie.image.clip_draw(int(zombie.index_h % 13) * zombie.size_h,
                                    (zombie.index_v - int(zombie.index_h / 13)) * zombie.size_v,
                                    zombie.size_h,

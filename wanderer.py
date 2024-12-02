@@ -4,6 +4,7 @@ from random import randint
 from pico2d import load_image, get_time
 
 import game_framework
+import game_world
 import play_mode
 from archer import Archer
 
@@ -70,7 +71,11 @@ class Wanderer:
 
         self.selected = 0
 
-        self.wanderer_index = randint(0, 1)
+        r = randint(0, 100)
+        if r < 30:
+            self.wanderer_index = 1
+        else:
+            self.wanderer_index = 0
 
         self.clip_pos_x = 700 - play_mode.character.pos_x + self.pos_x
         self.clip_pos_y = self.pos_y
@@ -104,6 +109,9 @@ class Wanderer:
     def update(self):
         if abs(play_mode.character.pos_x - self.pos_x) > 1000:
             return
+
+        if not game_world.is_day:
+            return
         self.bt.run()
         #print(f'{self.state}')
         print(f'{self.state_machine.cur_state}')
@@ -115,6 +123,9 @@ class Wanderer:
 
     def draw(self):
         if abs(play_mode.character.pos_x - self.pos_x) > 1000:
+            return
+
+        if not game_world.is_day:
             return
         self.clip_pos_x = 700 - play_mode.character.pos_x + self.pos_x
         self.clip_pos_y = self.pos_y
@@ -129,6 +140,11 @@ class Wanderer:
         self.be_civil()
 
     def be_civil(self):
+        if play_mode.character.money < 5:
+            return
+
+        play_mode.character.lose_money(5)
+
         self.camp.wanderer_count -= 1
         self.camp.wanderer_count_cur -= 1
         if self.wanderer_index == 0:

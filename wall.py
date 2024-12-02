@@ -30,7 +30,7 @@ class Wall:
         self.tiles_v = 2
 
         self.is_dying = 0
-        self.hp = 3
+        self.hp = 30
         self.draw_x = self.size_h * self.tiles_h * 1.9
         self.draw_y = self.size_v * self.tiles_v * 1.9
 

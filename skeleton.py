@@ -383,7 +383,7 @@ class Die:
 
     @staticmethod
     def draw(skeleton):
-        if skeleton.dir > 0:
+        if skeleton.dir < 0:
             Skeleton.image.clip_draw(int(skeleton.index_h % 13) * skeleton.size_h,
                                    (skeleton.index_v - int(skeleton.index_h / 13)) * skeleton.size_v,
                                    skeleton.size_h,

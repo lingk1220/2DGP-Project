@@ -2,7 +2,6 @@ import math
 import random
 import time
 from random import randint
-from zipfile import BZIP2_VERSION
 
 import game_framework
 import game_world
@@ -99,6 +98,8 @@ class Archer:
 
 
     def draw(self):
+        if abs(play_mode.character.pos_x - self.pos_x) > 1000:
+            return
         self.clip_pos_x = 700 - play_mode.character.pos_x + self.pos_x
         self.clip_pos_y = self.pos_y
         self.state_machine.draw()
@@ -158,8 +159,12 @@ class Archer:
             return BehaviorTree.RUNNING
 
     def set_random_location(self):
-        self.tx, self.ty = self.pos_x + ((2 * random.randint(0, 1)  - 1) *  random.randint(100, 101)), self.pos_y
-        print(f'tx = {self.tx}')
+        dir = self.pos_x / abs(self.pos_x)
+        d = randint(0, 10)
+        if d < 8:
+            self.tx, self.ty = self.pos_x + (dir *  random.randint(100, 200)), self.pos_y
+        else:
+            self.tx, self.ty = self.pos_x + (-dir * random.randint(50, 120)), self.pos_y
         # self.tx, self.ty = 1000, 100
         return BehaviorTree.SUCCESS
 
@@ -239,7 +244,8 @@ class Archer:
             return BehaviorTree.RUNNING
 
     def shoot_to_chicken(self):
-
+        if self.chicken_target == None:
+            return BehaviorTree.FAIL
         if self.chicken_target.pos_x == None:
             return BehaviorTree.SUCCESS
         self.bool_shooting = 1
@@ -255,6 +261,7 @@ class Archer:
             arrow.dir = self.dir
             arrow.parent = self
             play_mode.game_world.add_object(arrow, 3)
+            self.chicken_target = None
             return BehaviorTree.SUCCESS
 
 
@@ -276,10 +283,11 @@ class Archer:
             arrow.dir = self.dir
             arrow.parent = self
             play_mode.game_world.add_object(arrow, 3)
+            self.enemy_target = None
             return BehaviorTree.SUCCESS
 
-    def a(self):
-        print('db')
+    def set_day(self):
+        self.bool_is_at_home = False
 
     def set_home(self):
         d = randint(0, 1)
