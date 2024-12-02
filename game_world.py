@@ -14,8 +14,8 @@ objects = [[], [], [], [], []]
 
 UI = [[], [], []]
 
-time = 49.0
-time_one_day = 100.0
+time = 0.0
+time_one_day = 200.0
 
 is_day = True
 is_shifted = False
@@ -57,18 +57,18 @@ def render():
         for o in layer:
             o.draw()
 
-    i = 0
-    for layer in objects:
-        if 0 < i and i  <= 4:
-            for o in layer:
-                l, b, r, t = o.get_bb()
-                l = 700 - play_mode.character.pos_x + l
-                r = 700 - play_mode.character.pos_x + r
-                draw_rectangle(l, b, r, t)
-                pass
-        i += 1
-
-    map.draw_bb()
+    # i = 0
+    # for layer in objects:
+    #     if 0 < i and i  <= 4:
+    #         for o in layer:
+    #             l, b, r, t = o.get_bb()
+    #             l = 700 - play_mode.character.pos_x + l
+    #             r = 700 - play_mode.character.pos_x + r
+    #             draw_rectangle(l, b, r, t)
+    #             pass
+    #     i += 1
+    #
+    # map.draw_bb()
 
 
 def collide(a, b):

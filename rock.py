@@ -34,6 +34,8 @@ class Rock:
         self.draw_x = self.size_h * self.tiles_h * 1.5
         self.draw_y = self.size_v * self.tiles_v * 1.5
 
+        self.tag = 'Rock'
+
         self.clip_pos_x = 700 - play_mode.character.pos_x + self.pos_x
         self.clip_pos_y = self.pos_y
 

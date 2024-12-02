@@ -51,6 +51,9 @@ class ChickenField:
 
         self.dir = self.pos_x / abs(self.pos_x)
 
+
+        self.tag = 'ChickenField'
+
         self.spawn_timer = 0
         self.spawn_delay = 0.0 + randint(10, 100) / 10
         #self.state = Idle

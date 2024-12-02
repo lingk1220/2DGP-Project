@@ -1,8 +1,10 @@
 import math
 import random
 import time
+from random import randint
 
 import game_framework
+import game_world
 import play_mode
 
 from behavior_tree import BehaviorTree, Action, Sequence, Condition, Selector
@@ -60,6 +62,10 @@ class Chicken:
 
 
     def update(self):
+        if abs(play_mode.character.pos_x - self.pos_x) > 1000:
+            return
+        if not game_world.is_day:
+            return
         self.bt.run()
 
         if self.state_machine.cur_state != self.state:
@@ -72,6 +78,10 @@ class Chicken:
 
 
     def draw(self):
+        if abs(play_mode.character.pos_x - self.pos_x) > 1000:
+            return
+        if not game_world.is_day:
+            return
         self.clip_pos_x = 700 - play_mode.character.pos_x + self.pos_x
         self.clip_pos_y = self.pos_y
         self.state_machine.draw()
@@ -104,8 +114,12 @@ class Chicken:
             return BehaviorTree.RUNNING
 
     def set_random_location(self):
-        self.tx, self.ty = self.pos_x + ((2 * random.randint(0, 1)  - 1) *  random.randint(50, 120)), self.pos_y
-
+        dir = self.pos_x / abs(self.pos_x)
+        d = randint(0, 10)
+        if d < 8:
+            self.tx, self.ty = self.pos_x + (-dir *  random.randint(100, 200)), self.pos_y
+        else:
+            self.tx, self.ty = self.pos_x + (dir * random.randint(50, 120)), self.pos_y
         # self.tx, self.ty = 1000, 100
         return BehaviorTree.SUCCESS
 

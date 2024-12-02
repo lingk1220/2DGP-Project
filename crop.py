@@ -13,7 +13,7 @@ from state_machine import StateMachine
 
 class Crop:
     image = None
-    def __init__(self, x, y):
+    def __init__(self, farm, x, y):
         self.width_image = 768
         self.height_image = 512
 
@@ -33,8 +33,8 @@ class Crop:
         self.draw_x = self.size_h * 1.5
         self.draw_y = self.size_v * 1.5
 
-        self.growth = 0
-        self.max_growth = 10
+        self.growth = random.randint(0, 80) * 0.5
+        self.max_growth = 50
         self.growth_level = 0
         self.dir = 1
         #self.state = Idle
@@ -62,11 +62,15 @@ class Crop:
         if self.growth < self.max_growth:
             self.growth += game_framework.frame_time
         print(f'growth: {self.growth}')
-        if self.growth > self.max_growth / 3 * 1:
-            self.growth_level = 12
+        if self.growth > self.max_growth / 4 * 1:
+            self.growth_level = 0
+            self.index_h = 1
+
+        if self.growth >= self.max_growth / 4 * 2:
+            self.growth_level = 1
             self.index_h = 2
 
-        if self.growth >= self.max_growth / 3 * 2:
+        if self.growth >= self.max_growth / 4 * 3:
             self.growth_level = 2
             self.index_h = 3
 

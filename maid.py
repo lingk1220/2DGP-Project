@@ -1,5 +1,6 @@
 import math
 import random
+from random import randint
 import time
 
 import game_framework
@@ -41,9 +42,13 @@ class Maid:
         self.state = Walk
         self.crop_target = None
 
+        self.bool_is_at_farm = False
+
         self.clip_pos_x = 700 - play_mode.character.pos_x + self.pos_x
         self.clip_pos_y = self.pos_y
 
+
+        self.target_farm = None
         self.tag = 'Ally'
 
         if Maid.image == None:
@@ -111,7 +116,8 @@ class Maid:
             return BehaviorTree.RUNNING
 
     def set_random_location(self):
-        self.tx, self.ty = self.pos_x + ((2 * random.randint(0, 1)  - 1) *  random.randint(100, 101)), self.pos_y
+        minx, _, maxx, _ = self.target_farm.get_bb()
+        self.tx, self.ty = randint(int(minx), int(maxx)), self.pos_y
         print(f'tx = {self.tx}')
         # self.tx, self.ty = 1000, 100
         return BehaviorTree.SUCCESS
@@ -133,9 +139,9 @@ class Maid:
     def lockon_crop(self, distance):
         self.min_crop_dir = 10000000
         self.crop_target = None
-        for crop in game_world.objects[3]:
+        for crop in self.target_farm.crops:
             if crop.__class__ == Crop and crop.growth_level == 3:
-                print('hio')
+
                 crop_dir = self.distance_get(crop.pos_x, self.pos_x)
                 if crop_dir < distance:
                     if crop_dir < self.min_crop_dir:
@@ -166,18 +172,43 @@ class Maid:
 
     def reap_crop(self):
         self.state = Reap
-        # self.dir = self.crop_target.pos_x - self.pos_x
-        # if self.index_h < 10:
-        #     return BehaviorTree.RUNNING
-        # if self.index_h >= 10:
-        #     self.dir = self.dir / abs(self.dir)
-        #     print(f'arrow dir: {self.dir}')
 
-        #play_mode.game_world.remove_object(self.crop_target)
-        self.crop_target.growth = 0
-
-        play_mode.character.get_money(1)
+        if self.crop_target.growth_level == 3:
+            self.crop_target.growth = 0
+            self.crop_target.growth_level = 0
+            self.crop_target.index_h = 1
+            play_mode.character.get_money(3)
         self.crop_target = None
+        return BehaviorTree.SUCCESS
+
+    def set_farm(self):
+        d = randint(0, 1)
+        for i in range(0, game_world.map.map_size):
+            if game_world.map.buildings[d][i] is not None:
+                if game_world.map.buildings[d][i].tag == 'Farm':
+                    self.target_farm = game_world.map.buildings[d][i]
+                    self.tx = game_world.map.buildings[d][i].pos_x
+                    return BehaviorTree.SUCCESS
+
+        d = 1 - d
+        for i in range(0, game_world.map.map_size):
+            if game_world.map.buildings[d][i] is not None:
+                if game_world.map.buildings[d][i].tag == 'Farm':
+                    self.target_farm = game_world.map.buildings[d][i]
+                    self.tx = game_world.map.buildings[d][i].pos_x
+                    return BehaviorTree.SUCCESS
+
+        return BehaviorTree.FAIL
+
+
+    def is_at_farm(self):
+        if self.bool_is_at_farm:
+            return BehaviorTree.SUCCESS
+        else:
+            return BehaviorTree.FAIL
+
+    def get_farm(self):
+        self.bool_is_at_farm = True
         return BehaviorTree.SUCCESS
 
     def build_behavior_tree(self):
@@ -208,6 +239,19 @@ class Maid:
 
         root = SEL_farming_or_wander = Selector('농사 또는 wander', SEL_farming, SEQ_wander)
 
+        ACT_set_farm = Action('귀환 위치 설정', self.set_farm)
+        ACT_get_farm = Action('귀환 완료', self.get_farm)
+        ACT_go_farm = Action('Move to', self.move_to)
+
+        SEQ_go_farm = Sequence('기지로 이동', ACT_set_farm, ACT_go_farm, ACT_get_farm)
+
+        CDT_is_at_farm = Condition('집에있', self.is_at_farm)
+        SEL_go_farm = Selector('집에있는가', CDT_is_at_farm, SEQ_go_farm)
+
+
+
+
+        root = a = Sequence('d', SEL_go_farm, SEL_farming_or_wander)
         self.bt = BehaviorTree(root)
 
 
