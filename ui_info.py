@@ -58,6 +58,7 @@ class InformationUI:
     def update(self):
 
         self.draw_factor[2] = play_mode.character.money / play_mode.character.money_max
+        self.draw_factor[1] = play_mode.character.hp / play_mode.character.hp_max
 
         if play_mode.game_world.is_day:
             self.bool_draw[6] = 1
