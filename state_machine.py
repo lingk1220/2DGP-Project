@@ -108,9 +108,10 @@ class StateMachine:
         pass
 
     def clear_event(self):
-        t = self.event_q[0]
-        self.event_q.clear()
-        self.event_q.append(t)
+        if len(self.event_q):
+            t = self.event_q[0]
+            self.event_q.clear()
+            self.event_q.append(t)
 
     def set_transitions(self, transitions):
         self.transitions = transitions

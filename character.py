@@ -5,6 +5,8 @@ import game_framework
 
 from pico2d import *
 
+import game_world
+import pause_mode
 import play_mode
 from state_machine import StateMachine, right_down, right_up, left_down, left_up, lshift_down, lshift_up, interact_down, \
     interact_up, run_shift, right_down_with_shift, left_down_with_shift, time_out_interact, right_up_with_shift, \
@@ -30,8 +32,8 @@ class Character:
         self.pos_x = x
         self.pos_y = y
 
-        self.speed_walk = 3
-        self.speed_run = 7
+        self.speed_walk = 150
+        self.speed_run = 250
         self.frame = 0
         self.need_update_frame = 0
 
@@ -57,6 +59,9 @@ class Character:
         self.interact_size_v = (self.height_image_interact // self.interact_count_v)
 
         self.nearest_interactor = None
+        self.nearest_wanderer = None
+        self.wanderer_dist_min = 10000
+
         self.interactor_dist_min = 10000
 
 
@@ -66,10 +71,13 @@ class Character:
         self.draw_x = self.size_h * 2
         self.draw_y = self.size_v * 2
 
+        self.is_dying = 0
 
-        self.money = 50
+        self.money = 20
         self.money_max = 100
 
+        self.hp = 10
+        self.hp_max = 10
         if Character.image == None:
             Character.image = load_image('character.png')
         if Character.image_interaction == None:
@@ -77,6 +85,7 @@ class Character:
 
         play_mode.game_world.add_collision_pair('character:wanderer', self, None)
         play_mode.game_world.add_collision_pair('character:building', self, None)
+        play_mode.game_world.add_collision_pair('enemy:ally', None, self)
 
         self.state_machine = StateMachine(self)
         self.state_machine.start(Idle)
@@ -97,15 +106,22 @@ class Character:
         return self.pos_x - self.draw_x / 4.3 + self.dir * 7 + 25, self.pos_y - self.draw_y / 4, self.pos_x + self.draw_x / 4.3 + self.dir * 7 - 25, self.pos_y + self.draw_y / 2.5
 
     def handle_collision(self, group, other):
-        if group == 'character:wanderer' or group == 'character:building':
-            print(f'ae{other.__class__}')
+        if group == 'character:wanderer':
+
+            if self.wanderer_dist_min > self.pos_x - other.pos_x:
+                self.nearest_wanderer = other
+                self.wanderer_dist_min = self.pos_x - other.pos_x
+
+            return
+        if group == 'character:building':
+
             if other.__class__ == 'Wall':
                 return
             if self.interactor_dist_min > self.pos_x - other.pos_x:
                 self.nearest_interactor = other
-                self.wanderer_dist_min = self.pos_x - other.pos_x
+                self.interactor_dist_min = self.pos_x - other.pos_x
 
-            pass
+            return
 
     def update(self):
 
@@ -133,6 +149,11 @@ class Character:
         if self.money < 0:
             self.money = 0
 
+    def attacked(self, other):
+        self.hp -= 1
+        if self.hp <= 0:
+            self.is_dying = 1
+            game_framework.push_mode(pause_mode)
 
 
 class Idle:
@@ -195,7 +216,8 @@ class Walk:
             character.index_h = 2
 
 
-        character.pos_x += character.dir * character.speed_walk
+        if game_world.map.left_enemy_building.building.pos_x + 100 < character.pos_x + game_framework.frame_time * character.dir * character.speed_walk < game_world.map.right_enemy_building.building.pos_x - 100:
+            character.pos_x = character.pos_x +game_framework.frame_time * character.dir * character.speed_walk
 
     @staticmethod
     def draw(character):
@@ -234,7 +256,9 @@ class Run:
         if character.index_h >= 9:
             character.index_h = 2
 
-        character.pos_x += character.dir * character.speed_run
+        if game_world.map.left_enemy_building.building.pos_x + 100 < character.pos_x + game_framework.frame_time * character.dir * character.speed_run < game_world.map.right_enemy_building.building.pos_x - 100:
+            character.pos_x =   character.pos_x +game_framework.frame_time * character.dir * character.speed_run
+
 
     @staticmethod
     def draw(character):
@@ -276,7 +300,10 @@ class Interact:
             character.index_h = 0
         elif character.index_v == 8 - 1 and character.index_h >= 9:
             character.state_machine.add_event(('TIME_OUT', 0))
-            if character.nearest_interactor is not None:
+
+            if character.nearest_wanderer is not None:
+                character.nearest_wanderer.interact()
+            elif character.nearest_interactor is not None:
                 character.nearest_interactor.interact()
 
 
@@ -284,7 +311,7 @@ class Interact:
             character.index_v = 10 - 1
             character.index_h = 0
         character.nearest_interactor = None
-
+        character.nearest_wanderer = None
 
 
     @staticmethod

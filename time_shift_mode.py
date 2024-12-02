@@ -3,7 +3,9 @@ from sdl2 import SDL_QUIT, SDL_KEYDOWN
 
 import game_framework
 import game_world
+import pause_mode
 import play_mode
+from archer import Archer
 from ui import UI
 from ui_pause import PauseUI
 from ui_time_shift import TimeShiftUI
@@ -15,8 +17,8 @@ def handle_events():
         if event.type == SDL_QUIT:
             game_framework.quit()
         elif event.type == SDL_KEYDOWN and event.key == pico2d.SDLK_ESCAPE:
-                play_mode.character.change_mode()
-                game_framework.pop_mode()
+                game_framework.push_mode(pause_mode)
+
         else:
             play_mode.character.handle_event(event)
 
@@ -39,6 +41,10 @@ def update():
     if r == 2:
         print(f'r: {r}')
         game_world.is_day = not game_world.is_day
+        if game_world.is_day == True:
+            for o in game_world.objects[3]:
+                if o.__class__ == Archer:
+                    o.set_day()
         pass
 
 def draw():

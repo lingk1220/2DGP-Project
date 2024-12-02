@@ -48,7 +48,7 @@ class EnemyBuilding:
 
     def init_building(self):
 
-        difficulty_cutline = self.map.map_size -  (self.map.map_size * self.map.enemy_cutline / 3)
+        difficulty_cutline = self.map.map_size -  (self.map.map_size * self.map.enemy_cutline / 10)
         self.difficulty = self.x / self.map.map_size
         print(f'dif: {self.difficulty}')
 
