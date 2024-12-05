@@ -24,7 +24,7 @@ class Map:
     def __init__(self,x, ground):
         self.map_size = 75
         self.tile_size = 96
-        self.enemy_cutline = 0.4
+        self.enemy_cutline = 0.99
         self.x = 0
         self.ground = ground
 
