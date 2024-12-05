@@ -102,6 +102,8 @@ class Maid:
         return distance2
 
     def move_slightly_to(self, tx):
+        if tx == self.pos_x:
+            return
         self.dir = (tx - self.pos_x) / abs(tx - self.pos_x)
         self.speed = 100
         self.pos_x += self.speed * self.dir * game_framework.frame_time
@@ -116,7 +118,10 @@ class Maid:
             return BehaviorTree.RUNNING
 
     def set_random_location(self):
-        minx, _, maxx, _ = self.target_farm.get_bb()
+        if self.target_farm is None:
+            minx, maxx = self.pos_x - randint(50, 100),self.pos_x + randint(50, 100)
+        else:
+            minx, _, maxx, _ = self.target_farm.get_bb()
         self.tx, self.ty = randint(int(minx), int(maxx)), self.pos_y
         print(f'tx = {self.tx}')
         # self.tx, self.ty = 1000, 100
@@ -137,8 +142,13 @@ class Maid:
         return BehaviorTree.SUCCESS
 
     def lockon_crop(self, distance):
+        if self.target_farm == None:
+            return BehaviorTree.FAIL
+
         self.min_crop_dir = 10000000
         self.crop_target = None
+
+
         for crop in self.target_farm.crops:
             if crop.__class__ == Crop and crop.growth_level == 3:
 
@@ -182,21 +192,26 @@ class Maid:
         return BehaviorTree.SUCCESS
 
     def set_farm(self):
-        d = randint(0, 1)
-        for i in range(0, game_world.map.map_size):
-            if game_world.map.buildings[d][i] is not None:
-                if game_world.map.buildings[d][i].tag == 'Farm':
-                    self.target_farm = game_world.map.buildings[d][i]
-                    self.tx = game_world.map.buildings[d][i].pos_x
-                    return BehaviorTree.SUCCESS
 
-        d = 1 - d
         for i in range(0, game_world.map.map_size):
-            if game_world.map.buildings[d][i] is not None:
-                if game_world.map.buildings[d][i].tag == 'Farm':
-                    self.target_farm = game_world.map.buildings[d][i]
-                    self.tx = game_world.map.buildings[d][i].pos_x
-                    return BehaviorTree.SUCCESS
+            o =game_world.map.buildings[0][i]
+            o2 =game_world.map.buildings[1][i]
+            if o is not None:
+                if o.tag == 'Farm':
+                    if o.max_maid > o.maid_count:
+                        o.maid_count += 1
+                        self.target_farm = o
+                        self.tx = o.pos_x
+                        return BehaviorTree.SUCCESS
+
+            if o2 is not None:
+                if o2.tag == 'Farm':
+                    if o2.max_maid > o2.maid_count:
+                        o2.maid_count += 1
+                        self.target_farm = o2
+                        self.tx = o2.pos_x
+                        return BehaviorTree.SUCCESS
+
 
         return BehaviorTree.FAIL
 
@@ -246,7 +261,7 @@ class Maid:
         SEQ_go_farm = Sequence('기지로 이동', ACT_set_farm, ACT_go_farm, ACT_get_farm)
 
         CDT_is_at_farm = Condition('집에있', self.is_at_farm)
-        SEL_go_farm = Selector('집에있는가', CDT_is_at_farm, SEQ_go_farm)
+        SEL_go_farm = Selector('집에있는가', CDT_is_at_farm, SEQ_go_farm, SEQ_wander)
 
 
 

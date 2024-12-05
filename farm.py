@@ -53,6 +53,9 @@ class Farm:
 
         self.dir = self.pos_x / abs(self.pos_x)
 
+        self.max_maid = 3
+        self.maid_count = 0
+
         self.tag = 'Farm'
         self.spawn_timer = 0
         self.spawn_delay = 0.0 + randint(10, 100) / 10

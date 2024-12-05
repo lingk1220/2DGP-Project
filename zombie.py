@@ -92,8 +92,7 @@ class Zombie:
     def update(self):
         if not self.is_dying:
             self.bt.run()
-        #print(f'{self.state}')
-        print(f'{self.state_machine.cur_state}')
+
 
         if self.state_machine.cur_state != self.state:
             self.state_machine.start(self.state)

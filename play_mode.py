@@ -53,14 +53,14 @@ def init():
     global character
     character = Character(0, GROUNDHEIGHT)
 
-    for i in range(10):
-        archer = Archer(-1000, GROUNDHEIGHT)
-        game_world.add_object(archer, 3)
-
-    for i in range(10):
-        archer = Archer(1000, GROUNDHEIGHT)
-        game_world.add_object(archer, 3)
-
+    # for i in range(10):
+    #     archer = Archer(-1000, GROUNDHEIGHT)
+    #     game_world.add_object(archer, 3)
+    #
+    # for i in range(10):
+    #     archer = Archer(1000, GROUNDHEIGHT)
+    #     game_world.add_object(archer, 3)
+    #
 
     game_world.add_object(character, 4)
 
@@ -73,7 +73,7 @@ def init():
 
 
 
-    for i in range(1):
+    for i in range(7):
         maid = Maid(000, GROUNDHEIGHT)
         game_world.add_object(maid, 3)
 

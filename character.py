@@ -33,7 +33,7 @@ class Character:
         self.pos_y = y
 
         self.speed_walk = 150
-        self.speed_run = 250
+        self.speed_run = 350
         self.frame = 0
         self.need_update_frame = 0
 
