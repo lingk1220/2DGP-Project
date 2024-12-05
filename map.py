@@ -47,14 +47,17 @@ class Map:
 
     def generate_map(self):
         self.elements = []
-        self.buildings[0] = [None for _ in range(self.map_size)]
-        self.buildings[1] = [None for _ in range(self.map_size)]
+        self.buildings[0] = [None for _ in range(self.map_size + 1)]
+        self.buildings[1] = [None for _ in range(self.map_size + 1)]
         self.elements.append(self.grounds)
 
         self.walls[0] = [None for _ in range(self.map_size)]
         self.walls[1] = [None for _ in range(self.map_size)]
         self.elements.append(self.walls)
         self.elements.append(self.buildings)
+
+        self.enemy_buildings[0] = [None for _ in range(self.map_size + 1)]
+        self.enemy_buildings[1] = [None for _ in range(self.map_size + 1)]
         self.elements.append(self.enemy_buildings)
 
         self.init_grounds(0, 0)
@@ -72,6 +75,8 @@ class Map:
 
         self.house[0] = [House(self, 1, 0, self.ground)]
         self.elements.append(self.house)
+        self.init_enemy_building()
+        print(f'o: {self.left_enemy_building}')
 
 
     def get_bb(self):
@@ -82,7 +87,7 @@ class Map:
             for layer_half in layer:
                 for o in layer_half:
                     if o != None:
-                        print(f'asd{o.__class__}')
+
                         if o.__class__ == EnemyBuilding:
                             if o.building.__class__ == Obelisk or o.building.__class__ == Obelisk2:
                                 if o == self.left_enemy_building or o == self.right_enemy_building:
@@ -91,14 +96,7 @@ class Map:
                         else:
                             o.update()
 
-        for o in self.enemy_buildings[0]:
-            if o is not None:
-                self.left_enemy_building = o
 
-
-        for o in self.enemy_buildings[1]:
-            if o is not None:
-                self.right_enemy_building = o
 
 
     def draw(self):
@@ -171,7 +169,8 @@ class Map:
 
 
     def input_enemy_building(self, dir, x_index):
-        self.enemy_buildings[dir].append(EnemyBuilding(self, dir, x_index, self.ground))
+
+        self.enemy_buildings[dir][x_index] = (EnemyBuilding(self, dir, x_index, self.ground))
 
 
     def init_enemy_buildings(self, dir, x_index):
@@ -195,21 +194,61 @@ class Map:
 
     def remove_map_object(self, o):
         print(f'o: {o}')
+        s =  0
 
         for index, i in enumerate(self.walls[0]):
             if i == o:
                 self.walls[0][index] = None
-
+                s = 1
         for index, i in enumerate(self.walls[1]):
             if i == o:
                 self.walls[1][index] = None
-
+                s = 1
         for index, i in enumerate(self.buildings[0]):
             if i == o:
                 self.buildings[0][index] = None
-
+                s = 1
         for index, i in enumerate(self.buildings[1]):
             if i == o:
                 self.buildings[1][index] = None
+                s = 1
+        for index, i in enumerate(self.enemy_buildings[0]):
+            print(f'ev:{index, i}')
+            if i == o:
+                self.enemy_buildings[0][index] = None
+                s = 1
+        for index, i in enumerate(self.enemy_buildings[1]):
+            if i == o:
+                self.enemy_buildings[1][index] = None
+                s = 1
 
-        game_world.remove_collision_object(o)
+        if s == 1:
+            game_world.remove_collision_object(o)
+
+    def init_enemy_building(self):
+        for o in self.enemy_buildings[0]:
+            if o is not None:
+                self.left_enemy_building = o
+                break
+
+        for o in self.enemy_buildings[1]:
+            if o is not None:
+                self.right_enemy_building = o
+                break
+
+    def reset_enemy_building(self, dir):
+        if dir < 0:
+            self.remove_map_object(self.left_enemy_building)
+        else:
+            self.remove_map_object(self.right_enemy_building)
+
+        for o in self.enemy_buildings[0]:
+            if o is not None:
+                self.left_enemy_building = o
+                break
+
+
+        for o in self.enemy_buildings[1]:
+            if o is not None:
+                self.right_enemy_building = o
+                break

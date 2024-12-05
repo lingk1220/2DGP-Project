@@ -258,7 +258,7 @@ class Run:
 
         if game_world.map.left_enemy_building.building.pos_x + 100 < character.pos_x + game_framework.frame_time * character.dir * character.speed_run < game_world.map.right_enemy_building.building.pos_x - 100:
             character.pos_x =   character.pos_x +game_framework.frame_time * character.dir * character.speed_run
-
+        character.pos_x = character.pos_x + game_framework.frame_time * character.dir * character.speed_run
 
     @staticmethod
     def draw(character):
