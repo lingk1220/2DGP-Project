@@ -93,8 +93,6 @@ class Skeleton:
     def update(self):
         if not self.is_dying:
             self.bt.run()
-        #print(f'{self.state}')
-        print(f'{self.state_machine.cur_state}')
 
         if self.state_machine.cur_state != self.state:
             self.state_machine.start(self.state)
@@ -142,13 +140,11 @@ class Skeleton:
             return
         self.dir = (tx - self.pos_x) / abs(tx - self.pos_x)
         self.speed = 100 * self.cost
-        print(f'speed: {self.speed}')
         self.pos_x += self.speed * self.dir * game_framework.frame_time
 
     def move_to(self, r=10):
         self.state = Walk
         self.move_slightly_to(self.tx)
-        print(f'tx: {self.tx}, pos_x: {self.pos_x}')
         if self.distance_less_than(self.tx, self.pos_x, r):
             return BehaviorTree.SUCCESS
         else:
@@ -156,7 +152,7 @@ class Skeleton:
 
     def set_random_location(self):
         self.tx, self.ty = self.pos_x + ((2 * random.randint(0, 1)  - 1) *  random.randint(100, 101)), self.pos_y
-        print(f'tx = {self.tx}')
+
         # self.tx, self.ty = 1000, 100
         return BehaviorTree.SUCCESS
 
@@ -304,7 +300,7 @@ class Walk:
     @staticmethod
     def do(skeleton):
         skeleton.index_h = (skeleton.index_h + 8 * skeleton.cost *  1.5 * game_framework.frame_time) % 8
-        print(f'            {int(skeleton.index_h)}')
+
 
     @staticmethod
     def draw(skeleton):

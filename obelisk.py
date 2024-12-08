@@ -62,9 +62,12 @@ class Obelisk:
 
         self.is_dying = 0
 
+        self.hp = 10
         #self.state = Idle
         if Obelisk.image == None:
             Obelisk.image = load_image('obelisk.png')
+
+        play_mode.game_world.add_collision_pair('arrow:enemy', None, self)
 
         self.state = Idle
         self.state_machine = StateMachine(self)
@@ -73,9 +76,11 @@ class Obelisk:
 
 
     def get_bb(self):
-        return self.pos_x - self.draw_x , self.pos_y - self.draw_y / 2 - 5, self.pos_x + self.draw_x, self.pos_y + self.draw_y / 3 + 7
+        return self.pos_x - self.draw_x / 3.5, self.pos_y - self.draw_y / 2 - 5, self.pos_x + self.draw_x / 3.5, self.pos_y + self.draw_y / 3 + 7
 
     def handle_collision(self, group, other):
+        if group == 'arrow:enemy':
+            self.attacked(other)
         pass
 
 
@@ -83,7 +88,12 @@ class Obelisk:
         self.state = Die
 
 
-
+    def attacked(self, other):
+        self.hp -= 1
+        if self.hp <= 0:
+            self.is_dying = 1
+            self.state = Die
+            other.set_target_enemy_none()
 
 
     def update(self):

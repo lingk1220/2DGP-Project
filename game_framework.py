@@ -2,6 +2,8 @@ import time
 
 from pico2d import clear_canvas, update_canvas
 
+global frame_time
+frame_time = 0.0
 
 def run(start_mode):
     global running, stack
@@ -25,7 +27,6 @@ def run(start_mode):
         frame_time = time.time() - current_time
         frame_rate = 1.0 / frame_time
         current_time += frame_time
-        print(f'Frame Time: {frame_time}, Frame Rate: {frame_rate}')
 
     while (len(stack) > 0):
         stack[-1].finish()

@@ -48,7 +48,6 @@ class InformationUI:
         for i in range(0, 7):
             if InformationUI.images[i] == None:
                 name = './UI/' + 'Info' + '/' + self.image_names[i] +  '.png'
-                print(name)
                 InformationUI.images[i] = load_image(name)
                 pass
 

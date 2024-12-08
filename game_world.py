@@ -15,7 +15,7 @@ objects = [[], [], [], [], []]
 UI = [[], [], []]
 
 time = 0.0
-time_one_day = 200.0
+time_one_day = 100.0
 
 is_day = True
 is_shifted = False
@@ -67,8 +67,8 @@ def render():
     #             draw_rectangle(l, b, r, t)
     #             pass
     #     i += 1
-    #
-    # map.draw_bb()
+
+    #map.draw_bb()
 
 
 def collide(a, b):
@@ -84,7 +84,6 @@ def collide(a, b):
 
 def add_collision_pair(group, a, b):
     if group not in collision_pairs:
-        print(f'Added new group {group}')
         collision_pairs[group] = [ [], [] ]
     if a:
         collision_pairs[group][0].append(a)

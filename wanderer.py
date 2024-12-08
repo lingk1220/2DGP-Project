@@ -72,10 +72,10 @@ class Wanderer:
         self.selected = 0
 
         r = randint(0, 100)
-        if r < 30:
-            self.wanderer_index = 1
-        else:
+        if r < 70:
             self.wanderer_index = 0
+        else:
+            self.wanderer_index = 1
 
         self.clip_pos_x = 700 - play_mode.character.pos_x + self.pos_x
         self.clip_pos_y = self.pos_y
@@ -113,8 +113,7 @@ class Wanderer:
         if not game_world.is_day:
             return
         self.bt.run()
-        #print(f'{self.state}')
-        print(f'{self.state_machine.cur_state}')
+
 
         if self.state_machine.cur_state != self.state:
             self.state_machine.start(self.state)
@@ -180,7 +179,7 @@ class Wanderer:
     def move_to(self, r=10):
         self.state = Walk
         self.move_slightly_to(self.tx)
-        print(f'tx: {self.tx}, pos_x: {self.pos_x}')
+
         if self.distance_less_than(self.tx, self.pos_x, r):
             return BehaviorTree.SUCCESS
         else:
@@ -189,7 +188,7 @@ class Wanderer:
     def set_random_location(self):
         minx, _, maxx, _ = self.camp.get_bb()
         self.tx, self.ty = randint(int(minx), int(maxx)), self.pos_y
-        print(f'tx = {self.tx}')
+
         # self.tx, self.ty = 1000, 100
         return BehaviorTree.SUCCESS
 
@@ -266,7 +265,7 @@ class Walk:
     @staticmethod
     def do(wanderer):
         wanderer.index_h = (wanderer.index_h + 8 * 1.5 * game_framework.frame_time) % 8
-        print(f'            {int(wanderer.index_h)}')
+
 
     @staticmethod
     def draw(wanderer):

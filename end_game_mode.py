@@ -7,6 +7,8 @@ import pause_mode
 import play_mode
 from archer import Archer
 from ui import UI
+from ui_end_game import EndingUI
+
 from ui_pause import PauseUI
 from ui_time_shift import TimeShiftUI
 
@@ -17,7 +19,7 @@ def handle_events():
         if event.type == SDL_QUIT:
             game_framework.quit()
         elif event.type == SDL_KEYDOWN and event.key == pico2d.SDLK_ESCAPE:
-                game_framework.push_mode(pause_mode)
+                pass
 
         else:
             play_mode.character.handle_event(event)
@@ -26,24 +28,27 @@ def handle_events():
 def init():
     global ui
     ui = UI()
-    ui_timeshift = TimeShiftUI()
-    ui.input_UI(ui_timeshift)
+    ui_end = None
+    if play_mode.f == False:
+        ui_end = EndingUI(-1)
+    else:
+        ui_end = EndingUI(1)
+
+    ui.input_UI(ui_end)
     pass
 
 
 def update():
-    play_mode.update()
+    #play_mode.update()
     r= ui.update()
 
     if r == 1:
-        game_framework.pop_mode()
+        if play_mode.f == True:
+            game_framework.quit()
+        else:
+            play_mode.f = True
+            game_framework.pop_mode()
 
-    if r == 2:
-        game_world.is_day = not game_world.is_day
-        if game_world.is_day == True:
-            for o in game_world.objects[3]:
-                if o.__class__ == Archer:
-                    o.set_day()
         pass
 
 def draw():
@@ -55,7 +60,7 @@ def draw():
 
 
 def finish():
-    game_world.is_shifted = False
+
 
     pass
 

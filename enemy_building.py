@@ -3,6 +3,7 @@ import random
 import time
 from random import randint
 
+
 import game_framework
 
 
@@ -31,6 +32,7 @@ class EnemyBuilding:
 
         self.init_building()
 
+        self.pos_x = self.building.pos_x
         self.enemy_count = 0
         self.enemy_count_max = 3
 
@@ -39,6 +41,8 @@ class EnemyBuilding:
         self.spawn_delay = 1.0
 
 
+
+        self.tag = 'enemy'
     def get_bb(self):
         return self.building.get_bb()
 
@@ -50,7 +54,7 @@ class EnemyBuilding:
 
         difficulty_cutline = self.map.map_size -  (self.map.map_size * self.map.enemy_cutline / 10)
         self.difficulty = self.x / self.map.map_size
-        print(f'dif: {self.difficulty}')
+
 
         if self.x > difficulty_cutline:
             self.building = Obelisk2(self.map, self.dir, self.x, self.ground, self.difficulty)

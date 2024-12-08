@@ -46,59 +46,61 @@ class Obelisk2:
         self.draw_x = self.size_h
         self.draw_y = self.size_v
 
+        self.is_dying = 0
 
+        self.hp = 20
         self.clip_pos_x = 0
         self.clip_pos_y = 0
 
         self.enemy_count = 0
         self.enemy_count_max = 5 + (self.difficulty ** 5) * 50
-        print(f'cm: {self.difficulty, self.enemy_count_max}')
+
         self.dir = self.pos_x / abs(self.pos_x)
 
         self.spawn_timer = 0
         self.spawn_delay = 1.0
+
+        self.mt = 1000
+        self.t = self.mt
+
         #self.state = Idle
         if Obelisk2.image == None:
             Obelisk2.image = load_image('obelisk2.png')
 
+        self.state = Idle
+        self.state_machine = StateMachine(self)
+        self.state_machine.start(self.state)
+
+        play_mode.game_world.add_collision_pair('arrow:enemy', None, self)
 
     def get_bb(self):
-        return self.pos_x - self.draw_x , self.pos_y - self.draw_y / 2 - 5, self.pos_x + self.draw_x, self.pos_y + self.draw_y / 3 + 7
+        return self.pos_x - self.draw_x / 3.3, self.pos_y - self.draw_y / 2 - 5, self.pos_x + self.draw_x / 3.3, self.pos_y + self.draw_y / 3 + 7
 
-    def handle_collision(self, group, other):
-        pass
 
 
     def destroy(self):
         self.state = Die
 
+    def attacked(self, other):
+        self.hp -= 1
+        if self.hp <= 0:
+            self.is_dying = 1
+            self.state = Die
+            other.set_target_enemy_none()
 
+
+    def handle_collision(self, group, other):
+        if group == 'arrow:enemy':
+            self.attacked(other)
+        pass
 
     def update(self):
-        self.frame = (self.frame + 13 * 0.5 * game_framework.frame_time) % 13
-
-        if game_world.is_day == True:
-            return
-        self.spawn_timer = self.spawn_timer + game_framework.frame_time
-
-        if self.enemy_count >= self.enemy_count_max:
-           return
-        if self.spawn_timer > self.spawn_delay:
-            new_enemy = None
-            factor = randint(1, 3)
-            cost = min( randint(1, 3), self.enemy_count_max -self.enemy_count)
-            if factor == 1:
-                new_enemy = Zombie(self.pos_x, self.ground, self, cost)
-            elif factor == 2:
-                new_enemy = Skeleton(self.pos_x, self.ground, self, cost)
-            elif factor == 3:
-                new_enemy = Skeleton(self.pos_x, self.ground, self, cost)
-
-            play_mode.game_world.add_object(new_enemy, 3)
-            self.spawn_timer = 0
-            self.enemy_count += factor
+        if self.state_machine.cur_state != self.state:
+            self.state_machine.start(self.state)
+        self.state_machine.update()
 
         pass
+
 
     def handle_event(self, event):
         pass
@@ -107,16 +109,8 @@ class Obelisk2:
     def draw(self):
         self.clip_pos_x = 700 - play_mode.character.pos_x + self.pos_x
         self.clip_pos_y = self.pos_y
-        Obelisk2.image.clip_composite_draw(int(self.frame) * self.size_h,
-                            25,
-                           self.size_h,
-                           self.size_v,
-                           0,
-                           '',
-                           self.clip_pos_x,
-                           self.clip_pos_y,
-                           self.size_h , self.size_v - 25
-                           )
+        self.state_machine.draw()
+
 
 
 class Idle:
@@ -165,27 +159,27 @@ class Idle:
             obelisk.clip_pos_x = 700 - play_mode.character.pos_x + obelisk.pos_x
             obelisk.clip_pos_y = obelisk.pos_y
             Obelisk2.image.clip_composite_draw(int(obelisk.frame) * obelisk.size_h,
-                                              20,
+                                              25,
                                               obelisk.size_h,
                                               obelisk.size_v,
                                               0,
                                               '',
                                               obelisk.clip_pos_x,
                                               obelisk.clip_pos_y,
-                                              obelisk.size_h, obelisk.size_v - 20
+                                              obelisk.size_h, obelisk.size_v - 25
                                               )
         else:
             obelisk.clip_pos_x = 700 - play_mode.character.pos_x + obelisk.pos_x
             obelisk.clip_pos_y = obelisk.pos_y
             Obelisk2.image.clip_composite_draw(int(obelisk.frame) * obelisk.size_h,
-                                              20,
+                                              25,
                                               obelisk.size_h,
                                               obelisk.size_v,
                                               0,
                                               'h',
                                               obelisk.clip_pos_x,
                                               obelisk.clip_pos_y,
-                                              obelisk.size_h, obelisk.size_v - 20
+                                              obelisk.size_h, obelisk.size_v - 25
                                               )
 
 
@@ -205,8 +199,7 @@ class Die:
         obelisk.frame = 0
         obelisk.t -= 200 * game_framework.frame_time
         if obelisk.t <= 0:
-            obelisk.map.remove_map_object(obelisk)
-            obelisk.map.reset_enemy_building()
+            obelisk.map.reset_enemy_building(obelisk.dir)
 
 
     @staticmethod
@@ -217,7 +210,7 @@ class Die:
                                    obelisk.size_h,
                                    obelisk.size_v,
                                    obelisk.clip_pos_x + obelisk.center_error_x // 2 + (randint(0, 1)*2-1) * randint(1, 3) * 0.4,
-                                   obelisk.clip_pos_y + int(obelisk.draw_y  * (obelisk.t/ obelisk.mt - 1)) // 2 + 12, obelisk.draw_x + obelisk.center_error_x,  int(obelisk.draw_y  * (obelisk.t/ obelisk.mt)))
+                                   obelisk.clip_pos_y + int(obelisk.draw_y  * (obelisk.t/ obelisk.mt - 1)) // 2 -5, obelisk.draw_x + obelisk.center_error_x,  int(obelisk.draw_y  * (obelisk.t/ obelisk.mt)))
         else:
             Obelisk2.image.clip_composite_draw(0,
                                    20 + int(obelisk.size_v  * (1 - obelisk.t/ obelisk.mt)),
@@ -226,4 +219,4 @@ class Die:
                                    0,
                                    'h',
                                    obelisk.clip_pos_x + obelisk.center_error_x // 2 + (randint(0, 1)*2-1) * randint(1, 3) * 0.4,
-                                   obelisk.clip_pos_y + int(obelisk.draw_y  * (obelisk.t/ obelisk.mt - 1)) // 2 + 12, obelisk.draw_x + obelisk.center_error_x,  int(obelisk.draw_y  * (obelisk.t/ obelisk.mt)))
+                                   obelisk.clip_pos_y + int(obelisk.draw_y  * (obelisk.t/ obelisk.mt - 1)) // 2 - 5, obelisk.draw_x + obelisk.center_error_x,  int(obelisk.draw_y  * (obelisk.t/ obelisk.mt)))

@@ -144,7 +144,6 @@ class Zombie:
     def move_to(self, r=10):
         self.state = Walk
         self.move_slightly_to(self.tx)
-        print(f'tx: {self.tx}, pos_x: {self.pos_x}')
         if self.distance_less_than(self.tx, self.pos_x, r):
             return BehaviorTree.SUCCESS
         else:
@@ -152,7 +151,7 @@ class Zombie:
 
     def set_random_location(self):
         self.tx, self.ty = self.pos_x + ((2 * random.randint(0, 1)  - 1) *  random.randint(100, 101)), self.pos_y
-        print(f'tx = {self.tx}')
+
         # self.tx, self.ty = 1000, 100
         return BehaviorTree.SUCCESS
 
@@ -301,7 +300,7 @@ class Walk:
     @staticmethod
     def do(zombie):
         zombie.index_h = (zombie.index_h + 8 * 0.8 * game_framework.frame_time) % 8
-        print(f'            {int(zombie.index_h)}')
+
 
     @staticmethod
     def draw(zombie):

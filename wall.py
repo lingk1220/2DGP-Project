@@ -73,7 +73,7 @@ class Wall:
 
 
     def interact(self):
-        print('Interact With Wall')
+        pass
 
     def attacked(self, other):
         self.hp -= 1
@@ -81,4 +81,3 @@ class Wall:
 
             self.map.remove_walls(self)
             self.is_dying = 1
-        print('Wall Under Attacked!')

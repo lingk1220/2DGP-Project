@@ -65,8 +65,6 @@ class Maid:
 
     def update(self):
         self.bt.run()
-        #print(f'{self.state}')
-        print(f'{self.state_machine.cur_state}')
 
         if self.state_machine.cur_state != self.state:
             self.state_machine.start(self.state)
@@ -111,7 +109,6 @@ class Maid:
     def move_to(self, r=10):
         self.state = Walk
         self.move_slightly_to(self.tx)
-        print(f'tx: {self.tx}, pos_x: {self.pos_x}')
         if self.distance_less_than(self.tx, self.pos_x, r):
             return BehaviorTree.SUCCESS
         else:
@@ -123,7 +120,7 @@ class Maid:
         else:
             minx, _, maxx, _ = self.target_farm.get_bb()
         self.tx, self.ty = randint(int(minx), int(maxx)), self.pos_y
-        print(f'tx = {self.tx}')
+
         # self.tx, self.ty = 1000, 100
         return BehaviorTree.SUCCESS
 
@@ -329,7 +326,7 @@ class Walk:
         elif maid.index_v == 3 and maid.index_h > 3:
             maid.index_v = 4
             maid.index_h = 5
-        print(f'            maid.index_h: {int(maid.index_h)}')
+
 
     @staticmethod
     def draw(maid):

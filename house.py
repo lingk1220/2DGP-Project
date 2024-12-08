@@ -2,6 +2,7 @@ from random import randint
 
 from pico2d import load_image
 
+import end_game_mode
 import game_framework
 import pause_mode
 import play_mode
@@ -33,7 +34,7 @@ class House:
         self.tiles_h = 3
         self.tiles_v = 2
 
-        self.hp = 50
+        self.hp = 20
 
         self.is_dying = 0
 
@@ -55,8 +56,8 @@ class House:
         self.hp -= 1
         if self.hp <= 0:
             self.is_dying = 1
-            game_framework.push_mode(pause_mode)
-
+            game_framework.push_mode(end_game_mode)
+            pass
 
     def handle_collision(self, group, other):
         if group == '':
