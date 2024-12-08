@@ -31,7 +31,7 @@ class Archer:
 
         self.size_h = (self.width_image // self.count_h)
         self.size_v = (self.height_image // self.count_v)
-
+        self.speed = 300
         self.center_error_x = 10
         self.pos_x = x
         self.pos_y = y + 25
@@ -41,7 +41,7 @@ class Archer:
         self.is_dying = 0
 
         self.hp = 3
-
+        self.tx = 0
         self.index_h = 0
         self.index_v = 3 - 1
         self.x, self.y = random.randint(0, 0), 0
@@ -62,7 +62,7 @@ class Archer:
         play_mode.game_world.add_collision_pair('enemy:ally', None, self)
 
         self.build_behavior_tree()
-        self.bt = self.bt_day
+        self.bt = self.bt_attack
         self.state_machine = StateMachine(self)
         self.state_machine.start(Idle)
 
@@ -78,14 +78,16 @@ class Archer:
 
     def update(self):
         if game_world.is_day:
+            self.speed = 100
             self.bt = self.bt_day
         else:
-            self.bt = self.bt_night
+            self.speed = 200
+            if self.bt != self.bt_attack:
+
+                self.bt = self.bt_night
 
         if not self.is_dying:
             self.bt.run()
-        #print(f'{self.state}')
-        print(f'{self.state_machine.cur_state}')
 
         if self.state_machine.cur_state != self.state:
             self.state_machine.start(self.state)
@@ -96,6 +98,14 @@ class Archer:
     def handle_event(self, event):
         pass
 
+    def shift_mode(self):
+        if abs(play_mode.character.pos_x - self.pos_x) > 300:
+            return
+
+        if self.bt == self.bt_night:
+            self.bt = self.bt_attack
+        elif self.bt == self.bt_attack:
+            self.bt = self.bt_night
 
     def draw(self):
         if abs(play_mode.character.pos_x - self.pos_x) > 1000:
@@ -146,13 +156,12 @@ class Archer:
     def move_slightly_to(self, tx):
         if tx != self.pos_x:
             self.dir = (tx - self.pos_x) / abs(tx - self.pos_x)
-            self.speed = 100
+
             self.pos_x += self.speed * self.dir * game_framework.frame_time
 
     def move_to(self, r=10):
         self.state = Walk
         self.move_slightly_to(self.tx)
-        print(f'tx: {self.tx}, pos_x: {self.pos_x}')
         if self.distance_less_than(self.tx, self.pos_x, r):
             return BehaviorTree.SUCCESS
         else:
@@ -206,7 +215,21 @@ class Archer:
                     if enemy_dir < self.min_chicken_dir:
                         self.enemy_target = enemy
         if self.enemy_target == None:
-            return BehaviorTree.FAIL
+            if game_world.map.left_enemy_building is not None:
+                enemy = game_world.map.left_enemy_building
+                enemy_dir = abs(self.distance_get(enemy.pos_x, self.pos_x))
+                if enemy_dir < distance:
+                    if enemy_dir < self.min_chicken_dir:
+                        self.enemy_target = enemy
+            if game_world.map.right_enemy_building is not None:
+                enemy = game_world.map.right_enemy_building
+                enemy_dir = abs(self.distance_get(enemy.pos_x, self.pos_x))
+                if enemy_dir < distance:
+                    if enemy_dir < self.min_chicken_dir:
+                        self.enemy_target = enemy
+
+            if self.enemy_target == None:
+                return BehaviorTree.FAIL
         else:
             return BehaviorTree.SUCCESS
 
@@ -256,7 +279,6 @@ class Archer:
         if self.index_h >= 10:
             self.bool_shooting = 0
             self.dir = self.dir / abs(self.dir)
-            print(f'arrow dir: {self.dir}')
             arrow = Arrow(self.pos_x + self.dir * 20, self.pos_y + 20)
             arrow.dir = self.dir
             arrow.parent = self
@@ -278,7 +300,6 @@ class Archer:
         if self.index_h >= 10:
             self.bool_shooting = 0
             self.dir = self.dir / abs(self.dir)
-            print(f'arrow dir: {self.dir}')
             arrow = Arrow(self.pos_x + self.dir * 20, self.pos_y + 20)
             arrow.dir = self.dir
             arrow.parent = self
@@ -302,7 +323,6 @@ class Archer:
                     self.tx = 0 + (randint(0, 1) * 2 - 1) * randint(0, 30)
                 else:
                     self.tx = game_world.map.walls[d][i - 1].pos_x - (d * 2 - 1) * randint(30, 120)
-                print(f'eb: {self.tx}')
                 return BehaviorTree.SUCCESS
         return BehaviorTree.FAIL
 
@@ -315,6 +335,12 @@ class Archer:
 
     def get_home(self):
         self.bool_is_at_home = True
+        return BehaviorTree.SUCCESS
+
+    def set_character(self):
+        if abs(self.tx - play_mode.character.pos_x) < 200:
+            return BehaviorTree.FAIL
+        self.tx = play_mode.character.pos_x + (randint(0, 1) * 2 - 1) * randint(50, 100)
         return BehaviorTree.SUCCESS
 
     def build_behavior_tree(self):
@@ -389,6 +415,15 @@ class Archer:
         self.bt_night = BehaviorTree(root)
 
 
+        ACT_set_tx_character = Action('귀환 위치 설정', self.set_character)
+        ACT_go_character = Action('Move to', self.move_to)
+
+        root = SEQ_go_character = Sequence('go to character', ACT_set_tx_character, ACT_go_character)
+
+        root = SEL_a = Selector('asdf', SEQ_go_character, SEQ_defend)
+        self.bt_attack = BehaviorTree(root)
+
+
 
 
 
@@ -440,7 +475,6 @@ class Walk:
     @staticmethod
     def do(archer):
         archer.index_h = (archer.index_h + 8 * 1.5 * game_framework.frame_time) % 8
-        print(f'            {int(archer.index_h)}')
 
     @staticmethod
     def draw(archer):

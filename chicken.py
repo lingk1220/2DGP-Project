@@ -218,7 +218,7 @@ class Walk:
     @staticmethod
     def do(chicken):
         chicken.index_h = 8 + (chicken.index_h - 8 + 6 * 1.0 * game_framework.frame_time) % 6
-        print(f'            {int(chicken.index_h)}')
+
 
     @staticmethod
     def draw(chicken):
@@ -253,7 +253,7 @@ class Beak:
     @staticmethod
     def do(chicken):
         chicken.index_h = 14 + (chicken.index_h - 14 + 4 * 1.0 * game_framework.frame_time) % 4
-        print(f'            {int(chicken.index_h)}')
+
 
     @staticmethod
     def draw(chicken):

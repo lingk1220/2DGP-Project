@@ -1,6 +1,7 @@
 import random
 from types import NoneType
 
+import end_game_mode
 import game_framework
 
 from pico2d import *
@@ -73,7 +74,7 @@ class Character:
 
         self.is_dying = 0
 
-        self.money = 20
+        self.money = 40
         self.money_max = 100
 
         self.hp = 10
@@ -153,7 +154,7 @@ class Character:
         self.hp -= 1
         if self.hp <= 0:
             self.is_dying = 1
-            game_framework.push_mode(pause_mode)
+            game_framework.push_mode(end_game_mode)
 
 
 class Idle:
@@ -202,11 +203,10 @@ class Walk:
 
         character.index_v = 8 - 1
         character.index_h = 0
-        print('Character Walk Enter')
 
     @staticmethod
     def exit(character, e):
-        print('Character Walk Exit')
+        pass
 
     @staticmethod
     def do(character):
@@ -244,12 +244,10 @@ class Run:
 
         character.index_v = 7 - 1
         character.index_h = 0
-        print('Character Run Enter')
 
     @staticmethod
     def exit(character, e):
-        print('Character Run Exit')
-
+        pass
     @staticmethod
     def do(character):
         character.index_h = (character.index_h + 7 * 2 * game_framework.frame_time)
@@ -258,7 +256,6 @@ class Run:
 
         if game_world.map.left_enemy_building.building.pos_x + 100 < character.pos_x + game_framework.frame_time * character.dir * character.speed_run < game_world.map.right_enemy_building.building.pos_x - 100:
             character.pos_x =   character.pos_x +game_framework.frame_time * character.dir * character.speed_run
-        character.pos_x = character.pos_x + game_framework.frame_time * character.dir * character.speed_run
 
     @staticmethod
     def draw(character):
@@ -281,12 +278,10 @@ class Interact:
         elif interact_down(e):
             character.index_v = 10 - 1
             character.index_h = 0
-        print('Character Interact Enter')
 
     @staticmethod
     def exit(character, e):
-        print('Character Interact Exit')
-
+        pass
     @staticmethod
     def do(character):
         character.index_h = (character.index_h + 22 * 0.8 * game_framework.frame_time)

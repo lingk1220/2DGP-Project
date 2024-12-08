@@ -61,7 +61,6 @@ class Crop:
     def update(self):
         if self.growth < self.max_growth:
             self.growth += game_framework.frame_time
-        print(f'growth: {self.growth}')
         if self.growth > self.max_growth / 4 * 1:
             self.growth_level = 0
             self.index_h = 1
